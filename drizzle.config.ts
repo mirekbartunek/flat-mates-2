@@ -8,5 +8,5 @@ export default {
   dbCredentials: {
     url: env.DATABASE_URL,
   },
-  tablesFilter: ["flat-mates-2_*"],
+  out: "./drizzle",
 } satisfies Config;

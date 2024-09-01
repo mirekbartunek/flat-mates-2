@@ -1,0 +1,69 @@
+{
+  "Index": {
+    "title": "Flat Mates",
+    "description": "Rent flats with your mates",
+    "buttons": {
+      "search-listings": "Search listings",
+      "new-listing": "List your property"
+    }
+  },
+  "Unauthenticated": {
+    "title": "Unauthenticated",
+    "description": "You must be authenticated to access this page"
+  },
+  "Unauthorized": {
+    "title": "Unauthorized",
+    "description": "You are not authorized to view this page"
+  },
+  "Listings": {
+    "title": "Look for your new housing",
+    "not-found": "No offers yet :("
+  },
+  "Error": {
+    "title": "Error",
+    "description": "Something went horribly wrong: {message}"
+  },
+  "Not-Found": {
+    "title": "Not Found",
+    "description": "Could not find requested resource"
+  },
+  "Header": {
+    "heading": "About",
+    "description": "Leasing and co-renting flats has never been easier",
+    "offer": {
+      "title": "I want to lease a flat",
+      "description": "Identify yourself on one of our points and start renting"
+    },
+    "tenant": {
+      "title": "I want to rent a flat",
+      "description": "Choose from the offers that suit your needs"
+    },
+    "flats": {
+      "co-housing": {
+        "title": "Co-housing",
+        "description": "Flats for more tenants, perfect for students"
+      }
+    }
+  },
+  "Start-Renting": {
+    "title": "List your property",
+    "description": "Interested in listing your property? Here are all the needed steps",
+    "What-Do-I-Need": {
+      "title": "What do I need?",
+      "description": "To list properties on our platform, you need to verify yourself on of our checkpoints. Make sure to bring your ID, so we can verify your identity."
+    },
+    "What-To-Do-After": {
+      "title": "What to do after?",
+      "description": "Right after you are verified, you can list your property!"
+    },
+    "Messages": {
+      "verified": "Your account is verified, you can list your properties!",
+      "unverified": "Your account is not verified, but you can change that! Just follow the steps mentioned above",
+      "new-listing-redirect": "You can create a listing here",
+      "unauthenticated": "You are not logged in, therefore we cannot determine your current session."
+    }
+  },
+  "Create-a-new-listing": {
+    "title": "Create a new listing"
+  }
+}

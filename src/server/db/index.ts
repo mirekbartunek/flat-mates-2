@@ -3,6 +3,7 @@ import postgres from "postgres";
 
 import { env } from "@/env";
 import * as schema from "./schema";
+import { DefaultLogger, type LogWriter } from "drizzle-orm/logger";
 
 /**
  * Cache the database connection in development. This avoids creating a new connection on every HMR
@@ -15,4 +16,13 @@ const globalForDb = globalThis as unknown as {
 const conn = globalForDb.conn ?? postgres(env.DATABASE_URL);
 if (env.NODE_ENV !== "production") globalForDb.conn = conn;
 
-export const db = drizzle(conn, { schema });
+class CustomLogger implements LogWriter {
+  write(message: string) {
+    console.log(">>> DB call: " + message);
+  }
+}
+const logger = new DefaultLogger({ writer: new CustomLogger() });
+export const db = drizzle(conn, { schema, logger });
+export * from "./schema";
+
+export * from "./schema"

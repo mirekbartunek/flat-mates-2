@@ -1,0 +1,44 @@
+{
+  "Index": {
+    "title": "Bydlení lehce",
+    "description": "Hledej byty s ostatními lidmi",
+    "buttons": {
+      "search-listings": "Vyhledej nabídky",
+      "new-listing": "Nabídni svůj byt"
+    },
+    "Unauthenticated": {
+      "title": "Je třeba přihlášení",
+      "description": "K přístupu na tuto stránku je třeba přihlášení"
+    },
+    "Unauthorized": {
+      "title": "Nedostatečné ověření",
+      "description": "K přístupu na tuto stránku je třeba mít ověřený účet"
+    }
+  },
+  "Listings": {
+    "title": "Vyhledej nové bydlení",
+    "not-found": "Žádné nabídky :("
+  },
+  "Error": {
+    "title": "Chyba!",
+    "description": "Něco se hodně pokazilo: {message}"
+  },
+  "Header": {
+    "heading": "O nás",
+    "description": "Pronajímání a hledání bytů nebylo nikdy lehčí",
+    "offer": {
+      "title": "Chci pronajímat",
+      "description": "Identifikuj se na jednom z našich míst a nabízej"
+    },
+    "tenant": {
+      "title": "Chci si pronajmout",
+      "description": "Vyber si nabídku, která ti padne"
+    },
+    "flats": {
+      "co-housing": {
+        "title": "Spolubydlení",
+        "description": "Byty pro více lidí, perfektní pro studenty"
+      }
+    }
+  }
+}
