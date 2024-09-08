@@ -101,7 +101,7 @@ export const Header = () => {
                     </TransitionLink>
                   </NavigationMenuLink>
                 </li>
-                <ListItem href="/start-renting" title={t("offer.title")}>
+                <ListItem href="/list-your-property" title={t("offer.title")}>
                   {t("offer.description")}
                 </ListItem>
                 <ListItem href="/#listings" title={t("tenant.title")}>

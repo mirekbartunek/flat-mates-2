@@ -19,7 +19,7 @@ const Page = async () => {
   const dbUser = await db.query.users.findFirst({
     where: eq(users.id, session.user.id),
   });
-  const role = dbUser?.verifiedStatus;
+  const role = dbUser?.verified_status;
   const unauthorizedTranslations = await getTranslations("Unauthorized");
   if (role === "UNVERIFIED")
     return (
