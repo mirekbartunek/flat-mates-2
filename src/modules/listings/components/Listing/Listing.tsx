@@ -3,11 +3,7 @@ import Link from "next/link";
 
 type ListingProps = Listings;
 //eslint-disable-next-line no-unused-vars
-export const Listing = ({
-  maxTenants,
-  id,
-  monthly_price,
-}: ListingProps) => {
+export const Listing = ({ maxTenants, id, monthly_price }: ListingProps) => {
   return (
     <div
       key={id}

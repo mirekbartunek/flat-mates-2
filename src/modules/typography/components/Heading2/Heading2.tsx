@@ -1,7 +1,6 @@
 import type { ComponentProps, ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
-
 type Heading2Props = {
   children?: ReactNode;
   withBorder?: boolean;
