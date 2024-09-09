@@ -1,8 +1,6 @@
-import { router } from "next/client";
 import {
   createTRPCRouter,
   protectedProcedure,
-  publicProcedure,
 } from "@/server/api/trpc";
 import { createListingSchema } from "@/server/db/types";
 import { listings } from "@/server/db";
@@ -19,6 +17,6 @@ export const listingsRouter = createTRPCRouter({
         description: input.description,
         monthly_price: input.monthly_price,
       });
-      return;
+      return value;
     }),
 });

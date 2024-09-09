@@ -1,13 +1,11 @@
-import { Listings } from "@/server/db/types";
+import type { Listings } from "@/server/db/types";
 import Link from "next/link";
 
 type ListingProps = Listings;
+//eslint-disable-next-line no-unused-vars
 export const Listing = ({
   maxTenants,
   id,
-  userId,
-  description,
-  title,
   monthly_price,
 }: ListingProps) => {
   return (
