@@ -23,7 +23,7 @@ jobs:
         with:
           bun-version: 1.0.11
       - name: install
-        run: bun
+        run: bun install
       - name: ESLint
         run: bun run lint
       - name: Prettier
