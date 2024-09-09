@@ -15,7 +15,7 @@ import {
   users,
   verificationTokens,
 } from "@/server/db/schema";
-import { UserRole, UserVerified } from "@/server/db/enums";
+import type { UserRole, UserVerified } from "@/server/db/enums";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
