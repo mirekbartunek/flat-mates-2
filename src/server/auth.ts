@@ -28,14 +28,14 @@ declare module "next-auth" {
     user: {
       id: string;
       role: UserRole;
-      verified_status: UserVerified
+      verified_status: UserVerified;
     } & DefaultSession["user"];
   }
 
   interface User {
-   role: UserRole;
-    verified_status: UserVerified
-   }
+    role: UserRole;
+    verified_status: UserVerified;
+  }
 }
 
 /**
@@ -51,7 +51,7 @@ export const authOptions: NextAuthOptions = {
         ...session.user,
         id: user.id,
         verified_status: user.verified_status,
-        role: user.role
+        role: user.role,
       },
     }),
   },
@@ -64,7 +64,7 @@ export const authOptions: NextAuthOptions = {
   providers: [
     GoogleProvider({
       clientId: env.AUTH_GOOGLE_ID,
-      clientSecret: env.AUTH_GOOGLE_SECRET
+      clientSecret: env.AUTH_GOOGLE_SECRET,
     }),
     /**
      * ...add more providers here.

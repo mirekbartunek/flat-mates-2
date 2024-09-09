@@ -97,12 +97,8 @@
           "name": "flat-mates-2_account_user_id_flat-mates-2_user_id_fk",
           "tableFrom": "flat-mates-2_account",
           "tableTo": "flat-mates-2_user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -110,10 +106,7 @@
       "compositePrimaryKeys": {
         "flat-mates-2_account_provider_provider_account_id_pk": {
           "name": "flat-mates-2_account_provider_provider_account_id_pk",
-          "columns": [
-            "provider",
-            "provider_account_id"
-          ]
+          "columns": ["provider", "provider_account_id"]
         }
       },
       "uniqueConstraints": {}
@@ -191,12 +184,8 @@
           "name": "flat-mates-2_post_created_by_flat-mates-2_user_id_fk",
           "tableFrom": "flat-mates-2_post",
           "tableTo": "flat-mates-2_user",
-          "columnsFrom": [
-            "created_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["created_by"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -249,12 +238,8 @@
           "name": "flat-mates-2_session_user_id_flat-mates-2_user_id_fk",
           "tableFrom": "flat-mates-2_session",
           "tableTo": "flat-mates-2_user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -331,10 +316,7 @@
       "compositePrimaryKeys": {
         "flat-mates-2_verification_token_identifier_token_pk": {
           "name": "flat-mates-2_verification_token_identifier_token_pk",
-          "columns": [
-            "identifier",
-            "token"
-          ]
+          "columns": ["identifier", "token"]
         }
       },
       "uniqueConstraints": {}

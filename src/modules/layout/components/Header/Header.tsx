@@ -3,14 +3,16 @@ import * as React from "react";
 import { Link as TransitionLink } from "next-view-transitions";
 
 import { useTranslations } from "next-intl";
-import {  Moon, Sun } from "lucide-react";
+import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import { api } from "@/trpc/react";
 import {
-  NavigationMenu, NavigationMenuContent,
-  NavigationMenuItem, NavigationMenuLink,
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
   NavigationMenuList,
-  NavigationMenuTrigger
+  NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
 import { Button } from "@/components/ui/button";
 import { signIn } from "next-auth/react";
@@ -19,7 +21,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { UserRole } from "@/server/db/enums";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -29,14 +31,11 @@ import { BrandLogo } from "@/components/icons";
 
 export const Header = () => {
   const t = useTranslations("Header");
-  const { data: user, isLoading } = api.users.protectedMe.useQuery(
-    undefined,
-    {
-      retry: 1,
-      staleTime: 1000 * 60,
-      refetchInterval: 1000 * 120,
-    }
-  );
+  const { data: user, isLoading } = api.users.protectedMe.useQuery(undefined, {
+    retry: 1,
+    staleTime: 1000 * 60,
+    refetchInterval: 1000 * 120,
+  });
   const components: { title: string; href: string; description: string }[] = [
     {
       title: t("flats.co-housing.title"),

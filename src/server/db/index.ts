@@ -25,4 +25,4 @@ const logger = new DefaultLogger({ writer: new CustomLogger() });
 export const db = drizzle(conn, { schema, logger });
 export * from "./schema";
 
-export * from "./schema"
+export * from "./schema";

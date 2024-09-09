@@ -1,7 +1,7 @@
 "use client";
 import { useForm } from "react-hook-form";
 import { createListingSchema } from "@/server/db/types";
-import { z } from "zod";
+import type { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { api } from "@/trpc/react";
 import { Button, buttonVariants } from "@/components/ui/button";

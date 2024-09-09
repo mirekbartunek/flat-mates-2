@@ -4,8 +4,16 @@ import { signOut } from "next-auth/react";
 import { getUrl } from "@/lib/utils";
 
 export const SignOutButton = () => {
-  return <Button onClick={() => signOut({
-    redirect : true,
-    callbackUrl : `${getUrl()}/?signOut=true`
-  })}>Sign Out</Button>
-}
+  return (
+    <Button
+      onClick={() =>
+        signOut({
+          redirect: true,
+          callbackUrl: `${getUrl()}/?signOut=true`,
+        })
+      }
+    >
+      Sign Out
+    </Button>
+  );
+};

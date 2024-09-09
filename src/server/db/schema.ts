@@ -1,11 +1,14 @@
-import { relations, sql } from "drizzle-orm";
+import { relations } from "drizzle-orm";
 import {
   index,
-  integer, pgEnum, pgTable,
+  integer,
+  pgEnum,
+  pgTable,
   primaryKey,
   text,
-  timestamp, uuid,
-  varchar
+  timestamp,
+  uuid,
+  varchar,
 } from "drizzle-orm/pg-core";
 import { type AdapterAccount } from "next-auth/adapters";
 import { userRoleEnumValues, userVerifiedEnumValues } from "@/server/db/enums";
@@ -20,7 +23,7 @@ import { userRoleEnumValues, userVerifiedEnumValues } from "@/server/db/enums";
 export const userVerifiedEnum = pgEnum(
   "user_verified_enum",
   userVerifiedEnumValues
-); // verified = id verification, unverified = not id verified
+);
 export const userRoleEnum = pgEnum("user_role_enum", userRoleEnumValues);
 export const users = pgTable("user", {
   id: text("id")
