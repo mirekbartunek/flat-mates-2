@@ -7,6 +7,9 @@ import { getLocale, getMessages } from "next-intl/server";
 import { Header } from "@/modules/layout/components";
 import { Providers } from "@/modules/layout/components/Providers/Providers";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { ourFileRouter } from "@/app/api/uploadthing/core";
+import { extractRouterConfig } from "uploadthing/server";
+import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
 
 export const metadata = {
   title: "Flat Mates",
@@ -24,6 +27,7 @@ export default async function RootLayout({
   return (
     <html lang={locale} className={`${nunito.className}`}>
       <body>
+        <NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />
         <NextIntlClientProvider messages={messages}>
           <TRPCReactProvider>
             <Providers>

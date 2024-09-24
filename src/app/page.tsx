@@ -4,9 +4,11 @@ import { buttonVariants } from "@/components/ui/button";
 import { getTranslations } from "next-intl/server";
 import { Link } from "next-view-transitions";
 import { PageTop } from "@/modules/layout/components";
+
 export default async function Home() {
   const listings = await db.query.listings.findMany();
   const t = await getTranslations("Index");
+  console.log(listings);
   return (
     <>
       <PageTop>
@@ -33,6 +35,7 @@ export default async function Home() {
           </Link>
         </div>
       </PageTop>
+
       <ListingsPage listings={listings} />
     </>
   );

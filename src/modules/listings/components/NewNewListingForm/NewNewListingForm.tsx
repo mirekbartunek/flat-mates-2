@@ -17,10 +17,21 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Heading2, Paragraph } from "@/modules/typography";
 import { api } from "@/trpc/react";
 import { toast } from "sonner";
+import { DevTool } from "@hookform/devtools";
+import { UploadDropzone } from "@/lib/uploadthing";
+import { cn } from "@/lib/utils";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import Image from "next/image";
 
 const steps = [
   {
@@ -40,9 +51,14 @@ const steps = [
     title: "Price",
     description: "What is the monthly price? Price is listed in CZK",
   },
+  {
+    title: "Images",
+    description: "Upload any images",
+  },
 ];
 export const NewNewListingForm = () => {
   const [currentStep, setCurrentStep] = useState<number>(0);
+  const [imageUrls, setImageUrls] = useState<string[] | null>(null);
   const form = useForm<z.infer<typeof createListingSchema>>({
     //TODO: move infer to another file
     resolver: zodResolver(createListingSchema),
@@ -51,8 +67,9 @@ export const NewNewListingForm = () => {
       title: "",
       description: "",
       monthly_price: 0,
+      imageIds: [],
     },
-    mode: "all",
+    mode: "onChange",
   });
   const { mutate, status } = api.listings.createNewListing.useMutation({
     onSuccess: async () => {
@@ -63,13 +80,9 @@ export const NewNewListingForm = () => {
       });
     },
   });
-
   const handleNext = async () => {
     if (currentStep < steps.length - 1) {
-      const isValid = await form.trigger();
-      if (isValid || currentStep === 0) {
-        setCurrentStep((prev) => prev + 1);
-      }
+      setCurrentStep((prev) => prev + 1);
     }
   };
   const onSubmit = (data: z.infer<typeof createListingSchema>) => {
@@ -179,6 +192,40 @@ export const NewNewListingForm = () => {
             />
           </section>
         );
+      case 4:
+        return (
+          <section>
+            <FormField
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Images</FormLabel>
+                  <FormControl>
+                    <UploadDropzone
+                      endpoint="imageUploader"
+                      config={{ cn: cn, appendOnPaste: true }}
+                      appearance={{
+                        button: buttonVariants({
+                          variant: "secondary",
+                        }),
+                      }}
+                      onClientUploadComplete={(res) => {
+                        console.log(res);
+                        const ids = res
+                          .map((response) => response.serverData.ids)
+                          .flat(); // TODO: Show uploaded images and improve
+                        const urls = res.map((response) => response.url);
+                        setImageUrls(urls);
+                        field.onChange(ids);
+                      }}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+              control={form.control}
+              name="imageIds"
+            />
+          </section>
+        );
       default:
         return null;
     }
@@ -240,11 +287,30 @@ export const NewNewListingForm = () => {
                   Next
                 </Button>
               )}
+              {currentStep}
             </div>
           </form>
         </Form>
-        {/*<DevTool control={form.control} />*/}
+        <DevTool control={form.control} />
       </div>
+      {imageUrls ? (
+        <Carousel className="w-full max-w-xs">
+          <CarouselContent>
+            {imageUrls.map((url) => (
+              <CarouselItem key={url} className="relative aspect-square">
+                <Image
+                  src={url}
+                  alt={"Listing Image"}
+                  fill
+                  className="rounded-md object-cover"
+                />
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious />
+          <CarouselNext />
+        </Carousel>
+      ) : null}
     </div>
   );
 };

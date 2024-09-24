@@ -13,6 +13,15 @@ const withNextIntl = createNextIntlPlugin();
 jiti("./src/env");
 
 /** @type {import("next").NextConfig} */
-const config = {};
+const config = {
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "utfs.io",
+      },
+    ],
+  },
+};
 
 export default withNextIntl(config);

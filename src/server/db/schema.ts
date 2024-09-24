@@ -124,3 +124,26 @@ export const listings = pgTable("listings", {
   maxTenants: integer("max_tenants").notNull(),
   monthly_price: integer("monthly_price").notNull(),
 });
+
+export const files = pgTable("files", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  name: text("name").notNull(),
+  key: text("key").notNull(),
+  url: text("url").notNull(),
+  createdAt: timestamp("createdAt").notNull().defaultNow(),
+  uploadedBy: text("uploadedBy")
+    .notNull()
+    .references(() => users.id),
+});
+
+export const listingFiles = pgTable(
+  "listing_files",
+  {
+    // listing may have more files
+    listingId: uuid("listingId").references(() => listings.id),
+    fileId: uuid("fileId").references(() => files.id),
+  },
+  (table) => ({
+    pk: primaryKey({ columns: [table.listingId, table.fileId] }),
+  })
+);

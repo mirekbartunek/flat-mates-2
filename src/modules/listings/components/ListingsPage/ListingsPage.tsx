@@ -19,7 +19,7 @@ export const ListingsPage = async ({ listings }: LandingPageProps) => {
       <div>
         <h1>{t("title")}</h1>
       </div>
-      <pre>{JSON.stringify(listings, null, 2)}</pre>
+      <pre className="max-w-full">{JSON.stringify(listings, null, 2)}</pre>
     </main>
   );
 };
