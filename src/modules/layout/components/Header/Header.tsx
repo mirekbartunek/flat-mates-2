@@ -75,7 +75,7 @@ export const Header = () => {
   return (
     <div className="flex max-w-full flex-row items-center justify-between px-5 py-2 sm:px-20">
       <NavigationMenu>
-        <TransitionLink href="/public">
+        <TransitionLink href="/">
           <BrandLogo className="h-6 w-6 text-primary dark:text-primary" />
         </TransitionLink>
         <NavigationMenuList>

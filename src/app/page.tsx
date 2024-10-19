@@ -1,14 +1,29 @@
 import { ListingsPage } from "@/modules/listings";
-import { db } from "@/server/db";
+import { db, files, listingFiles, listings } from "@/server/db";
 import { buttonVariants } from "@/components/ui/button";
 import { getTranslations } from "next-intl/server";
 import { Link } from "next-view-transitions";
 import { PageTop } from "@/modules/layout/components";
+import { eq, sql } from "drizzle-orm";
 
 export default async function Home() {
-  const listings = await db.query.listings.findMany();
+  const availableListings = await db
+    .select({
+      id: listings.id,
+      userId: listings.userId,
+      title: listings.title,
+      description: listings.description,
+      maxTenants: listings.maxTenants,
+      monthly_price: listings.monthly_price,
+      imageUrls: sql<string[]>`JSON_AGG(${files.url})`,
+      createdAt: listings.createdAt,
+    })
+    .from(listings)
+    .innerJoin(listingFiles, eq(listings.id, listingFiles.listingId))
+    .innerJoin(files, eq(files.id, listingFiles.fileId))
+    .groupBy(listings.id);
+
   const t = await getTranslations("Index");
-  console.log(listings);
   return (
     <>
       <PageTop>
@@ -36,7 +51,7 @@ export default async function Home() {
         </div>
       </PageTop>
 
-      <ListingsPage listings={listings} />
+      <ListingsPage listings={availableListings} />
     </>
   );
 }

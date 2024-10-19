@@ -22,5 +22,8 @@ export const createListingSchema = z.object({
   monthly_price: z.number({
     message: "Monthly price must be included",
   }),
-  imageIds: z.string().array(),
+  imageIds: z.string().array().min(1, {
+    message:
+      "Listing must include atleast 1 image. Have you clicked the Upload button?",
+  }),
 });

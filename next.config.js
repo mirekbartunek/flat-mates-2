@@ -21,6 +21,7 @@ const config = {
         hostname: "utfs.io",
       },
     ],
+    minimumCacheTTL: 120,
   },
 };
 

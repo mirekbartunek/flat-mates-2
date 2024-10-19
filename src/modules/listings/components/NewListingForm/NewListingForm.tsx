@@ -19,6 +19,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Slider } from "@/components/ui/slider";
 import { toast } from "sonner";
 
+/**
+ * @deprecated Use NewNewListingForm for now
+ */
 export const NewListingForm = () => {
   const { mutate } = api.listings.createNewListing.useMutation({
     onSuccess: () => {

@@ -21,17 +21,10 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { Heading2, Paragraph } from "@/modules/typography";
 import { api } from "@/trpc/react";
 import { toast } from "sonner";
-import { DevTool } from "@hookform/devtools";
 import { UploadDropzone } from "@/lib/uploadthing";
 import { cn } from "@/lib/utils";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
-import Image from "next/image";
+import { ImageCarousel } from "@/modules/listings/components/ImageCarousel/ImageCarousel";
+import { useRouter } from "next/navigation";
 
 const steps = [
   {
@@ -53,7 +46,7 @@ const steps = [
   },
   {
     title: "Images",
-    description: "Upload any images",
+    description: "Upload image(s) showing the property",
   },
 ];
 export const NewNewListingForm = () => {
@@ -71,13 +64,15 @@ export const NewNewListingForm = () => {
     },
     mode: "onChange",
   });
+  const router = useRouter();
   const { mutate, status } = api.listings.createNewListing.useMutation({
-    onSuccess: async () => {
+    onSuccess: async (listingId) => {
       toast("Listing created!");
       await confetti({
         particleCount: 100,
         origin: { y: 0.6 },
       });
+      router.replace(`listing/${listingId}`);
     },
   });
   const handleNext = async () => {
@@ -98,7 +93,7 @@ export const NewNewListingForm = () => {
     switch (currentStep) {
       case 0:
         return (
-          <section>
+          <section className="space-y-8">
             <Heading2 withBorder={false}>Let us get you started!</Heading2>
             <Paragraph>
               This form will take you through all the steps needed to list your
@@ -108,7 +103,7 @@ export const NewNewListingForm = () => {
         );
       case 1:
         return (
-          <section>
+          <section className="space-y-8">
             <FormField
               control={form.control}
               name="title"
@@ -143,7 +138,7 @@ export const NewNewListingForm = () => {
         );
       case 2:
         return (
-          <section>
+          <section className="space-y-8">
             <FormField
               control={form.control}
               name="maxTenants"
@@ -169,7 +164,7 @@ export const NewNewListingForm = () => {
         );
       case 3:
         return (
-          <section>
+          <section className="space-y-8">
             <FormField
               control={form.control}
               name="monthly_price"
@@ -194,7 +189,7 @@ export const NewNewListingForm = () => {
         );
       case 4:
         return (
-          <section>
+          <section className="space-y-8">
             <FormField
               render={({ field }) => (
                 <FormItem>
@@ -212,18 +207,31 @@ export const NewNewListingForm = () => {
                         console.log(res);
                         const ids = res
                           .map((response) => response.serverData.ids)
-                          .flat(); // TODO: Show uploaded images and improve
+                          .flat();
                         const urls = res.map((response) => response.url);
                         setImageUrls(urls);
                         field.onChange(ids);
                       }}
+                      onUploadError={(err) => {
+                        toast.error("Whoops! Something went wrong", {
+                          description: err.message,
+                        });
+                      }}
                     />
                   </FormControl>
+                  <FormMessage />
                 </FormItem>
               )}
               control={form.control}
               name="imageIds"
             />
+            {imageUrls && imageUrls.length > 0 ? (
+              <ImageCarousel
+                imageUrls={imageUrls}
+                showDelete={true}
+                showControls={true}
+              />
+            ) : null}
           </section>
         );
       default:
@@ -232,7 +240,7 @@ export const NewNewListingForm = () => {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center p-4">
+    <div className="flex items-center justify-center p-4">
       <div className="relative w-full max-w-md overflow-hidden rounded-xl border border-accent p-6 shadow-xl">
         <div className="mb-8">
           <div className="mb-2 flex justify-between">
@@ -265,7 +273,7 @@ export const NewNewListingForm = () => {
         <Form {...form}>
           <form className="mb-8" onSubmit={form.handleSubmit(onSubmit)}>
             <Fragment key={currentStep}>{renderStep()}</Fragment>
-            <div className="flex justify-between">
+            <div className="mt-8 flex justify-between">
               <Button
                 variant="outline"
                 type="button"
@@ -287,30 +295,10 @@ export const NewNewListingForm = () => {
                   Next
                 </Button>
               )}
-              {currentStep}
             </div>
           </form>
         </Form>
-        <DevTool control={form.control} />
       </div>
-      {imageUrls ? (
-        <Carousel className="w-full max-w-xs">
-          <CarouselContent>
-            {imageUrls.map((url) => (
-              <CarouselItem key={url} className="relative aspect-square">
-                <Image
-                  src={url}
-                  alt={"Listing Image"}
-                  fill
-                  className="rounded-md object-cover"
-                />
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-          <CarouselPrevious />
-          <CarouselNext />
-        </Carousel>
-      ) : null}
     </div>
   );
 };

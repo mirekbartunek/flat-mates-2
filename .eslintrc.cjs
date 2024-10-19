@@ -27,6 +27,7 @@ const config = {
       },
     ],
     "@typescript-eslint/require-await": "off",
+    "react/jsx-no-leaked-render": ["error", { validStrategies: ["ternary"] }],
     "@typescript-eslint/no-misused-promises": [
       "error",
       {

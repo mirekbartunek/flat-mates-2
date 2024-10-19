@@ -2,8 +2,8 @@ import { ErrorPage, PageTop } from "@/modules/layout";
 import { db, users } from "@/server/db";
 import { eq } from "drizzle-orm";
 import { getTranslations } from "next-intl/server";
-import { NewListingForm } from "@/modules/listings";
 import { getServerAuthSession } from "@/server/auth";
+import { NewNewListingForm } from "@/modules/listings/components/NewNewListingForm/NewNewListingForm";
 const Page = async () => {
   const session = await getServerAuthSession();
   const unauthenticatedTranslations = await getTranslations("Unauthenticated");
@@ -39,7 +39,7 @@ const Page = async () => {
         </h1>
       </PageTop>
       <section className="container">
-        <NewListingForm />
+        <NewNewListingForm />
       </section>
     </main>
   );

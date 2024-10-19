@@ -117,12 +117,15 @@ export const verificationTokens = pgTable(
 export const listings = pgTable("listings", {
   id: uuid("id").primaryKey().defaultRandom(),
   userId: text("userId")
-    .references(() => users.id)
+    .references(() => users.id, {
+      onDelete: "cascade",
+    })
     .notNull(),
   title: varchar("title").notNull(),
   description: varchar("description").notNull(),
   maxTenants: integer("max_tenants").notNull(),
   monthly_price: integer("monthly_price").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
 export const files = pgTable("files", {
@@ -133,15 +136,21 @@ export const files = pgTable("files", {
   createdAt: timestamp("createdAt").notNull().defaultNow(),
   uploadedBy: text("uploadedBy")
     .notNull()
-    .references(() => users.id),
+    .references(() => users.id, {
+      onDelete: "cascade",
+    }),
 });
 
 export const listingFiles = pgTable(
   "listing_files",
   {
     // listing may have more files
-    listingId: uuid("listingId").references(() => listings.id),
-    fileId: uuid("fileId").references(() => files.id),
+    listingId: uuid("listingId").references(() => listings.id, {
+      onDelete: "cascade",
+    }),
+    fileId: uuid("fileId").references(() => files.id, {
+      onDelete: "cascade",
+    }),
   },
   (table) => ({
     pk: primaryKey({ columns: [table.listingId, table.fileId] }),
