@@ -26,4 +26,9 @@ export const createListingSchema = z.object({
     message:
       "Listing must include atleast 1 image. Have you clicked the Upload button?",
   }),
+  current_capacity: z
+    .number({
+      message: "Please provide the current number of residents",
+    })
+    .default(0),
 });

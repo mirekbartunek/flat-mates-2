@@ -13,6 +13,7 @@ import { ZodError } from "zod";
 
 import { getServerAuthSession } from "@/server/auth";
 import { db } from "@/server/db";
+import { ADMIN_ROLES } from "@/lib/constants";
 
 /**
  * 1. CONTEXT
@@ -118,16 +119,37 @@ export const publicProcedure = t.procedure.use(timingMiddleware);
  *
  * @see https://trpc.io/docs/procedures
  */
+
+const protectedMiddleware = t.middleware(({ ctx, next }) => {
+  if (!ctx.session || !ctx.session.user) {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+  return next({
+    ctx: {
+      // infers the `session` as non-nullable
+      session: { ...ctx.session, user: ctx.session.user },
+    },
+  });
+});
 export const protectedProcedure = t.procedure
   .use(timingMiddleware)
-  .use(({ ctx, next }) => {
-    if (!ctx.session || !ctx.session.user) {
-      throw new TRPCError({ code: "UNAUTHORIZED" });
-    }
-    return next({
-      ctx: {
-        // infers the `session` as non-nullable
-        session: { ...ctx.session, user: ctx.session.user },
-      },
+  .use(protectedMiddleware);
+
+const adminMiddleware = t.middleware(({ ctx, next }) => {
+  if (!ADMIN_ROLES.includes(ctx.session!.user.role)) {
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+      message: "Only users with admin roles can access this endpoint",
     });
+  }
+  return next({
+    ctx: {
+      // infers the `session` as non-nullable
+      session: { ...ctx.session, user: ctx.session!.user },
+    },
   });
+});
+
+export const adminProcedure = t.procedure
+  .use(protectedMiddleware)
+  .use(adminMiddleware);

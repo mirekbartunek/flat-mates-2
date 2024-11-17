@@ -17,6 +17,7 @@ export default async function Home() {
       monthly_price: listings.monthly_price,
       imageUrls: sql<string[]>`JSON_AGG(${files.url})`,
       createdAt: listings.createdAt,
+      current_capacity: listings.current_capacity,
     })
     .from(listings)
     .innerJoin(listingFiles, eq(listings.id, listingFiles.listingId))

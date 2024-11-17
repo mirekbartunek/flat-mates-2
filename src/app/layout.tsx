@@ -25,7 +25,11 @@ export default async function RootLayout({
   const locale = await getLocale();
 
   return (
-    <html lang={locale} className={`${nunito.className}`}>
+    <html
+      lang={locale}
+      className={`${nunito.className}`}
+      suppressHydrationWarning
+    >
       <body>
         <NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />
         <NextIntlClientProvider messages={messages}>

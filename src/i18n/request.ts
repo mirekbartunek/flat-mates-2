@@ -3,7 +3,7 @@ import { headers } from "next/headers";
 import { APP_LOCALES, type AppLocale } from "@/lib/constants";
 
 export default getRequestConfig(async () => {
-  const heads = headers();
+  const heads = await headers();
   let resolvedLocale: AppLocale = APP_LOCALES[0];
   const localeHeader = heads.get("accept-language");
   if (localeHeader) {
@@ -17,7 +17,7 @@ export default getRequestConfig(async () => {
   console.log(`>>> LOCALE: ${resolvedLocale}`);
   return {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
-    messages: (await import(`../messages/${resolvedLocale}.json`)).default,
+    messages: (await import(`../../messages/${resolvedLocale}.json`)).default,
     locale: resolvedLocale, // check if works
   };
 });

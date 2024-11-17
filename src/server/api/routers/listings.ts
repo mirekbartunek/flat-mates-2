@@ -18,6 +18,7 @@ export const listingsRouter = createTRPCRouter({
             maxTenants: input.maxTenants,
             description: input.description,
             monthly_price: input.monthly_price,
+            current_capacity: input.current_capacity,
           })
           .returning({ id: listings.id });
         if (!listing) {

@@ -124,6 +124,7 @@ export const listings = pgTable("listings", {
   title: varchar("title").notNull(),
   description: varchar("description").notNull(),
   maxTenants: integer("max_tenants").notNull(),
+  current_capacity: integer("current_capacity").notNull(),
   monthly_price: integer("monthly_price").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
@@ -153,6 +154,16 @@ export const listingFiles = pgTable(
     }),
   },
   (table) => ({
-    pk: primaryKey({ columns: [table.listingId, table.fileId] }),
+    pk: primaryKey({
+      name: "listingFilesId",
+      columns: [table.listingId, table.fileId],
+    }),
   })
 );
+
+export const tenants = pgTable("tenants", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  name: text("name").notNull(),
+  image: text("image").notNull(),
+  bio: text("bio").notNull(),
+});

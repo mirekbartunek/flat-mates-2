@@ -6,7 +6,15 @@ const f = createUploadthing();
 const ALLOWED_FORMATS = ["image/jpeg", "image/jpg", "image/png"];
 export const ourFileRouter = {
   imageUploader: f({ image: { maxFileSize: "4MB", maxFileCount: 10 } })
-    .middleware(async () => {
+    .middleware(async ({ files }) => {
+      const fileTypes = files.map((file) => file.type);
+      if (!fileTypes.some((type) => ALLOWED_FORMATS.includes(type))) {
+        // eslint-disable-next-line @typescript-eslint/only-throw-error
+        throw new UploadThingError({
+          code: "BAD_REQUEST",
+          message: `Only ${ALLOWED_FORMATS.toString()} image formats are allowed`,
+        });
+      }
       const user = await getServerAuthSession();
 
       // If you throw, the user will not be able to upload
@@ -17,13 +25,6 @@ export const ourFileRouter = {
       return { userId: user.user.id };
     })
     .onUploadComplete(async ({ metadata, file }) => {
-      if (!ALLOWED_FORMATS.includes(file.type)) {
-        // eslint-disable-next-line @typescript-eslint/only-throw-error
-        throw new UploadThingError({
-          code: "BAD_REQUEST",
-          message: `${file.type} is now allowed`,
-        });
-      }
       // This code RUNS ON YOUR SERVER after uploa
       console.log(file.type);
       console.log("Upload complete for userId:", metadata.userId);

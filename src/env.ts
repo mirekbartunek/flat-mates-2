@@ -21,6 +21,7 @@ export const env = createEnv({
     NEXTAUTH_URL: z.string(),
     UPLOADTHING_TOKEN: z.string(),
     UPLOADTHING_APP_ID: z.string(),
+    RESEND_API_KEY: z.string(),
   },
 
   /**

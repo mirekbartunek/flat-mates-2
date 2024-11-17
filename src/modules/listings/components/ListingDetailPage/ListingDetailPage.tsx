@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { ImageCell } from "@/modules/listings/components/ImageCell/ImageCell";
 import { PageTop } from "@/modules/layout";
 import { DollarSign, Users } from "lucide-react";
+import { ContactBuyerModal } from "@/modules/listings/components/ContactBuyerModal/ContactBuyerModal";
 
 type ListingDetailPageProps = {
   listingId: string;
@@ -46,18 +47,7 @@ export const ListingDetailPage = async ({
           {listingDetails.description}
         </p>
       </PageTop>
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-        {listingDetails.imageUrls.map((image) => (
-          <ImageCell
-            src={image}
-            alt={image}
-            key={image}
-            width={300}
-            height={300}
-            className="h-auto max-w-full rounded-lg"
-          />
-        ))}
-      </div>
+
       <div className="flex w-10/12 flex-col justify-around md:flex-row md:flex-wrap">
         <div className="flex flex-col items-center gap-2 text-rose-500">
           <div className="flex flex-col items-center">
@@ -77,6 +67,21 @@ export const ListingDetailPage = async ({
           </div>
           <h3 className="text-lg font-extrabold">Per month</h3>
         </div>
+      </div>
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+        {listingDetails.imageUrls.map((image) => (
+          <ImageCell
+            src={image}
+            alt={image}
+            key={image}
+            width={300}
+            height={300}
+            className="h-auto max-w-full rounded-lg"
+          />
+        ))}
+      </div>
+      <div className="flex w-full flex-row items-center justify-center">
+        <ContactBuyerModal />
       </div>
     </main>
   );

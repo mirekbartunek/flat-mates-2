@@ -1,6 +1,6 @@
 //todo: this needs to be refactored
 "use client";
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import type { z } from "zod";
 import { createListingSchema } from "@/server/db/types";
@@ -25,6 +25,7 @@ import { UploadDropzone } from "@/lib/uploadthing";
 import { cn } from "@/lib/utils";
 import { ImageCarousel } from "@/modules/listings/components/ImageCarousel/ImageCarousel";
 import { useRouter } from "next/navigation";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const steps = [
   {
@@ -52,6 +53,7 @@ const steps = [
 export const NewNewListingForm = () => {
   const [currentStep, setCurrentStep] = useState<number>(0);
   const [imageUrls, setImageUrls] = useState<string[] | null>(null);
+  const [hasTenants, setHasTenants] = useState(false);
   const form = useForm<z.infer<typeof createListingSchema>>({
     //TODO: move infer to another file
     resolver: zodResolver(createListingSchema),
@@ -60,10 +62,17 @@ export const NewNewListingForm = () => {
       title: "",
       description: "",
       monthly_price: 0,
+      current_capacity: 0,
       imageIds: [],
     },
     mode: "onChange",
   });
+  useEffect(() => {
+    if (!hasTenants) {
+      form.setValue("current_capacity", 0);
+    }
+  }, [form, hasTenants]);
+
   const router = useRouter();
   const { mutate, status } = api.listings.createNewListing.useMutation({
     onSuccess: async (listingId) => {
@@ -75,6 +84,7 @@ export const NewNewListingForm = () => {
       router.replace(`listing/${listingId}`);
     },
   });
+
   const handleNext = async () => {
     if (currentStep < steps.length - 1) {
       setCurrentStep((prev) => prev + 1);
@@ -83,12 +93,12 @@ export const NewNewListingForm = () => {
   const onSubmit = (data: z.infer<typeof createListingSchema>) => {
     mutate(data);
   };
-
   const handlePrevious = () => {
     if (currentStep > 0) {
       setCurrentStep((prev) => prev - 1);
     }
   };
+
   const renderStep = () => {
     switch (currentStep) {
       case 0:
@@ -156,6 +166,54 @@ export const NewNewListingForm = () => {
                   <FormDescription>
                     How many tenants can be in this property
                   </FormDescription>
+                  <div className="flex flex-col gap-5">
+                    <div className="items-top flex space-x-2">
+                      <Checkbox
+                        id="terms1"
+                        checked={hasTenants}
+                        onCheckedChange={(checked) => {
+                          if (!(checked === "indeterminate")) {
+                            setHasTenants(checked);
+                          }
+                        }}
+                      />
+                      <div className="grid gap-1.5 leading-none">
+                        <FormLabel
+                          htmlFor="terms1"
+                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >
+                          Any residents already in property?
+                        </FormLabel>
+                      </div>
+                    </div>
+                    {hasTenants ? (
+                      <FormField
+                        control={form.control}
+                        name="current_capacity"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>How many residents?</FormLabel>
+                            <FormControl>
+                              <Input
+                                type="number"
+                                id="resident_count"
+                                placeholder="Residents"
+                                {...field}
+                                max={form.getValues("maxTenants")}
+                                onChange={(e) =>
+                                  field.onChange(e.target.valueAsNumber)
+                                }
+                              />
+                            </FormControl>
+                            <FormDescription>
+                              Residents in property
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    ) : null}
+                  </div>
                   <FormMessage />
                 </FormItem>
               )}
@@ -213,6 +271,9 @@ export const NewNewListingForm = () => {
                         field.onChange(ids);
                       }}
                       onUploadError={(err) => {
+                        if (err.code === "BAD_REQUEST") {
+                          // clear the input
+                        }
                         toast.error("Whoops! Something went wrong", {
                           description: err.message,
                         });
