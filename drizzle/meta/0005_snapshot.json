@@ -1,6 +1,6 @@
 {
-  "id": "52d60ffd-ff25-4f60-beaf-be043168ae86",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "23784c90-113e-46ad-b354-893328e14a07",
+  "prevId": "83b26612-67ca-4fad-a44b-88658788cdd4",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -246,6 +246,153 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
+    "public.listing_reservations": {
+      "name": "listing_reservations",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "listing_id": {
+          "name": "listing_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "message": {
+          "name": "message",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "reservation_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'pending'"
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "listing_reservations_listing_id_listings_id_fk": {
+          "name": "listing_reservations_listing_id_listings_id_fk",
+          "tableFrom": "listing_reservations",
+          "tableTo": "listings",
+          "columnsFrom": [
+            "listing_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "listing_reservations_user_id_user_id_fk": {
+          "name": "listing_reservations_user_id_user_id_fk",
+          "tableFrom": "listing_reservations",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.listing_tenants": {
+      "name": "listing_tenants",
+      "schema": "",
+      "columns": {
+        "listingId": {
+          "name": "listingId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "tenantId": {
+          "name": "tenantId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "listing_tenants_listingId_listings_id_fk": {
+          "name": "listing_tenants_listingId_listings_id_fk",
+          "tableFrom": "listing_tenants",
+          "tableTo": "listings",
+          "columnsFrom": [
+            "listingId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "listing_tenants_tenantId_tenants_id_fk": {
+          "name": "listing_tenants_tenantId_tenants_id_fk",
+          "tableFrom": "listing_tenants",
+          "tableTo": "tenants",
+          "columnsFrom": [
+            "tenantId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "listingTenantsId": {
+          "name": "listingTenantsId",
+          "columns": [
+            "listingId",
+            "tenantId"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public.listings": {
       "name": "listings",
       "schema": "",
@@ -275,8 +422,8 @@
           "primaryKey": false,
           "notNull": true
         },
-        "max_tenants": {
-          "name": "max_tenants",
+        "maxTenants": {
+          "name": "maxTenants",
           "type": "integer",
           "primaryKey": false,
           "notNull": true
@@ -293,8 +440,8 @@
           "primaryKey": false,
           "notNull": true
         },
-        "created_at": {
-          "name": "created_at",
+        "createdAt": {
+          "name": "createdAt",
           "type": "timestamp",
           "primaryKey": false,
           "notNull": true,
@@ -384,12 +531,19 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.tenantSocials": {
-      "name": "tenantSocials",
+    "public.tenant_socials": {
+      "name": "tenant_socials",
       "schema": "",
       "columns": {
         "id": {
           "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "tenantId": {
+          "name": "tenantId",
           "type": "uuid",
           "primaryKey": false,
           "notNull": true
@@ -400,16 +554,22 @@
           "typeSchema": "public",
           "primaryKey": false,
           "notNull": true
+        },
+        "url": {
+          "name": "url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
         }
       },
       "indexes": {},
       "foreignKeys": {
-        "tenantSocials_id_tenants_id_fk": {
-          "name": "tenantSocials_id_tenants_id_fk",
-          "tableFrom": "tenantSocials",
+        "tenant_socials_tenantId_tenants_id_fk": {
+          "name": "tenant_socials_tenantId_tenants_id_fk",
+          "tableFrom": "tenant_socials",
           "tableTo": "tenants",
           "columnsFrom": [
-            "id"
+            "tenantId"
           ],
           "columnsTo": [
             "id"
@@ -562,6 +722,15 @@
     }
   },
   "enums": {
+    "public.reservation_status": {
+      "name": "reservation_status",
+      "schema": "public",
+      "values": [
+        "pending",
+        "accepted",
+        "rejected"
+      ]
+    },
     "public.socials": {
       "name": "socials",
       "schema": "public",

@@ -1,0 +1,1 @@
+ALTER TABLE "tenantSocials" ADD COLUMN "url" text NOT NULL;

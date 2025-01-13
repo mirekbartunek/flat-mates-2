@@ -1,11 +1,15 @@
 "use client";
-import { NewNewListingForm } from "@/modules/listings/components/NewNewListingForm/NewNewListingForm";
-import { env } from "@/env";
-import { redirect } from "next/navigation";
 
-const Page = () => {
-  if (env.NODE_ENV === "production") return redirect("/"); // avoid leaking this page on production
-  return <NewNewListingForm />;
-};
+import { TenantDescriptionForm } from "@/modules/listings/components/TenantDescriptionForm/TenantDescriptionForm";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
 
-export default Page;
+export default function Component() {
+
+  return (
+    <main>
+      <TenantDescriptionForm />
+
+    </main>
+  );
+}

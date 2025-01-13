@@ -28,7 +28,7 @@ export const ListingDetailPage = async ({
     .innerJoin(files, eq(files.id, listingFiles.fileId))
     .innerJoin(users, eq(listings.userId, users.id))
     .groupBy(listings.id)
-    .where(eq(listings.id, listingId));
+    .where(eq(listings.id, listingId)); // todo might wanna use the relations api
   const whenImplemented = {
     current: 4,
     capacity: 6,
@@ -53,7 +53,7 @@ export const ListingDetailPage = async ({
           <div className="flex flex-col items-center">
             <Users width={75} height={75} />
             <span className="text-lg">
-              {whenImplemented.current} / {whenImplemented.capacity}
+              {10000000} / {listingDetails.maxTenants}
             </span>
           </div>
           <h3 className="text-lg font-extrabold">Capacity</h3>
@@ -81,7 +81,7 @@ export const ListingDetailPage = async ({
         ))}
       </div>
       <div className="flex w-full flex-row items-center justify-center">
-        <ContactBuyerModal />
+        <ContactBuyerModal listingId={listingId} />
       </div>
     </main>
   );

@@ -17,3 +17,7 @@ export const isNewListing = (creationDate: Date): boolean => {
   const daysDiff = timeDiff / (1000 * 60 * 60 * 24); // Convert milliseconds to days
   return daysDiff < 5;
 };
+
+export const capitalizer = (str: string): string => {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+};

@@ -1,5 +1,6 @@
 import type { users, listings } from "./index";
 import { z } from "zod";
+import { tenantSocialsEnumValues } from "@/server/db/enums";
 
 export type Users = typeof users.$inferSelect; // when queried
 export type Listings = typeof listings.$inferSelect;
@@ -32,3 +33,26 @@ export const createListingSchema = z.object({
     })
     .default(0),
 });
+export const socialEnum = z.enum(tenantSocialsEnumValues);
+
+const socials = z.object({
+  label: socialEnum,
+  value: z
+    .string({
+      message: "Must be included",
+    })
+    .url({
+      message: "This is not a valid URL",
+    }),
+});
+
+export const createTenantSchema = z.object({
+  name: z.string({
+    message: "Tenant must have a name",
+  }),
+  bio: z.string({
+    message: "Tenant must have a bio",
+  }),
+  socials: socials.array().optional(),
+});
+export type TenantSchema = z.infer<typeof createTenantSchema>;

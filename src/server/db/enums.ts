@@ -1,6 +1,6 @@
 export const userVerifiedEnumValues = ["VERIFIED", "UNVERIFIED"] as const;
 export const userRoleEnumValues = ["USER", "ADMIN", "SUPERADMIN"] as const;
-export const tenantSocials = [
+export const tenantSocialsEnumValues = [
   "instagram",
   "facebook",
   "x",

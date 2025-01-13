@@ -81,7 +81,7 @@ export const NewNewListingForm = () => {
         particleCount: 100,
         origin: { y: 0.6 },
       });
-      router.replace(`listing/${listingId}`);
+      router.push (`listing/${listingId}`);
     },
   });
 
@@ -160,7 +160,7 @@ export const NewNewListingForm = () => {
                       type="number"
                       id="maxTenants"
                       {...field}
-                      onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                      onChange={(e) => field.onChange(e.target.valueAsNumber ?? 0)}
                     />
                   </FormControl>
                   <FormDescription>

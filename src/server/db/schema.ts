@@ -11,14 +11,7 @@ import {
   varchar,
 } from "drizzle-orm/pg-core";
 import { type AdapterAccount } from "next-auth/adapters";
-import { userRoleEnumValues, userVerifiedEnumValues } from "@/server/db/enums";
-
-/**
- * This is an example of how to use the multi-project schema feature of Drizzle ORM. Use the same
- * database instance for multiple projects.
- *
- * @see https://orm.drizzle.team/docs/goodies#multi-project-schema
- */
+import { tenantSocialsEnumValues, userRoleEnumValues, userVerifiedEnumValues } from "@/server/db/enums";
 
 export const userVerifiedEnum = pgEnum(
   "user_verified_enum",
@@ -26,21 +19,22 @@ export const userVerifiedEnum = pgEnum(
 );
 export const userRoleEnum = pgEnum("user_role_enum", userRoleEnumValues);
 export const users = pgTable("user", {
-  id: text("id")
+  id: text()
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
-  name: text("name"),
+  name: text(),
   email: text("email").notNull(),
-  emailVerified: timestamp("emailVerified", { mode: "date" }),
-  image: text("image"),
-  role: userRoleEnum("role").notNull().default("USER"),
-  verified_status: userVerifiedEnum("verified_status")
+  emailVerified: timestamp({ mode: "date" }),
+  image: text(),
+  role: userRoleEnum().notNull().default("USER"),
+  verified_status: userVerifiedEnum()
     .notNull()
     .default("UNVERIFIED"),
 });
 
 export const usersRelations = relations(users, ({ many }) => ({
   accounts: many(accounts),
+  listings: many(listings)
 }));
 
 export const accounts = pgTable(
@@ -115,27 +109,27 @@ export const verificationTokens = pgTable(
 );
 
 export const listings = pgTable("listings", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  userId: text("userId")
+  id: uuid().primaryKey().defaultRandom(),
+  userId: text()
     .references(() => users.id, {
       onDelete: "cascade",
     })
     .notNull(),
-  title: varchar("title").notNull(),
-  description: varchar("description").notNull(),
-  maxTenants: integer("max_tenants").notNull(),
-  current_capacity: integer("current_capacity").notNull(),
-  monthly_price: integer("monthly_price").notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
+  title: varchar().notNull(),
+  description: varchar().notNull(),
+  maxTenants: integer().notNull(),
+  current_capacity: integer().notNull(),
+  monthly_price: integer().notNull(),
+  createdAt: timestamp().defaultNow().notNull(),
 });
 
 export const files = pgTable("files", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  name: text("name").notNull(),
-  key: text("key").notNull(),
-  url: text("url").notNull(),
-  createdAt: timestamp("createdAt").notNull().defaultNow(),
-  uploadedBy: text("uploadedBy")
+  id: uuid().primaryKey().defaultRandom(),
+  name: text().notNull(),
+  key: text().notNull(),
+  url: text().notNull(),
+  createdAt: timestamp().notNull().defaultNow(),
+  uploadedBy: text()
     .notNull()
     .references(() => users.id, {
       onDelete: "cascade",
@@ -145,11 +139,10 @@ export const files = pgTable("files", {
 export const listingFiles = pgTable(
   "listing_files",
   {
-    // listing may have more files
-    listingId: uuid("listingId").references(() => listings.id, {
+    listingId: uuid().references(() => listings.id, {
       onDelete: "cascade",
     }),
-    fileId: uuid("fileId").references(() => files.id, {
+    fileId: uuid().references(() => files.id, {
       onDelete: "cascade",
     }),
   },
@@ -162,8 +155,114 @@ export const listingFiles = pgTable(
 );
 
 export const tenants = pgTable("tenants", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  name: text("name").notNull(),
-  image: text("image").notNull(),
-  bio: text("bio").notNull(),
+  id: uuid().primaryKey().defaultRandom(),
+  name: text().notNull(),
+  image: text().notNull(),
+  bio: text().notNull(),
 });
+
+export const socialEnum = pgEnum("socials", tenantSocialsEnumValues)
+
+export const tenantSocials = pgTable("tenant_socials", {
+  id: uuid().primaryKey().defaultRandom(),
+  tenantId: uuid().references(() => tenants.id, {
+    onDelete: "cascade"
+  }).notNull(),
+  social_enum: socialEnum().notNull(),
+  url: text().notNull()
+})
+
+export const listingTenants = pgTable(
+  "listing_tenants",
+  {
+    listingId: uuid().references(() => listings.id, {
+      onDelete: "cascade",
+    }),
+    tenantId: uuid().references(() => tenants.id, {
+      onDelete: "cascade",
+    }),
+  },
+  (table) => ({
+    pk: primaryKey({
+      name: "listingTenantsId",
+      columns: [table.listingId, table.tenantId],
+    }),
+  })
+);
+
+export const reservationStatusEnum = pgEnum('reservation_status', ['pending', 'accepted', 'rejected']);
+
+export const listingReservations = pgTable('listing_reservations', {
+  id: uuid().primaryKey().defaultRandom(),
+  listing_id: uuid()
+    .notNull()
+    .references(() => listings.id),
+  user_id: uuid()
+    .notNull()
+    .references(() => users.id),
+  message: text(),
+  status: reservationStatusEnum().notNull().default('pending'),
+  createdAt: timestamp().notNull().defaultNow(),
+  updatedAt: timestamp().notNull().defaultNow(),
+});
+
+export const listingsRelations = relations(listings, ({ one, many }) => ({
+  creator: one(users, {
+    fields: [listings.userId],
+    references: [users.id]
+  }),
+  files: many(listingFiles),
+  tenants: many(listingTenants),
+  reservations: many(listingReservations),
+}));
+
+export const filesRelations = relations(files, ({ many }) => ({
+  listingFiles: many(listingFiles)
+}));
+
+export const listingFilesRelations = relations(listingFiles, ({ one }) => ({
+  listing: one(listings, {
+    fields: [listingFiles.listingId],
+    references: [listings.id]
+  }),
+  file: one(files, {
+    fields: [listingFiles.fileId],
+    references: [files.id]
+  })
+}));
+
+export const tenantsRelations = relations(tenants, ({ many }) => ({
+  socials: many(tenantSocials),
+  listings: many(listingTenants),
+
+}));
+
+export const tenantSocialsRelations = relations(tenantSocials, ({ one }) => ({
+  tenant: one(tenants, {
+    fields: [tenantSocials.tenantId],
+    references: [tenants.id]
+  })
+}));
+
+
+export const listingTenantsRelations = relations(listingTenants, ({ one }) => ({
+  listing: one(listings, {
+    fields: [listingTenants.listingId],
+    references: [listings.id],
+  }),
+  tenant: one(tenants, {
+    fields: [listingTenants.tenantId],
+    references: [tenants.id],
+  }),
+}));
+
+export const listingReservationsRelations = relations(listingReservations, ({ one }) => ({
+  listing: one(listings, {
+    fields: [listingReservations.listing_id],
+    references: [listings.id],
+  }),
+  user: one(users, {
+    fields: [listingReservations.user_id],
+    references: [users.id],
+  }),
+}));

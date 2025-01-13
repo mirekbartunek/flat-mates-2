@@ -1,6 +1,6 @@
 {
-  "id": "52d60ffd-ff25-4f60-beaf-be043168ae86",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "742a2f1d-bbeb-4c66-86b4-88747acdd7b0",
+  "prevId": "b242daab-b499-4756-81e8-693d3f2d0466",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -275,8 +275,8 @@
           "primaryKey": false,
           "notNull": true
         },
-        "max_tenants": {
-          "name": "max_tenants",
+        "maxTenants": {
+          "name": "maxTenants",
           "type": "integer",
           "primaryKey": false,
           "notNull": true
@@ -293,8 +293,8 @@
           "primaryKey": false,
           "notNull": true
         },
-        "created_at": {
-          "name": "created_at",
+        "createdAt": {
+          "name": "createdAt",
           "type": "timestamp",
           "primaryKey": false,
           "notNull": true,
@@ -391,6 +391,13 @@
         "id": {
           "name": "id",
           "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "tenantId": {
+          "name": "tenantId",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": true
         },
@@ -400,16 +407,22 @@
           "typeSchema": "public",
           "primaryKey": false,
           "notNull": true
+        },
+        "url": {
+          "name": "url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
         }
       },
       "indexes": {},
       "foreignKeys": {
-        "tenantSocials_id_tenants_id_fk": {
-          "name": "tenantSocials_id_tenants_id_fk",
+        "tenantSocials_tenantId_tenants_id_fk": {
+          "name": "tenantSocials_tenantId_tenants_id_fk",
           "tableFrom": "tenantSocials",
           "tableTo": "tenants",
           "columnsFrom": [
-            "id"
+            "tenantId"
           ],
           "columnsTo": [
             "id"

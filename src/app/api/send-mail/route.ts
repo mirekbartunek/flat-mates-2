@@ -1,9 +1,9 @@
 import { NotifyOwnerEmail } from "@/components/emails/notify-owner-email";
 import { env } from "@/env";
-import { Resend } from "resend";
 import { NextResponse } from "next/server";
+import { resend } from "@/lib/resend";
 
-const resend = new Resend(env.RESEND_API_KEY);
+
 
 export async function POST() {
   if (env.NODE_ENV === "production") {
