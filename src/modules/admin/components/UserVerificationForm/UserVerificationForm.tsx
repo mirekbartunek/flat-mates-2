@@ -1,7 +1,7 @@
-import type { Users } from "@/server/db/types";
-import { type UserRole } from "@/server/db/enums";
-import { UserRow } from "@/modules/admin/components/UserRow/UserRow";
 import { UserFilter } from "@/modules/admin/components/UserFilter/UserFilter";
+import { UserRow } from "@/modules/admin/components/UserRow/UserRow";
+import type {  UserRole } from "@/server/db/enums";
+import type { Users } from "@/server/db/types";
 
 type UserVerificationFormProps = {
   users: Users[];
@@ -12,14 +12,17 @@ export const UserVerificationForm = ({
   adminRole,
 }: UserVerificationFormProps) => {
   return (
-    <main className="space-y-10">
-      <UserFilter className="m-auto" />
-      <section className="m-auto flex w-10/12 flex-col items-center gap-5">
-        {/*todo edit width*/}
+    <main className="container mx-auto space-y-8 py-8">
+      <div className="flex flex-col items-center gap-6">
+        <h1 className="text-3xl font-bold text-rose-500">User Management</h1>
+        <UserFilter className="w-full max-w-2xl" />
+      </div>
+
+      <div className="space-y-4">
         {users.map((user) => (
           <UserRow {...user} key={user.id} adminRole={adminRole} />
         ))}
-      </section>
+      </div>
     </main>
   );
 };

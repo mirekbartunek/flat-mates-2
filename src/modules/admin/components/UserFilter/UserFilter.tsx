@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 import { useDebouncedValue } from "@mantine/hooks";
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { Search } from "lucide-react";
 
 type UserFilterProps = Omit<InputProps, "type" | "value" | "onChange">;
 
@@ -23,13 +24,16 @@ export const UserFilter = ({ className, ...props }: UserFilterProps) => {
   }, [debouncedQueryValue, router]);
 
   return (
-    <Input
-      type="text"
-      className={cn("w-5/12", className)}
-      placeholder="Search for users"
-      value={queryValue ?? ""}
-      onChange={(e) => setQueryValue(e.target.value)}
-      {...props}
-    />
+    <div className={cn("relative", className)}>
+      <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+      <Input
+        type="text"
+        className="pl-10"
+        placeholder="Search users by name"
+        value={queryValue ?? ""}
+        onChange={(e) => setQueryValue(e.target.value)}
+        {...props}
+      />
+    </div>
   );
 };

@@ -6,5 +6,7 @@ export const tenantSocialsEnumValues = [
   "x",
   "pinterest",
 ] as const;
+export const  reservationStatusEnumValues = ['pending', 'accepted', 'rejected'] as const;
 export type UserVerified = (typeof userVerifiedEnumValues)[number];
 export type UserRole = (typeof userRoleEnumValues)[number];
+export type TenantSocial = (typeof tenantSocialsEnumValues)[number];

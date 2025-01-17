@@ -1,13 +1,12 @@
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { createTenantSchema } from "@/server/db/types";
-import { tenants, tenantSocials } from "@/server/db";
 
 export const tenantsRouter = createTRPCRouter({
   addNewTenants: protectedProcedure
     .input(createTenantSchema.array())
     .mutation(async ({ ctx, input }) => {
       const { db, session } = ctx;
-
+      /*
       await db.transaction(async (tx) => {
         await Promise.all(input.map(async (tenant) => {
           const [res] = await tx.insert(tenants).values({
@@ -25,6 +24,10 @@ tenantSocials: tenant.socials,
             url: tenant.socials.
           })
         }))
-      });
+         });
+
+ */
     }),
+
 });
+

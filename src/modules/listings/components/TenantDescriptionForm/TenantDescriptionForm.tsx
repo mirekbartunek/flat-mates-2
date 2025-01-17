@@ -15,8 +15,11 @@ import { useFieldArray, useForm } from "react-hook-form";
 import { createTenantSchema, type TenantSchema, socialEnum } from "@/server/db/types";
 import { capitalizer } from "@/lib/utils";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { type TenantSocial } from "@/server/db/enums";
 
-
+/**
+ * @deprecated Marked for deletion
+ */
 export const TenantDescriptionForm = () => {
   const form = useForm<TenantSchema>({
     resolver: zodResolver(createTenantSchema),
@@ -77,7 +80,7 @@ export const TenantDescriptionForm = () => {
                 <FormControl>
                   <Select
                     onValueChange={(value) =>
-                      form.setValue(`socials.${index}.label`, value)
+                      form.setValue(`socials.${index}.label`, value as TenantSocial)
                     }
                   >
                     <SelectTrigger className="w-32">

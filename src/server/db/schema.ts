@@ -11,7 +11,12 @@ import {
   varchar,
 } from "drizzle-orm/pg-core";
 import { type AdapterAccount } from "next-auth/adapters";
-import { tenantSocialsEnumValues, userRoleEnumValues, userVerifiedEnumValues } from "@/server/db/enums";
+import {
+  reservationStatusEnumValues,
+  tenantSocialsEnumValues,
+  userRoleEnumValues,
+  userVerifiedEnumValues
+} from "@/server/db/enums";
 
 export const userVerifiedEnum = pgEnum(
   "user_verified_enum",
@@ -139,25 +144,19 @@ export const files = pgTable("files", {
 export const listingFiles = pgTable(
   "listing_files",
   {
+    id: uuid().primaryKey().defaultRandom(),
     listingId: uuid().references(() => listings.id, {
       onDelete: "cascade",
-    }),
+    }).notNull(),
     fileId: uuid().references(() => files.id, {
       onDelete: "cascade",
-    }),
-  },
-  (table) => ({
-    pk: primaryKey({
-      name: "listingFilesId",
-      columns: [table.listingId, table.fileId],
-    }),
-  })
+    }).notNull(),
+  }
 );
 
 export const tenants = pgTable("tenants", {
   id: uuid().primaryKey().defaultRandom(),
   name: text().notNull(),
-  image: text().notNull(),
   bio: text().notNull(),
 });
 
@@ -175,29 +174,23 @@ export const tenantSocials = pgTable("tenant_socials", {
 export const listingTenants = pgTable(
   "listing_tenants",
   {
+    id: uuid().primaryKey().defaultRandom(),
     listingId: uuid().references(() => listings.id, {
       onDelete: "cascade",
-    }),
+    }).notNull(),
     tenantId: uuid().references(() => tenants.id, {
       onDelete: "cascade",
-    }),
-  },
-  (table) => ({
-    pk: primaryKey({
-      name: "listingTenantsId",
-      columns: [table.listingId, table.tenantId],
-    }),
-  })
+    }).notNull(),
+  }
 );
-
-export const reservationStatusEnum = pgEnum('reservation_status', ['pending', 'accepted', 'rejected']);
+export const reservationStatusEnum = pgEnum('reservation_status', reservationStatusEnumValues);
 
 export const listingReservations = pgTable('listing_reservations', {
   id: uuid().primaryKey().defaultRandom(),
   listing_id: uuid()
     .notNull()
     .references(() => listings.id),
-  user_id: uuid()
+  user_id: text()
     .notNull()
     .references(() => users.id),
   message: text(),

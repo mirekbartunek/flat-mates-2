@@ -1,9 +1,11 @@
-import type { users, listings } from "./index";
+import { users, listings, tenants, listingReservations } from "./index";
 import { z } from "zod";
 import { tenantSocialsEnumValues } from "@/server/db/enums";
 
 export type Users = typeof users.$inferSelect; // when queried
 export type Listings = typeof listings.$inferSelect;
+export type Tenants = typeof tenants.$inferSelect;
+export type Resevations = typeof listingReservations.$inferSelect
 export const createListingSchema = z.object({
   title: z
     .string({ message: "Title must be included" })
@@ -32,6 +34,18 @@ export const createListingSchema = z.object({
       message: "Please provide the current number of residents",
     })
     .default(0),
+  tenants: z.array(
+    z.object({
+      name: z.string().min(1, { message: "Tenant name is required" }),
+      bio: z.string().min(1, { message: "Tenant bio is required" }),
+      socials: z.array(
+        z.object({
+          label: z.enum(tenantSocialsEnumValues), // Tady je ta změna
+          value: z.string().url({ message: "Please enter a valid URL" })
+        })
+      ).default([])
+    })
+  ).optional(),
 });
 export const socialEnum = z.enum(tenantSocialsEnumValues);
 

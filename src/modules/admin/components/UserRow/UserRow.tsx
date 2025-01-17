@@ -20,6 +20,8 @@ import { RIGHT_TO_CHANGE_ROLES, RIGHT_TO_VERIFY_USERS } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
 import type { FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import { Card, CardContent } from "@/components/ui/card";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 type UserRowProps = {
   name: string | null;
@@ -89,73 +91,88 @@ export const UserRow = ({
   };
 
   return (
-    <div className="flex w-10/12 flex-row items-center justify-between">
-      <div className="font-bold">{name}</div>
-      <form className="contents flex-row" onSubmit={handleSubmit}>
-        <Select
-          defaultValue={role}
-          onValueChange={(res: UserRole) =>
-            setFormValues({
-              ...formValues,
-              role: res,
-            })
-          }
+    <Card>
+      <CardContent className="py-4">
+        <form
+          className="flex items-center gap-4 flex-wrap md:flex-nowrap"
+          onSubmit={handleSubmit}
         >
-          <SelectTrigger className="w-[200px]">
-            <SelectValue placeholder="User role" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              {userRoleEnumValues.map((userRoleEnumValue) => (
-                <SelectItem
-                  value={userRoleEnumValue}
-                  key={crypto.randomUUID()}
-                  disabled={
-                    !RIGHT_TO_CHANGE_ROLES[adminRole].includes(
-                      userRoleEnumValue
-                    )
-                  }
-                >
-                  {userRoleEnumValue}
-                </SelectItem>
-              ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-        <Select
-          defaultValue={verified_status}
-          onValueChange={(res: UserVerified) =>
-            setFormValues({ ...formValues, verified_status: res })
-          }
-        >
-          <SelectTrigger className="w-[200px]">
-            <SelectValue placeholder="User verification status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              {userVerifiedEnumValues.map((verifiedEnumValue) => (
-                <SelectItem
-                  value={verifiedEnumValue}
-                  key={crypto.randomUUID()}
-                  disabled={!RIGHT_TO_VERIFY_USERS[adminRole]}
-                  className="disabled:cursor-not-allowed"
-                >
-                  {verifiedEnumValue}
-                </SelectItem>
-              ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-        <Button
-          disabled={
-            /* eslint-disable-line*/ formValues.role === role &&
-            formValues.verified_status === verified_status
-          }
-          type="submit"
-        >
-          Update
-        </Button>
-      </form>
-    </div>
+          <div className="flex items-center gap-3 min-w-[200px]">
+            <Avatar className="h-10 w-10">
+              <AvatarFallback>{name?.[0]}</AvatarFallback>
+            </Avatar>
+            <div className="font-medium">{name}</div>
+          </div>
+
+          <div className="flex flex-1 items-center gap-4 flex-wrap md:flex-nowrap">
+            <Select
+              defaultValue={role}
+              onValueChange={(res: UserRole) =>
+                setFormValues({
+                  ...formValues,
+                  role: res,
+                })
+              }
+            >
+              <SelectTrigger className="w-[200px]">
+                <SelectValue placeholder="User role" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  {userRoleEnumValues.map((userRoleEnumValue) => (
+                    <SelectItem
+                      value={userRoleEnumValue}
+                      key={crypto.randomUUID()}
+                      disabled={
+                        !RIGHT_TO_CHANGE_ROLES[adminRole].includes(
+                          userRoleEnumValue
+                        )
+                      }
+                    >
+                      {userRoleEnumValue}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+
+            <Select
+              defaultValue={verified_status}
+              onValueChange={(res: UserVerified) =>
+                setFormValues({ ...formValues, verified_status: res })
+              }
+            >
+              <SelectTrigger className="w-[200px]">
+                <SelectValue placeholder="Verification status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  {userVerifiedEnumValues.map((verifiedEnumValue) => (
+                    <SelectItem
+                      value={verifiedEnumValue}
+                      key={crypto.randomUUID()}
+                      disabled={!RIGHT_TO_VERIFY_USERS[adminRole]}
+                    >
+                      {verifiedEnumValue}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+
+            <Button
+              disabled={
+                formValues.role === role ? formValues.verified_status === verified_status : false
+              }
+              type="submit"
+              className="ml-auto"
+              variant="default"
+            >
+              Update
+            </Button>
+          </div>
+        </form>
+      </CardContent>
+    </Card>
   );
 };
