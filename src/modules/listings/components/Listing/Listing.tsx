@@ -34,7 +34,7 @@ export const Listing = ({
               <Badge className="bg-green-500/80 text-white">New</Badge>
             </div>
           ) : null}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+          <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent" />
           <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between">
             <Badge variant="secondary" className="bg-white/90 text-black">
               {monthly_price.toLocaleString()} CZK/month
@@ -42,7 +42,7 @@ export const Listing = ({
           </div>
         </div>
 
-        <div className="flex flex-grow flex-col p-4">
+        <div className="flex grow flex-col p-4">
           <h3 className="mb-2 line-clamp-2 text-lg font-semibold transition-colors group-hover:text-primary">
             {title}
           </h3>

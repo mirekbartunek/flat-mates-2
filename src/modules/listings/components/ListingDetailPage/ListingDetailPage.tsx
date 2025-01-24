@@ -61,7 +61,7 @@ export const ListingDetailPage = async ({
             height={400}
             className="h-full w-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+          <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent" />
         </div>
         <div className="absolute bottom-0 p-8 text-white">
           <h1 className="mb-2 text-4xl font-bold">{listingDetails.title}</h1>

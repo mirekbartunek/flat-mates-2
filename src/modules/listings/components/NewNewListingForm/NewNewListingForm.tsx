@@ -434,7 +434,7 @@ export const NewNewListingForm = () => {
   return (
     <div className="container mx-auto py-8">
       <div className="relative max-w-3xl mx-auto space-y-8">
-        <div className="rounded-lg bg-card p-6 shadow-sm border">
+        <div className="rounded-lg bg-card p-6 shadow-xs border">
           <div className="mb-6">
             <div className="flex justify-between mb-4">
               {steps.map((step, index) => (
@@ -465,7 +465,7 @@ export const NewNewListingForm = () => {
         </div>
 
         {/* Form Content */}
-        <div className="rounded-lg bg-card p-6 shadow-sm border">
+        <div className="rounded-lg bg-card p-6 shadow-xs border">
           <div className="mb-6">
             <h2 className="text-2xl font-bold text-rose-500">
               {steps[currentStep]?.title}

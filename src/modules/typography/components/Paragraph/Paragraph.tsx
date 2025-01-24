@@ -6,7 +6,7 @@ type ParagraphProps = {
 } & ComponentProps<"p">;
 export const Paragraph = ({ children, ...props }: ParagraphProps) => {
   return (
-    <p className={cn("leading-7 [&:not(:first-child)]:mt-6", props.className)}>
+    <p className={cn("leading-7 not-first:mt-6", props.className)}>
       {children}
     </p>
   );

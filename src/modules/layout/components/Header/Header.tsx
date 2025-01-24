@@ -90,7 +90,7 @@ export const Header = () => {
                   <NavigationMenuLink asChild>
                     <TransitionLink
                       href="/public"
-                      className="flex h-full w-full select-none flex-col justify-end rounded-md bg-rose-100 p-6 no-underline outline-none focus:shadow-md dark:bg-rose-950"
+                      className="flex h-full w-full select-none flex-col justify-end rounded-md bg-rose-100 p-6 no-underline outline-hidden focus:shadow-md dark:bg-rose-950"
                     >
                       <div className="mb-2 mt-4 text-lg font-medium">
                         Flat Mates
@@ -161,7 +161,7 @@ const ListItem = React.forwardRef<
         <a
           ref={ref}
           className={cn(
-            "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
+            "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-hidden transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
             className
           )}
           {...props}
