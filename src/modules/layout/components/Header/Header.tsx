@@ -31,10 +31,11 @@ import { BrandLogo } from "@/components/icons";
 
 export const Header = () => {
   const t = useTranslations("Header");
-  const { data: user, isLoading } = api.users.protectedMe.useQuery(undefined, {
-    retry: 1,
+  const { data: user, isLoading } = api.users.publicMe.useQuery(undefined, {
     staleTime: 1000 * 60,
     refetchInterval: 1000 * 120,
+    throwOnError: false,
+
   });
   const components: { title: string; href: string; description: string }[] = [
     {

@@ -40,7 +40,7 @@ export const createListingSchema = z.object({
       bio: z.string().min(1, { message: "Tenant bio is required" }),
       socials: z.array(
         z.object({
-          label: z.enum(tenantSocialsEnumValues), // Tady je ta změna
+          label: z.enum(tenantSocialsEnumValues),
           value: z.string().url({ message: "Please enter a valid URL" })
         })
       ).default([])

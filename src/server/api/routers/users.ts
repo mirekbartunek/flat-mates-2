@@ -12,6 +12,11 @@ export const usersRouter = createTRPCRouter({
   }),
   publicMe: publicProcedure.query(async ({ ctx }) => {
     const { session } = ctx;
-    return session?.user;
+    if (!session?.user) return false;
+    return session.user;
+  }),
+  hasAuth: publicProcedure.query(async ({ ctx }) => {
+    const { session } = ctx;
+    return Boolean(session);
   }),
 });

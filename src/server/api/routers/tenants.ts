@@ -1,33 +1,22 @@
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
-import { createTenantSchema } from "@/server/db/types";
+import { z } from "zod";
+import { tenants } from "@/server/db";
+import { eq } from "drizzle-orm";
+import { TRPCError } from "@trpc/server";
 
 export const tenantsRouter = createTRPCRouter({
-  addNewTenants: protectedProcedure
-    .input(createTenantSchema.array())
+  removeTenant: protectedProcedure
+    .input(
+      z.object({
+        tenantId: z.string(),
+      })
+    )
     .mutation(async ({ ctx, input }) => {
-      const { db, session } = ctx;
-      /*
-      await db.transaction(async (tx) => {
-        await Promise.all(input.map(async (tenant) => {
-          const [res] = await tx.insert(tenants).values({
-            name: tenant.name,
-            bio: tenant.bio,
-            image: "https://i.imgur.com/OvMZBs9.jpg",
-          }).returning();
-          if (!res?.id) {
-            tx.rollback()
-            return;
-          }
-          await tx.insert(tenantSocials).values({
-            tenantId: res.id,
-tenantSocials: tenant.socials,
-            url: tenant.socials.
-          })
-        }))
-         });
-
- */
+      const { db } = ctx;
+      const tenant = await db.query.tenants.findFirst({
+        where: eq(tenants.id, input.tenantId)
+      });
+      if (!tenant) throw new TRPCError({code: "NOT_FOUND", message: "Tenant could not be found"})
+      await db.delete(tenants).where(eq(tenants.id, input.tenantId)).returning();
     }),
-
 });
-

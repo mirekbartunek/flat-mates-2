@@ -6,7 +6,7 @@ import { getTranslations } from "next-intl/server";
 import { ErrorPage } from "@/modules/layout";
 const Page = async ({ params }: { params: { listingId: string } }) => {
   const details = await api.listings.getListingById({
-    listingId: params.listingId,
+    listingId: await params.listingId,
   });
 
   const unauthenticatedTranslations = await getTranslations("Unauthenticated");

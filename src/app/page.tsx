@@ -19,9 +19,9 @@ export default async function Home() {
 
   const mappedListings = availableListings.map(listing => ({
     ...listing,
-    imageUrls: listing?.files
+    imageUrls: listing.files
       .map(f => f.file?.url)
-      .filter(Boolean) as string[]
+      .filter(Boolean)
   }));
 
   const t = await getTranslations("Index");

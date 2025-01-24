@@ -8,6 +8,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { formatDistance } from "date-fns";
+import { getServerAuthSession } from "@/server/auth";
+import { Link } from "next-view-transitions";
+import { getUrl } from "@/lib/utils";
+import { buttonVariants } from "@/components/ui/button";
 
 type ListingDetailPageProps = {
   listingId: string;
@@ -28,7 +32,8 @@ export const ListingDetailPage = async ({
         columns: {
           name: true,
           email: true,
-          image:true
+          image: true,
+          id: true,
         },
       },
       tenants: {
@@ -38,6 +43,7 @@ export const ListingDetailPage = async ({
       },
     },
   });
+  const user = await getServerAuthSession();
 
   if (!listingDetails) return notFound();
 
@@ -188,8 +194,11 @@ export const ListingDetailPage = async ({
               </div>
             </CardContent>
           </Card>
-
-          <ContactBuyerModal listingId={listingId} />
+          {user?.user.id === listingDetails.creator.id ? (
+            <Link href={`${getUrl()}/listing/${listingDetails.id}/owner`} className={buttonVariants()}>Go to dashboard</Link>
+          ) : (
+            <ContactBuyerModal listingId={listingId} />
+          )}
         </div>
       </div>
     </main>

@@ -11,10 +11,24 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { formatDistance } from "date-fns";
-import { Users, Home, Calendar, DollarSign, Check, Cross, X } from "lucide-react";
+import {
+  Users,
+  Home,
+  Calendar,
+  DollarSign,
+  Check,
+  X,
+  Trash2,
+  Plus,
+} from "lucide-react";
 
-import type { InferSelectModel } from 'drizzle-orm'
-import type { listingReservations, listings, tenants, users } from "@/server/db";
+import type { InferSelectModel } from "drizzle-orm";
+import type {
+  listingReservations,
+  listings,
+  tenants,
+  users,
+} from "@/server/db";
 import { Button } from "@/components/ui/button";
 import { api } from "@/trpc/react";
 import { toast } from "sonner";
@@ -30,8 +44,8 @@ type ListingWithRelations = InferSelectModel<typeof listings> & {
   tenants: {
     tenant: InferSelectModel<typeof tenants>;
   }[];
-}
-type ListingOwnerPageProps = ListingWithRelations
+};
+type ListingOwnerPageProps = ListingWithRelations;
 export const ListingOwnerPage = ({
   title,
   description,
@@ -42,12 +56,18 @@ export const ListingOwnerPage = ({
   tenants,
   reservations,
 }: ListingOwnerPageProps) => {
-  const router = useRouter()
-  const {mutate} = api.listings.resolveReservationRequest.useMutation({
+  const router = useRouter();
+  const { mutate } = api.listings.resolveReservationRequest.useMutation({
     onSuccess: () => {
-      toast("Successfully resolved request")
+      toast("Successfully resolved request");
       router.refresh();
-    }
+    },
+  });
+  const { mutate: deleteTenant } = api.tenants.removeTenant.useMutation({
+    onSuccess: () => {
+      toast("Successfully removed tenant from listing!");
+      router.refresh();
+    },
   });
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -72,7 +92,7 @@ export const ListingOwnerPage = ({
             <CardDescription>Monthly rent</CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold">${monthly_price}</p>
+            <p className="text-2xl font-bold">${monthly_price.toLocaleString()}</p>
           </CardContent>
         </Card>
       </div>
@@ -87,7 +107,7 @@ export const ListingOwnerPage = ({
           </CardHeader>
           <CardContent>
             <p className="text-2xl font-bold">
-              {current_capacity}/{maxTenants}
+              {tenants.length}/{maxTenants}
             </p>
           </CardContent>
         </Card>
@@ -133,7 +153,18 @@ export const ListingOwnerPage = ({
         <TabsContent value="tenants" className="mt-6">
           <div className="grid grid-cols-3 gap-4">
             {tenants.map(({ tenant }) => (
-              <Card key={tenant.id}>
+              <Card key={tenant.id} className="group relative">
+                <Button
+                  variant="ghost"
+                  className="absolute right-1 top-1 hidden border-none hover:bg-primary group-hover:block"
+                  onClick={() =>
+                    deleteTenant({
+                      tenantId: tenant.id,
+                    })
+                  }
+                >
+                  <Trash2 />
+                </Button>
                 <CardHeader className="flex flex-row items-center gap-4">
                   <Avatar>
                     <AvatarFallback>{tenant.name[0]}</AvatarFallback>
@@ -147,63 +178,106 @@ export const ListingOwnerPage = ({
                 </CardHeader>
               </Card>
             ))}
+
+            <Card className="group relative">
+              <CardHeader className="flex flex-row items-center gap-4">
+                <Plus />
+                <div>
+                  {" "}
+                  {/*todo: add tenant addinfg modal - extract component logic and styles from the form component*/}
+                  <CardTitle>Add tenant</CardTitle>
+                  <CardDescription>
+                    Add any tenant that came outside Flat Mates
+                  </CardDescription>
+                </div>
+              </CardHeader>
+            </Card>
           </div>
         </TabsContent>
 
         <TabsContent value="reservations" className="mt-6">
           <div className="space-y-4">
-            <Input placeholder="Filter by email" type="search" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}/>
+            <Input
+              placeholder="Filter by email"
+              type="search"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
             {filteredReservations.map((reservation) => (
               <Card key={reservation.id}>
                 <CardHeader>
-                  <div className="flex justify-between items-start">
+                  <div className="flex items-start justify-between">
                     <div className="space-y-1">
                       <CardTitle>Reservation Request</CardTitle>
                       <CardDescription>
-                        Created {formatDistance(new Date(reservation.createdAt), new Date(), { addSuffix: true })}
+                        Created{" "}
+                        {formatDistance(
+                          new Date(reservation.createdAt),
+                          new Date(),
+                          { addSuffix: true }
+                        )}
                       </CardDescription>
                       <CardDescription>
-                        Created by {reservation.user.name} - <a href={`mailto:${reservation.user.email}`} className="underline">{reservation.user.email}</a>
+                        Created by {reservation.user.name} -{" "}
+                        <a
+                          href={`mailto:${reservation.user.email}`}
+                          className="underline"
+                        >
+                          {reservation.user.email}
+                        </a>
                       </CardDescription>
                     </div>
-                    <Badge variant={
-                      reservation.status === 'accepted' ? 'default' :
-                        reservation.status === 'rejected' ? 'destructive' :
-                          'secondary'
-                    }>
+                    <Badge
+                      variant={
+                        reservation.status === "accepted"
+                          ? "default"
+                          : reservation.status === "rejected"
+                            ? "destructive"
+                            : "secondary"
+                      }
+                    >
                       {reservation.status}
                     </Badge>
                   </div>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {reservation.message ? <p className="text-muted-foreground">{reservation.message}</p> : null}
+                    {reservation.message ? (
+                      <p className="text-muted-foreground">
+                        {reservation.message}
+                      </p>
+                    ) : null}
 
-                    {/* Přidáme buttons jen pro 'pending' rezervace */}
-                    {reservation.status === 'pending' ? <div className="flex gap-2">
+                    {reservation.status === "pending" ? (
+                      <div className="flex gap-2">
                         <Button
-                          onClick={() => mutate({
-                            reservationId: reservation.id,
-                            action: "ACCEPT"
-                          })}
+                          onClick={() =>
+                            mutate({
+                              reservationId: reservation.id,
+                              action: "ACCEPT",
+                            })
+                          }
                           variant="outline"
-                          className="flex items-center gap-2 text-green-600 hover:text-green-700 hover:bg-green-50"
+                          className="flex items-center gap-2 text-green-600 hover:bg-green-50 hover:text-green-700"
                         >
-                          <Check className="w-4 h-4" />
+                          <Check className="h-4 w-4" />
                           Accept
                         </Button>
                         <Button
-                          onClick={() => mutate({
-                            reservationId: reservation.id,
-                            action: "REJECT"
-                          })}
+                          onClick={() =>
+                            mutate({
+                              reservationId: reservation.id,
+                              action: "REJECT",
+                            })
+                          }
                           variant="outline"
-                          className="flex items-center gap-2 text-red-600 hover:text-red-700 hover:bg-red-50"
+                          className="flex items-center gap-2 text-red-600 hover:bg-red-50 hover:text-red-700"
                         >
-                          <X className="w-4 h-4" />
+                          <X className="h-4 w-4" />
                           Reject
                         </Button>
-                      </div> : null}
+                      </div>
+                    ) : null}
                   </div>
                 </CardContent>
               </Card>

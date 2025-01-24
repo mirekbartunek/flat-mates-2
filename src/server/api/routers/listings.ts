@@ -92,12 +92,6 @@ export const listingsRouter = createTRPCRouter({
           message: "Listing not found",
         });
       }
-      if (res.creator.id !== session.user.id) {
-        throw new TRPCError({
-          code: "UNAUTHORIZED",
-          message: "Only property owners can perform such action",
-        });
-      }
       return res;
     }),
   bookListing: protectedProcedure
@@ -249,4 +243,6 @@ export const listingsRouter = createTRPCRouter({
         }
       }
     }),
+   // todo: je tohle dobry? nemam si spis delat vic endpointu na upravovani nebo jeden na bulk edit?
+
 });
