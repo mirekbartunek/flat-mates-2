@@ -1,0 +1,1 @@
+ALTER TABLE "listings" RENAME COLUMN "maxTenants" TO "max_tenants";

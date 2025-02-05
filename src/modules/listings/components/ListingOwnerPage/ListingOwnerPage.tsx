@@ -19,7 +19,6 @@ import {
   Check,
   X,
   Trash2,
-  Plus,
 } from "lucide-react";
 
 import type { InferSelectModel } from "drizzle-orm";
@@ -35,6 +34,8 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
+import { EditListingPrice } from "@/modules/listings/components/EditListingPrice/EditListingPrice";
+import { AddForeignTenantDialog } from "@/modules/listings/components/AddForeignTenantDialog/AddForeignTenantDialog";
 
 type ListingWithRelations = InferSelectModel<typeof listings> & {
   reservations: (InferSelectModel<typeof listingReservations> & {
@@ -49,11 +50,11 @@ type ListingOwnerPageProps = ListingWithRelations;
 export const ListingOwnerPage = ({
   title,
   description,
-  current_capacity,
-  maxTenants,
+  max_tenants,
   monthly_price,
   creator,
   tenants,
+  id,
   reservations,
 }: ListingOwnerPageProps) => {
   const router = useRouter();
@@ -81,9 +82,10 @@ export const ListingOwnerPage = ({
       <div className="flex items-start justify-between">
         <div>
           <Heading1>{title}</Heading1>
-          <p className="mt-2 text-muted-foreground">{description}</p>
+          <p className="text-muted-foreground mt-2">{description}</p>
         </div>
-        <Card className="w-[200px]">
+        <Card className="group/edit relative w-[200px]">
+          <EditListingPrice previousPrice={monthly_price} listingId={id} />
           <CardHeader className="space-y-1">
             <div className="flex items-center gap-2">
               <DollarSign className="h-4 w-4" />
@@ -92,7 +94,9 @@ export const ListingOwnerPage = ({
             <CardDescription>Monthly rent</CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold">${monthly_price.toLocaleString()}</p>
+            <p className="text-2xl font-bold">
+              ${monthly_price.toLocaleString()}
+            </p>
           </CardContent>
         </Card>
       </div>
@@ -107,7 +111,7 @@ export const ListingOwnerPage = ({
           </CardHeader>
           <CardContent>
             <p className="text-2xl font-bold">
-              {tenants.length}/{maxTenants}
+              {tenants.length}/{max_tenants}
             </p>
           </CardContent>
         </Card>
@@ -138,7 +142,7 @@ export const ListingOwnerPage = ({
             </Avatar>
             <div>
               <p className="font-medium">{creator.name}</p>
-              <p className="text-sm text-muted-foreground">Owner</p>
+              <p className="text-muted-foreground text-sm">Owner</p>
             </div>
           </CardContent>
         </Card>
@@ -156,7 +160,7 @@ export const ListingOwnerPage = ({
               <Card key={tenant.id} className="group relative">
                 <Button
                   variant="ghost"
-                  className="absolute right-1 top-1 hidden border-none hover:bg-primary group-hover:block"
+                  className="hover:bg-primary absolute top-1 right-1 hidden border-none group-hover:block"
                   onClick={() =>
                     deleteTenant({
                       tenantId: tenant.id,
@@ -178,20 +182,9 @@ export const ListingOwnerPage = ({
                 </CardHeader>
               </Card>
             ))}
-
-            <Card className="group relative">
-              <CardHeader className="flex flex-row items-center gap-4">
-                <Plus />
-                <div>
-                  {" "}
-                  {/*todo: add tenant addinfg modal - extract component logic and styles from the form component*/}
-                  <CardTitle>Add tenant</CardTitle>
-                  <CardDescription>
-                    Add any tenant that came outside Flat Mates
-                  </CardDescription>
-                </div>
-              </CardHeader>
-            </Card>
+            {tenants.length === max_tenants ? null : (
+              <AddForeignTenantDialog listingId={id} />
+            )}
           </div>
         </TabsContent>
 

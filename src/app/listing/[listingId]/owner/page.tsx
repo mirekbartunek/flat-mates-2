@@ -15,10 +15,10 @@ const Page = async ({ params }: { params: { listingId: string } }) => {
   const user = await getServerAuthSession();
   const mappedListing = {
     ...details,
-    tenants: details.tenants.map(t => ({
-      tenant: t.tenant!
-    }))
-  }
+    tenants: details.tenants.map((t) => ({
+      tenant: t.tenant,
+    })),
+  };
   if (!user)
     return (
       <ErrorPage

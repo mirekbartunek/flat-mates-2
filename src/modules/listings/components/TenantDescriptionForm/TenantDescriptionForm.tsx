@@ -12,9 +12,19 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useFieldArray, useForm } from "react-hook-form";
-import { createTenantSchema, type TenantSchema, socialEnum } from "@/server/db/types";
+import {
+  createTenantSchema,
+  type TenantSchema,
+  socialEnum,
+} from "@/server/db/types";
 import { capitalizer } from "@/lib/utils";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { type TenantSocial } from "@/server/db/enums";
 
 /**
@@ -75,42 +85,45 @@ export const TenantDescriptionForm = () => {
           <div>
             <FormLabel>Socials</FormLabel>
             <div className="flex flex-col gap-4">
-            {fields.map((field, index) => (
-              <div key={field.id} className="flex space-x-2">
-                <FormControl>
-                  <Select
-                    onValueChange={(value) =>
-                      form.setValue(`socials.${index}.label`, value as TenantSocial)
-                    }
+              {fields.map((field, index) => (
+                <div key={field.id} className="flex space-x-2">
+                  <FormControl>
+                    <Select
+                      onValueChange={(value) =>
+                        form.setValue(
+                          `socials.${index}.label`,
+                          value as TenantSocial
+                        )
+                      }
+                    >
+                      <SelectTrigger className="w-32">
+                        <SelectValue placeholder="Select a social" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Object.values(socialEnum.Values).map((social) => (
+                          <SelectItem key={crypto.randomUUID()} value={social}>
+                            {capitalizer(social)}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormControl>
+                    <Input
+                      type="url"
+                      placeholder="URL"
+                      {...form.register(`socials.${index}.value` as const)}
+                    />
+                  </FormControl>
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    onClick={() => remove(index)}
                   >
-                    <SelectTrigger className="w-32">
-                      <SelectValue placeholder="Select a social" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {Object.values(socialEnum.Values).map((social) => (
-                        <SelectItem key={crypto.randomUUID()} value={social}>
-                          {capitalizer(social)}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </FormControl>
-                <FormControl>
-                  <Input
-                    type="url"
-                    placeholder="URL"
-                    {...form.register(`socials.${index}.value` as const)}
-                  />
-                </FormControl>
-                <Button
-                  type="button"
-                  variant="destructive"
-                  onClick={() => remove(index)}
-                >
-                  Remove
-                </Button>
-              </div>
-            ))}
+                    Remove
+                  </Button>
+                </div>
+              ))}
             </div>
             <Button
               type="button"

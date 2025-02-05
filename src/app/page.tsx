@@ -11,17 +11,15 @@ export default async function Home() {
     with: {
       files: {
         with: {
-          file: true
-        }
-      }
-    }
+          file: true,
+        },
+      },
+    },
   });
 
-  const mappedListings = availableListings.map(listing => ({
+  const mappedListings = availableListings.map((listing) => ({
     ...listing,
-    imageUrls: listing.files
-      .map(f => f.file?.url)
-      .filter(Boolean)
+    imageUrls: listing.files.map((f) => f.file?.url).filter(Boolean),
   }));
 
   const t = await getTranslations("Index");
@@ -39,16 +37,16 @@ export default async function Home() {
             </h1>
           </div>
 
-          <p className="mx-auto mt-6 max-w-2xl text-center text-lg text-muted-foreground">
+          <p className="text-muted-foreground mx-auto mt-6 max-w-2xl text-center text-lg">
             {t("description")}
           </p>
 
-          <div className="mt-10 flex flex-col sm:flex-row justify-center gap-4">
+          <div className="mt-10 flex flex-col justify-center gap-4 sm:flex-row">
             <Link
               className={buttonVariants({
                 variant: "default",
                 size: "lg",
-                className: "group"
+                className: "group",
               })}
               href="#listings"
             >
@@ -61,7 +59,7 @@ export default async function Home() {
               className={buttonVariants({
                 variant: "secondary",
                 size: "lg",
-                className: "group"
+                className: "group",
               })}
               href="/list-your-property"
             >
@@ -75,7 +73,7 @@ export default async function Home() {
               <div className="text-3xl font-bold text-rose-500">
                 {availableListings.length}+
               </div>
-              <div className="mt-2 text-center text-sm text-muted-foreground">
+              <div className="text-muted-foreground mt-2 text-center text-sm">
                 Available Properties
               </div>
             </div>
@@ -83,7 +81,7 @@ export default async function Home() {
         </PageTop>
       </div>
 
-      <div className="border-t bg-secondary/30">
+      <div className="bg-secondary/30 border-t">
         <div className="container mx-auto py-16">
           <div className="grid grid-cols-1 gap-8 sm:grid-cols-2">
             <div className="text-center">
@@ -91,7 +89,7 @@ export default async function Home() {
                 <Search className="h-6 w-6 text-rose-500" />
               </div>
               <h3 className="mt-4 text-lg font-semibold">Easy Search</h3>
-              <p className="mt-2 text-sm text-muted-foreground">
+              <p className="text-muted-foreground mt-2 text-sm">
                 Find your perfect home with our advanced search filters
               </p>
             </div>
@@ -100,7 +98,7 @@ export default async function Home() {
                 <Plus className="h-6 w-6 text-rose-500" />
               </div>
               <h3 className="mt-4 text-lg font-semibold">Easy Listing</h3>
-              <p className="mt-2 text-sm text-muted-foreground">
+              <p className="text-muted-foreground mt-2 text-sm">
                 List your property in minutes
               </p>
             </div>

@@ -15,7 +15,7 @@ import {
   reservationStatusEnumValues,
   tenantSocialsEnumValues,
   userRoleEnumValues,
-  userVerifiedEnumValues
+  userVerifiedEnumValues,
 } from "@/server/db/enums";
 
 export const userVerifiedEnum = pgEnum(
@@ -32,14 +32,12 @@ export const users = pgTable("user", {
   emailVerified: timestamp({ mode: "date" }),
   image: text(),
   role: userRoleEnum().notNull().default("USER"),
-  verified_status: userVerifiedEnum()
-    .notNull()
-    .default("UNVERIFIED"),
+  verified_status: userVerifiedEnum().notNull().default("UNVERIFIED"),
 });
 
 export const usersRelations = relations(users, ({ many }) => ({
   accounts: many(accounts),
-  listings: many(listings)
+  listings: many(listings),
 }));
 
 export const accounts = pgTable(
@@ -122,7 +120,7 @@ export const listings = pgTable("listings", {
     .notNull(),
   title: varchar().notNull(),
   description: varchar().notNull(),
-  maxTenants: integer().notNull(),
+  max_tenants: integer().notNull(),
   current_capacity: integer().notNull(),
   monthly_price: integer().notNull(),
   createdAt: timestamp().defaultNow().notNull(),
@@ -141,18 +139,19 @@ export const files = pgTable("files", {
     }),
 });
 
-export const listingFiles = pgTable(
-  "listing_files",
-  {
-    id: uuid().primaryKey().defaultRandom(),
-    listingId: uuid().references(() => listings.id, {
+export const listingFiles = pgTable("listing_files", {
+  id: uuid().primaryKey().defaultRandom(),
+  listingId: uuid()
+    .references(() => listings.id, {
       onDelete: "cascade",
-    }).notNull(),
-    fileId: uuid().references(() => files.id, {
+    })
+    .notNull(),
+  fileId: uuid()
+    .references(() => files.id, {
       onDelete: "cascade",
-    }).notNull(),
-  }
-);
+    })
+    .notNull(),
+});
 
 export const tenants = pgTable("tenants", {
   id: uuid().primaryKey().defaultRandom(),
@@ -160,41 +159,49 @@ export const tenants = pgTable("tenants", {
   bio: text().notNull(),
 });
 
-export const socialEnum = pgEnum("socials", tenantSocialsEnumValues)
+export const socialEnum = pgEnum("socials", tenantSocialsEnumValues);
 
 export const tenantSocials = pgTable("tenant_socials", {
   id: uuid().primaryKey().defaultRandom(),
-  tenantId: uuid().references(() => tenants.id, {
-    onDelete: "cascade"
-  }).notNull(),
+  tenantId: uuid()
+    .references(() => tenants.id, {
+      onDelete: "cascade",
+    })
+    .notNull(),
   social_enum: socialEnum().notNull(),
-  url: text().notNull()
-})
+  url: text().notNull(),
+});
 
-export const listingTenants = pgTable(
-  "listing_tenants",
-  {
-    id: uuid().primaryKey().defaultRandom(),
-    listingId: uuid().references(() => listings.id, {
+export const listingTenants = pgTable("listing_tenants", {
+  id: uuid().primaryKey().defaultRandom(),
+  listingId: uuid()
+    .references(() => listings.id, {
       onDelete: "cascade",
-    }).notNull(),
-    tenantId: uuid().references(() => tenants.id, {
+    })
+    .notNull(),
+  tenantId: uuid()
+    .references(() => tenants.id, {
       onDelete: "cascade",
-    }).notNull(),
-  }
+    })
+    .notNull(),
+});
+export const reservationStatusEnum = pgEnum(
+  "reservation_status",
+  reservationStatusEnumValues
 );
-export const reservationStatusEnum = pgEnum('reservation_status', reservationStatusEnumValues);
 
-export const listingReservations = pgTable('listing_reservations', {
+export const listingReservations = pgTable("listing_reservations", {
   id: uuid().primaryKey().defaultRandom(),
   listing_id: uuid()
     .notNull()
-    .references(() => listings.id),
+    .references(() => listings.id, {
+      onDelete: "cascade",
+    }),
   user_id: text()
     .notNull()
     .references(() => users.id),
   message: text(),
-  status: reservationStatusEnum().notNull().default('pending'),
+  status: reservationStatusEnum().notNull().default("pending"),
   createdAt: timestamp().notNull().defaultNow(),
   updatedAt: timestamp().notNull().defaultNow(),
 });
@@ -202,7 +209,7 @@ export const listingReservations = pgTable('listing_reservations', {
 export const listingsRelations = relations(listings, ({ one, many }) => ({
   creator: one(users, {
     fields: [listings.userId],
-    references: [users.id]
+    references: [users.id],
   }),
   files: many(listingFiles),
   tenants: many(listingTenants),
@@ -210,33 +217,31 @@ export const listingsRelations = relations(listings, ({ one, many }) => ({
 }));
 
 export const filesRelations = relations(files, ({ many }) => ({
-  listingFiles: many(listingFiles)
+  listingFiles: many(listingFiles),
 }));
 
 export const listingFilesRelations = relations(listingFiles, ({ one }) => ({
   listing: one(listings, {
     fields: [listingFiles.listingId],
-    references: [listings.id]
+    references: [listings.id],
   }),
   file: one(files, {
     fields: [listingFiles.fileId],
-    references: [files.id]
-  })
+    references: [files.id],
+  }),
 }));
 
 export const tenantsRelations = relations(tenants, ({ many }) => ({
   socials: many(tenantSocials),
   listings: many(listingTenants),
-
 }));
 
 export const tenantSocialsRelations = relations(tenantSocials, ({ one }) => ({
   tenant: one(tenants, {
     fields: [tenantSocials.tenantId],
-    references: [tenants.id]
-  })
+    references: [tenants.id],
+  }),
 }));
-
 
 export const listingTenantsRelations = relations(listingTenants, ({ one }) => ({
   listing: one(listings, {
@@ -249,13 +254,16 @@ export const listingTenantsRelations = relations(listingTenants, ({ one }) => ({
   }),
 }));
 
-export const listingReservationsRelations = relations(listingReservations, ({ one }) => ({
-  listing: one(listings, {
-    fields: [listingReservations.listing_id],
-    references: [listings.id],
-  }),
-  user: one(users, {
-    fields: [listingReservations.user_id],
-    references: [users.id],
-  }),
-}));
+export const listingReservationsRelations = relations(
+  listingReservations,
+  ({ one }) => ({
+    listing: one(listings, {
+      fields: [listingReservations.listing_id],
+      references: [listings.id],
+    }),
+    user: one(users, {
+      fields: [listingReservations.user_id],
+      references: [users.id],
+    }),
+  })
+);

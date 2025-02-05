@@ -94,17 +94,17 @@ export const UserRow = ({
     <Card>
       <CardContent className="py-4">
         <form
-          className="flex items-center gap-4 flex-wrap md:flex-nowrap"
+          className="flex flex-wrap items-center gap-4 md:flex-nowrap"
           onSubmit={handleSubmit}
         >
-          <div className="flex items-center gap-3 min-w-[200px]">
+          <div className="flex min-w-[200px] items-center gap-3">
             <Avatar className="h-10 w-10">
               <AvatarFallback>{name?.[0]}</AvatarFallback>
             </Avatar>
             <div className="font-medium">{name}</div>
           </div>
 
-          <div className="flex flex-1 items-center gap-4 flex-wrap md:flex-nowrap">
+          <div className="flex flex-1 flex-wrap items-center gap-4 md:flex-nowrap">
             <Select
               defaultValue={role}
               onValueChange={(res: UserRole) =>
@@ -162,7 +162,9 @@ export const UserRow = ({
 
             <Button
               disabled={
-                formValues.role === role ? formValues.verified_status === verified_status : false
+                formValues.role === role
+                  ? formValues.verified_status === verified_status
+                  : false
               }
               type="submit"
               className="ml-auto"

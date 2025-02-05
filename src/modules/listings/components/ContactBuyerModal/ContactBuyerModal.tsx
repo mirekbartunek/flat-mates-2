@@ -1,14 +1,5 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useState } from "react";
 import { api } from "@/trpc/react";
@@ -17,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import {
-  ContactBuyerFormSchema,
+  type ContactBuyerFormSchema,
   contactBuyerFormSchema,
 } from "@/modules/listings/components/ContactBuyerModal/contact-buyer-form.schema";
 import {
@@ -30,11 +21,14 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useSession } from "next-auth/react";
+import { DialogPrimitive } from "@/modules/listings/components/DialogPrimitive/DialogPrimitive";
+import { DialogFooter } from "@/components/ui/dialog";
 
 type ContactBuyerModalProps = {
   listingId: string;
 };
 export const ContactBuyerModal = ({ listingId }: ContactBuyerModalProps) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isOpen, setIsOpen] = useState(false);
 
   const form = useForm<ContactBuyerFormSchema>({
@@ -45,7 +39,7 @@ export const ContactBuyerModal = ({ listingId }: ContactBuyerModalProps) => {
     },
   });
 
-  const { mutate } = api.listings.bookListing.useMutation({
+  const { mutate, isPending } = api.listings.bookListing.useMutation({
     onSuccess: () => {
       toast("Success nemas translaci", {
         description:
@@ -65,25 +59,16 @@ export const ContactBuyerModal = ({ listingId }: ContactBuyerModalProps) => {
   };
 
   return (
-    <Dialog
-      open={isOpen}
+    <DialogPrimitive
       onOpenChange={(open) => {
-        setIsOpen(open);
         if (!open) {
           form.reset();
         }
       }}
-    >
-      <DialogTrigger asChild>
-        <Button>I&#39;m interested</Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Are you sure?</DialogTitle>
-          <DialogDescription>
-            This action will contact the property owner.
-          </DialogDescription>
-        </DialogHeader>
+      dialogTrigger={<Button>I&#39;m interested</Button>}
+      dialogTitle={"Are you sure?"}
+      dialogDescription={"This action will contact the property owner."}
+      dialogBody={
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <div className="space-y-4 py-2 pb-4">
@@ -111,7 +96,7 @@ export const ContactBuyerModal = ({ listingId }: ContactBuyerModalProps) => {
                 control={form.control}
                 name="terms"
                 render={({ field }) => (
-                  <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                  <FormItem className="flex flex-row items-start space-y-0 space-x-3 rounded-md border p-4">
                     <FormControl>
                       <Checkbox
                         checked={field.value}
@@ -125,17 +110,19 @@ export const ContactBuyerModal = ({ listingId }: ContactBuyerModalProps) => {
                       </FormDescription>
                       <FormMessage />
                     </div>
-
                   </FormItem>
                 )}
               />
             </div>
             <DialogFooter>
-              <Button type="submit">Contact owner</Button>
+              <Button type="submit" disabled={isPending}>
+                Contact owner
+              </Button>
             </DialogFooter>
           </form>
         </Form>
-      </DialogContent>
-    </Dialog>
+      }
+      inForm={true}
+    />
   );
 };

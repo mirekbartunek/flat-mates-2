@@ -42,7 +42,7 @@ export const ImageCarousel = ({
             />
             {showDelete && showActions ? (
               <Trash2
-                className="absolute right-1 top-1 z-20 stroke-neutral-300"
+                className="absolute top-1 right-1 z-20 stroke-neutral-300"
                 width={20}
                 height={20}
                 onClick={() => alert("Deleted")}

@@ -1,11 +1,12 @@
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
-import { createListingSchema } from "@/server/db/types";
+import { createListingSchema, updateListingSchema } from "@/server/db/types";
 import {
   listingFiles,
   listingReservations,
   listings,
   listingTenants,
   tenants,
+  tenantSocials,
   users,
 } from "@/server/db";
 import { TRPCError } from "@trpc/server";
@@ -27,7 +28,7 @@ export const listingsRouter = createTRPCRouter({
           .values({
             userId: session.user.id,
             title: input.title,
-            maxTenants: input.maxTenants,
+            max_tenants: input.max_tenants,
             description: input.description,
             monthly_price: input.monthly_price,
             current_capacity: input.current_capacity,
@@ -45,16 +46,39 @@ export const listingsRouter = createTRPCRouter({
             fileId: id,
           }))
         );
-  if (input.tenants) {
-    const addedTenants = await tx.insert(tenants).values(input.tenants.map((tenant) => ({
-      name: tenant.name,
-      bio: tenant.bio,
-    }))).returning()
-    await tx.insert(listingTenants).values(addedTenants.map((tenant) => ({
-      listingId: listing.id,
-      tenantId: tenant.id
-    })))
-  }
+        if (input.tenants) {
+          const addedTenants = await tx
+            .insert(tenants)
+            .values(
+              input.tenants.map((tenant) => ({
+                name: tenant.name,
+                bio: tenant.bio,
+              }))
+            )
+            .returning();
+          await tx.insert(listingTenants).values(
+            addedTenants.map((tenant) => ({
+              listingId: listing.id,
+              tenantId: tenant.id,
+            }))
+          );
+          const socialValues = addedTenants.flatMap((tenant) => {
+            const inputTenant = input.tenants!.find(
+              (t) => t.name === tenant.name
+            );
+            if (!inputTenant?.socials) return [];
+
+            return inputTenant.socials.map((social) => ({
+              tenantId: tenant.id,
+              social_enum: social.label,
+              url: social.value,
+            }));
+          });
+
+          if (socialValues.length > 0) {
+            await tx.insert(tenantSocials).values(socialValues);
+          }
+        }
 
         return listing.id;
       });
@@ -237,12 +261,105 @@ export const listingsRouter = createTRPCRouter({
             react: RejectedTenantMessage({
               tenantName: res.user.name!,
               ownerName: res.listing.creator.name!,
-              propertyTitle: res.listing.title
-            })
-          })
+              propertyTitle: res.listing.title,
+            }),
+          });
         }
       }
     }),
-   // todo: je tohle dobry? nemam si spis delat vic endpointu na upravovani nebo jeden na bulk edit?
+  editListing: protectedProcedure
+    .input(updateListingSchema)
+    .mutation(async ({ ctx, input }) => {
+      const { db, session } = ctx;
 
+      const listing = await db.query.listings.findFirst({
+        where: eq(listings.id, input.id),
+        with: {
+          creator: true,
+        },
+      });
+
+      if (!listing) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Listing not found",
+        });
+      }
+
+      if (listing.creator.id !== session.user.id) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "Only listing owner can edit this listing",
+        });
+      }
+
+      const { id, tenants: tenantsInput, ...updateData } = input;
+
+      await db.transaction(async (tx) => {
+        if (Object.keys(updateData).length !== 0) {
+          await tx.update(listings).set(updateData).where(eq(listings.id, id));
+        }
+        if (tenantsInput?.length) {
+          const addedTenants = await tx
+            .insert(tenants)
+            .values(
+              tenantsInput.map((tenant) => ({
+                name: tenant.name,
+                bio: tenant.bio,
+              }))
+            )
+            .returning();
+
+          await tx.insert(listingTenants).values(
+            addedTenants.map((tenant) => ({
+              tenantId: tenant.id,
+              listingId: id,
+            }))
+          );
+
+          const socialValues = addedTenants.flatMap((tenant) => {
+            const inputTenant = tenantsInput.find(
+              (t) => t.name === tenant.name
+            );
+            if (!inputTenant?.socials) return [];
+
+            return inputTenant.socials.map((social) => ({
+              tenantId: tenant.id,
+              social_enum: social.label,
+              url: social.value,
+            }));
+          });
+
+          if (socialValues.length > 0) {
+            await tx.insert(tenantSocials).values(socialValues);
+          }
+        }
+      });
+
+      return { success: true };
+    }),
+  removeListing: protectedProcedure
+    .input(
+      z.object({
+        listingId: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { db, session } = ctx;
+      const listing = await db.query.listings.findFirst({
+        where: eq(listings.id, input.listingId),
+      });
+      if (!listing)
+        throw new TRPCError({
+          message: "Listing not found",
+          code: "NOT_FOUND",
+        });
+      if (
+        listing.userId !== session.user.id ||
+        !["ADMIN", "SUPERADMIN"].includes(session.user.role)
+      )
+        throw new TRPCError({ message: "Unauthorized", code: "UNAUTHORIZED" });
+
+      await db.delete(listings).where(eq(listings.id, listing.id));
+    }),
 });

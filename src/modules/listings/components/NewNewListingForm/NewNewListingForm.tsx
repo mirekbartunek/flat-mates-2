@@ -26,7 +26,13 @@ import { ImageCarousel } from "@/modules/listings/components/ImageCarousel/Image
 import { useRouter } from "next/navigation";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import type { TenantSocial } from "@/server/db/enums";
 
 const steps = [
@@ -61,7 +67,7 @@ export const NewNewListingForm = () => {
   const form = useForm<z.infer<typeof createListingSchema>>({
     resolver: zodResolver(createListingSchema),
     defaultValues: {
-      maxTenants: 0,
+      max_tenants: 0,
       title: "",
       description: "",
       monthly_price: 0,
@@ -78,15 +84,16 @@ export const NewNewListingForm = () => {
       const currentTenants = form.getValues("tenants") ?? [];
 
       if (currentTenants.length < currentCapacity) {
-        const newTenants = Array.from({ length: currentCapacity }).map((_, i) => ({
-          name: "",
-          bio: "",
-          socials: [],
-          ...(currentTenants[i] ?? {}) // zachováme existující data
-        }));
+        const newTenants = Array.from({ length: currentCapacity }).map(
+          (_, i) => ({
+            name: "",
+            bio: "",
+            socials: [],
+            ...(currentTenants[i] ?? {}), // zachováme existující data
+          })
+        );
         form.setValue("tenants", newTenants);
-      }
-      else if (currentTenants.length > currentCapacity) {
+      } else if (currentTenants.length > currentCapacity) {
         form.setValue("tenants", currentTenants.slice(0, currentCapacity));
       }
     } else {
@@ -172,16 +179,18 @@ export const NewNewListingForm = () => {
           <section className="space-y-8">
             <FormField
               control={form.control}
-              name="maxTenants"
+              name="max_tenants"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Maximum number of tenants</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
-                      id="maxTenants"
+                      id="max_tenants"
                       {...field}
-                      onChange={(e) => field.onChange(e.target.valueAsNumber ?? 0)}
+                      onChange={(e) =>
+                        field.onChange(e.target.valueAsNumber ?? 0)
+                      }
                     />
                   </FormControl>
                   <FormDescription>
@@ -205,13 +214,14 @@ export const NewNewListingForm = () => {
                 />
                 <label
                   htmlFor="hasExistingTenants"
-                  className="text-sm font-medium leading-none"
+                  className="text-sm leading-none font-medium"
                 >
                   Property has existing tenants
                 </label>
               </div>
 
-              {hasTenants ? <div className="space-y-6">
+              {hasTenants ? (
+                <div className="space-y-6">
                   <FormField
                     control={form.control}
                     name="current_capacity"
@@ -222,8 +232,10 @@ export const NewNewListingForm = () => {
                           <Input
                             type="number"
                             {...field}
-                            max={form.getValues("maxTenants")}
-                            onChange={(e) => field.onChange(e.target.valueAsNumber ?? 0)}
+                            max={form.getValues("max_tenants")}
+                            onChange={(e) =>
+                              field.onChange(e.target.valueAsNumber ?? 0)
+                            }
                           />
                         </FormControl>
                         <FormMessage />
@@ -232,8 +244,14 @@ export const NewNewListingForm = () => {
                   />
 
                   <div className="space-y-4">
-                    {Array.from({ length: form.watch("current_capacity") || 0 }).map((_, index) => {
-                      const tenant = form.watch(`tenants.${index}`) || { name: "", bio: "", socials: [] };
+                    {Array.from({
+                      length: form.watch("current_capacity") || 0,
+                    }).map((_, index) => {
+                      const tenant = form.watch(`tenants.${index}`) || {
+                        name: "",
+                        bio: "",
+                        socials: [],
+                      };
                       return (
                         <Card key={index}>
                           <CardHeader>
@@ -250,9 +268,15 @@ export const NewNewListingForm = () => {
                                 <FormItem>
                                   <FormLabel>Name</FormLabel>
                                   <FormControl>
-                                    <Input placeholder="Joe" type="text" {...field} />
+                                    <Input
+                                      placeholder="Joe"
+                                      type="text"
+                                      {...field}
+                                    />
                                   </FormControl>
-                                  <FormDescription>Tenant&#39;s name</FormDescription>
+                                  <FormDescription>
+                                    Tenant&#39;s name
+                                  </FormDescription>
                                   <FormMessage />
                                 </FormItem>
                               )}
@@ -272,7 +296,9 @@ export const NewNewListingForm = () => {
                                       {...field}
                                     />
                                   </FormControl>
-                                  <FormDescription>Describe the tenant</FormDescription>
+                                  <FormDescription>
+                                    Describe the tenant
+                                  </FormDescription>
                                   <FormMessage />
                                 </FormItem>
                               )}
@@ -281,61 +307,81 @@ export const NewNewListingForm = () => {
                             <div>
                               <FormLabel>Socials</FormLabel>
                               <div className="mt-2 space-y-3">
-                                {(tenant.socials || []).map((_, socialIndex) => (
-                                  <div key={socialIndex} className="flex space-x-2">
-                                    <Select
-                                      defaultValue={tenant.socials?.[socialIndex]?.label}
-                                      onValueChange={(value) =>
-                                        form.setValue(`tenants.${index}.socials.${socialIndex}.label`, value as TenantSocial)
-                                      }
+                                {(tenant.socials || []).map(
+                                  (_, socialIndex) => (
+                                    <div
+                                      key={socialIndex}
+                                      className="flex space-x-2"
                                     >
-                                      <SelectTrigger className="w-32">
-                                        <SelectValue placeholder="Select a social" />
-                                      </SelectTrigger>
-                                      <SelectContent>
-                                        {Object.values(socialEnum.Values).map((social) => (
-                                          <SelectItem key={social} value={social}>
-                                            {capitalizer(social)}
-                                          </SelectItem>
-                                        ))}
-                                      </SelectContent>
-                                    </Select>
+                                      <Select
+                                        defaultValue={
+                                          tenant.socials?.[socialIndex]?.label
+                                        }
+                                        onValueChange={(value) =>
+                                          form.setValue(
+                                            `tenants.${index}.socials.${socialIndex}.label`,
+                                            value as TenantSocial
+                                          )
+                                        }
+                                      >
+                                        <SelectTrigger className="w-32">
+                                          <SelectValue placeholder="Select a social" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                          {Object.values(socialEnum.Values).map(
+                                            (social) => (
+                                              <SelectItem
+                                                key={social}
+                                                value={social}
+                                              >
+                                                {capitalizer(social)}
+                                              </SelectItem>
+                                            )
+                                          )}
+                                        </SelectContent>
+                                      </Select>
 
-                                    <FormControl>
-                                      <Input
-                                        type="url"
-                                        placeholder="URL"
-                                        {...form.register(`tenants.${index}.socials.${socialIndex}.value`)}
-                                      />
-                                    </FormControl>
+                                      <FormControl>
+                                        <Input
+                                          type="url"
+                                          placeholder="URL"
+                                          {...form.register(
+                                            `tenants.${index}.socials.${socialIndex}.value`
+                                          )}
+                                        />
+                                      </FormControl>
 
-                                    <Button
-                                      type="button"
-                                      variant="destructive"
-                                      size="sm"
-                                      onClick={() => {
-                                        const currentSocials = form.getValues(
-                                          `tenants.${index}.socials`
-                                        );
-                                        form.setValue(
-                                          `tenants.${index}.socials`,
-                                          currentSocials.filter((_, i) => i !== socialIndex)
-                                        );
-                                      }}
-                                    >
-                                      Remove
-                                    </Button>
-                                  </div>
-                                ))}
+                                      <Button
+                                        type="button"
+                                        variant="destructive"
+                                        size="sm"
+                                        onClick={() => {
+                                          const currentSocials = form.getValues(
+                                            `tenants.${index}.socials`
+                                          );
+                                          form.setValue(
+                                            `tenants.${index}.socials`,
+                                            currentSocials.filter(
+                                              (_, i) => i !== socialIndex
+                                            )
+                                          );
+                                        }}
+                                      >
+                                        Remove
+                                      </Button>
+                                    </div>
+                                  )
+                                )}
 
                                 <Button
                                   type="button"
                                   variant="outline"
                                   size="sm"
                                   onClick={() => {
-                                    const currentSocials = form.getValues(
-                                      `tenants.${index}.socials`
-                                    ) || [];
+                                    const currentSocials =
+                                      form.getValues(
+                                        `tenants.${index}.socials`
+                                      ) || [];
                                     form.setValue(`tenants.${index}.socials`, [
                                       ...currentSocials,
                                       { label: "facebook", value: "" },
@@ -351,7 +397,8 @@ export const NewNewListingForm = () => {
                       );
                     })}
                   </div>
-                </div> : null}
+                </div>
+              ) : null}
             </div>
           </section>
         );
@@ -433,15 +480,15 @@ export const NewNewListingForm = () => {
 
   return (
     <div className="container mx-auto py-8">
-      <div className="relative max-w-3xl mx-auto space-y-8">
-        <div className="rounded-lg bg-card p-6 shadow-xs border">
+      <div className="relative mx-auto max-w-3xl space-y-8">
+        <div className="bg-card rounded-lg border p-6 shadow-xs">
           <div className="mb-6">
-            <div className="flex justify-between mb-4">
+            <div className="mb-4 flex justify-between">
               {steps.map((step, index) => (
                 <div key={index} className="flex flex-col items-center">
                   <div
                     className={cn(
-                      "h-10 w-10 rounded-full flex items-center justify-center transition-colors",
+                      "flex h-10 w-10 items-center justify-center rounded-full transition-colors",
                       index <= currentStep
                         ? "bg-rose-500 text-white"
                         : "bg-secondary text-muted-foreground"
@@ -449,23 +496,23 @@ export const NewNewListingForm = () => {
                   >
                     {index + 1}
                   </div>
-                  <span className="mt-2 text-sm font-medium">
-                    {step.title}
-                  </span>
+                  <span className="mt-2 text-sm font-medium">{step.title}</span>
                 </div>
               ))}
             </div>
-            <div className="h-2 rounded-full bg-secondary">
+            <div className="bg-secondary h-2 rounded-full">
               <div
                 className="h-full rounded-full bg-rose-500 transition-all duration-300"
-                style={{ width: `${(currentStep / (steps.length - 1)) * 100}%` }}
+                style={{
+                  width: `${(currentStep / (steps.length - 1)) * 100}%`,
+                }}
               />
             </div>
           </div>
         </div>
 
         {/* Form Content */}
-        <div className="rounded-lg bg-card p-6 shadow-xs border">
+        <div className="bg-card rounded-lg border p-6 shadow-xs">
           <div className="mb-6">
             <h2 className="text-2xl font-bold text-rose-500">
               {steps[currentStep]?.title}
@@ -508,4 +555,3 @@ export const NewNewListingForm = () => {
     </div>
   );
 };
-

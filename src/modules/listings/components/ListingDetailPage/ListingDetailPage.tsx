@@ -10,8 +10,9 @@ import { Badge } from "@/components/ui/badge";
 import { formatDistance } from "date-fns";
 import { getServerAuthSession } from "@/server/auth";
 import { Link } from "next-view-transitions";
-import { getUrl } from "@/lib/utils";
+import { getUrl, isAdmin } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
+import { ListingAdminActions } from "@/modules/listings/components/ListingAdminActions/ListingAdminActions";
 
 type ListingDetailPageProps = {
   listingId: string;
@@ -67,7 +68,7 @@ export const ListingDetailPage = async ({
           <h1 className="mb-2 text-4xl font-bold">{listingDetails.title}</h1>
           <div className="flex items-center gap-2">
             <Badge variant="secondary" className="bg-white/20">
-              {listingDetails.current_capacity}/{listingDetails.maxTenants}{" "}
+              {listingDetails.current_capacity}/{listingDetails.max_tenants}{" "}
               Tenants
             </Badge>
             <Badge variant="secondary" className="bg-white/20">
@@ -124,7 +125,7 @@ export const ListingDetailPage = async ({
                       </Avatar>
                       <div>
                         <p className="font-medium">{tenant?.name}</p>
-                        <p className="max-w-[200px] truncate text-sm text-muted-foreground">
+                        <p className="text-muted-foreground max-w-[200px] truncate text-sm">
                           {tenant?.bio}
                         </p>
                       </div>
@@ -150,7 +151,7 @@ export const ListingDetailPage = async ({
               </Avatar>
               <div>
                 <p className="font-medium">{listingDetails.creator.name}</p>
-                <p className="text-sm text-muted-foreground">Property Owner</p>
+                <p className="text-muted-foreground text-sm">Property Owner</p>
               </div>
             </CardContent>
           </Card>
@@ -161,29 +162,29 @@ export const ListingDetailPage = async ({
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center gap-3">
-                <Users className="h-5 w-5 text-muted-foreground" />
+                <Users className="text-muted-foreground h-5 w-5" />
                 <div>
                   <p className="font-medium">Capacity</p>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-muted-foreground text-sm">
                     {listingDetails.current_capacity}/
-                    {listingDetails.maxTenants} tenants
+                    {listingDetails.max_tenants} tenants
                   </p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <DollarSign className="h-5 w-5 text-muted-foreground" />
+                <DollarSign className="text-muted-foreground h-5 w-5" />
                 <div>
                   <p className="font-medium">Monthly Rent</p>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-muted-foreground text-sm">
                     {listingDetails.monthly_price.toLocaleString()} CZK
                   </p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <Calendar className="h-5 w-5 text-muted-foreground" />
+                <Calendar className="text-muted-foreground h-5 w-5" />
                 <div>
                   <p className="font-medium">Listed</p>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-muted-foreground text-sm">
                     {formatDistance(
                       new Date(listingDetails.createdAt),
                       new Date(),
@@ -194,11 +195,21 @@ export const ListingDetailPage = async ({
               </div>
             </CardContent>
           </Card>
-          {user?.user.id === listingDetails.creator.id ? (
-            <Link href={`${getUrl()}/listing/${listingDetails.id}/owner`} className={buttonVariants()}>Go to dashboard</Link>
-          ) : (
-            <ContactBuyerModal listingId={listingId} />
-          )}
+          <div className="flex flex-row gap-5">
+            {user?.user.id === listingDetails.creator.id ? (
+              <Link
+                href={`${getUrl()}/listing/${listingDetails.id}/owner`}
+                className={buttonVariants()}
+              >
+                Go to dashboard
+              </Link>
+            ) : (
+              <ContactBuyerModal listingId={listingId} />
+            )}
+            {isAdmin(user?.user.role ?? "USER") ? (
+              <ListingAdminActions listingId={listingId} />
+            ) : null}
+          </div>
         </div>
       </div>
     </main>

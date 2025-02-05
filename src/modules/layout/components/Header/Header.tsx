@@ -35,7 +35,6 @@ export const Header = () => {
     staleTime: 1000 * 60,
     refetchInterval: 1000 * 120,
     throwOnError: false,
-
   });
   const components: { title: string; href: string; description: string }[] = [
     {
@@ -77,7 +76,7 @@ export const Header = () => {
     <div className="flex max-w-full flex-row items-center justify-between px-5 py-2 sm:px-20">
       <NavigationMenu>
         <TransitionLink href="/">
-          <BrandLogo className="h-6 w-6 text-primary dark:text-primary" />
+          <BrandLogo className="text-primary dark:text-primary h-6 w-6" />
         </TransitionLink>
         <NavigationMenuList>
           <NavigationMenuItem>
@@ -90,12 +89,12 @@ export const Header = () => {
                   <NavigationMenuLink asChild>
                     <TransitionLink
                       href="/public"
-                      className="flex h-full w-full select-none flex-col justify-end rounded-md bg-rose-100 p-6 no-underline outline-hidden focus:shadow-md dark:bg-rose-950"
+                      className="flex h-full w-full flex-col justify-end rounded-md bg-rose-100 p-6 no-underline outline-hidden select-none focus:shadow-md dark:bg-rose-950"
                     >
-                      <div className="mb-2 mt-4 text-lg font-medium">
+                      <div className="mt-4 mb-2 text-lg font-medium">
                         Flat Mates
                       </div>
-                      <p className="text-sm leading-tight text-muted-foreground">
+                      <p className="text-muted-foreground text-sm leading-tight">
                         {t("description")}
                       </p>
                     </TransitionLink>
@@ -161,13 +160,13 @@ const ListItem = React.forwardRef<
         <a
           ref={ref}
           className={cn(
-            "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-hidden transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
+            "hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground block space-y-1 rounded-md p-3 leading-none no-underline outline-hidden transition-colors select-none",
             className
           )}
           {...props}
         >
-          <div className="text-sm font-medium leading-none">{title}</div>
-          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+          <div className="text-sm leading-none font-medium">{title}</div>
+          <p className="text-muted-foreground line-clamp-2 text-sm leading-snug">
             {children}
           </p>
         </a>
@@ -183,8 +182,8 @@ const ModeToggle = () => {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="outline" size="icon">
-          <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-          <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+          <Sun className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
+          <Moon className="absolute h-[1.2rem] w-[1.2rem] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
           <span className="sr-only">Toggle theme</span>
         </Button>
       </DropdownMenuTrigger>

@@ -3,8 +3,6 @@ import { env } from "@/env";
 import { NextResponse } from "next/server";
 import { resend } from "@/lib/resend";
 
-
-
 export async function POST() {
   if (env.NODE_ENV === "production") {
     return NextResponse.json(

@@ -1,7 +1,13 @@
 import type { Listings } from "@/server/db/types";
 import { getTranslations } from "next-intl/server";
 import { Listing } from "@/modules/listings";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 type ListingAndImages = Listings & {
   imageUrls: string[];
 };
@@ -14,10 +20,15 @@ export const ListingsPage = async ({ listings }: LandingPageProps) => {
 
   if (listings.length === 0) {
     return (
-      <main className="flex flex-col items-center justify-center gap-4 py-12" id="listings">
+      <main
+        className="flex flex-col items-center justify-center gap-4 py-12"
+        id="listings"
+      >
         <div className="text-center">
           <h2 className="text-2xl font-semibold">{t("not-found")}</h2>
-          <p className="text-muted-foreground mt-2">Check back later for new properties</p>
+          <p className="text-muted-foreground mt-2">
+            Check back later for new properties
+          </p>
         </div>
       </main>
     );
@@ -27,7 +38,7 @@ export const ListingsPage = async ({ listings }: LandingPageProps) => {
     <section className="container mx-auto py-12" id="listings">
       <div className="space-y-8">
         {/* Header with filters */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
             <h2 className="text-3xl font-bold">{t("title")}</h2>
             <p className="text-muted-foreground mt-1">
@@ -62,7 +73,7 @@ export const ListingsPage = async ({ listings }: LandingPageProps) => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {listings.map((listing) => (
             <Listing key={listing.id} {...listing} />
           ))}

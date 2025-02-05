@@ -1,4 +1,4 @@
-import { Html,  Tailwind, Text} from "@react-email/components";
+import { Html, Tailwind, Text } from "@react-email/components";
 
 type AcceptedTenantMessageProps = {
   tenantName: string;

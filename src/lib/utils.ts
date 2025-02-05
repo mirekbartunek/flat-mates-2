@@ -1,6 +1,7 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { env } from "@/env";
+import type { UserRole } from "@/server/db/enums";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -20,4 +21,8 @@ export const isNewListing = (creationDate: Date): boolean => {
 
 export const capitalizer = (str: string): string => {
   return str.charAt(0).toUpperCase() + str.slice(1);
+};
+
+export const isAdmin = (role: UserRole) => {
+  return role === "ADMIN" || role === "SUPERADMIN";
 };

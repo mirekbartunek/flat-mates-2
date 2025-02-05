@@ -31,14 +31,14 @@ export const ImageCell = ({ ...props }: ImageCellProps) => {
       {isOpened
         ? createPortal(
             <div
-              className="fixed right-1 top-1 z-50 flex h-screen w-screen items-center justify-center bg-neutral-800/80"
+              className="fixed top-1 right-1 z-50 flex h-screen w-screen items-center justify-center bg-neutral-800/80"
               onClick={() => setIsOpened(false)}
               onKeyDown={(key) =>
                 key.key === "Escape" ? setIsOpened(false) : null
               }
             >
               {isLoading ? (
-                <Skeleton className="absolute inset-0 m-auto size-4/12 bg-secondary" />
+                <Skeleton className="bg-secondary absolute inset-0 m-auto size-4/12" />
               ) : null}
               <Image
                 {...props}

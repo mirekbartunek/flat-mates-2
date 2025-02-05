@@ -71,6 +71,20 @@
       "when": 1736930913344,
       "tag": "0009_thick_zzzax",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1737795887763,
+      "tag": "0010_fair_johnny_storm",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1738786874994,
+      "tag": "0011_sparkling_wallflower",
+      "breakpoints": true
     }
   ]
 }

@@ -34,7 +34,7 @@ export const NewListingForm = () => {
   const form = useForm<z.infer<typeof createListingSchema>>({
     resolver: zodResolver(createListingSchema),
     defaultValues: {
-      maxTenants: 0,
+      max_tenants: 0,
       title: "",
       description: "",
       monthly_price: 0,
@@ -77,7 +77,7 @@ export const NewListingForm = () => {
         />
         <FormField
           control={form.control}
-          name="maxTenants"
+          name="max_tenants"
           render={({ field: { value, onChange } }) => (
             <FormItem>
               <FormLabel>Maximum number of tenants</FormLabel>
@@ -90,7 +90,7 @@ export const NewListingForm = () => {
                   onValueChange={(n) => onChange(n.at(0))}
                 />
               </FormControl>
-              <span>{form.getValues("maxTenants")}</span>
+              <span>{form.getValues("max_tenants")}</span>
               <FormDescription>
                 How many tenants can be in this property
               </FormDescription>

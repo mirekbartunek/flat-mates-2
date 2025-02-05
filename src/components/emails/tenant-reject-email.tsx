@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Html, Button, Tailwind, Text, Link } from "@react-email/components";
+import { Html, Tailwind, Text } from "@react-email/components";
 
 type RejectedTenantMessageProps = {
   tenantName: string;
@@ -9,7 +9,6 @@ type RejectedTenantMessageProps = {
 
 export const RejectedTenantMessage = ({
   tenantName,
-  ownerName,
   propertyTitle,
 }: RejectedTenantMessageProps) => {
   return (
@@ -23,8 +22,8 @@ export const RejectedTenantMessage = ({
         </Text>
 
         <Text>
-          Don&#39;t be discouraged! There are many other great properties available
-          on Flat Mates.
+          Don&#39;t be discouraged! There are many other great properties
+          available on Flat Mates.
         </Text>
 
         <Text>Some tips for your next application:</Text>

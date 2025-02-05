@@ -1,6 +1,6 @@
 import { UserFilter } from "@/modules/admin/components/UserFilter/UserFilter";
 import { UserRow } from "@/modules/admin/components/UserRow/UserRow";
-import type {  UserRole } from "@/server/db/enums";
+import type { UserRole } from "@/server/db/enums";
 import type { Users } from "@/server/db/types";
 
 type UserVerificationFormProps = {
