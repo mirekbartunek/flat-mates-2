@@ -198,7 +198,7 @@ export const AddForeignTenantDialog = ({
 }: AddForeignTenantDialogProps) => {
   return (
     <DialogPrimitive
-      dialogTriggerClassName="flex flex-row"
+      dialogTriggerClassName="flex flex-row outline-none"
       dialogTrigger={
         <Card className="group relative">
           <CardHeader className="flex flex-row items-center gap-4">

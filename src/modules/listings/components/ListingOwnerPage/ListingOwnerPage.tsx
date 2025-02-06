@@ -36,6 +36,8 @@ import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { EditListingPrice } from "@/modules/listings/components/EditListingPrice/EditListingPrice";
 import { AddForeignTenantDialog } from "@/modules/listings/components/AddForeignTenantDialog/AddForeignTenantDialog";
+import { EditListingTitle } from "@/modules/listings/components/EditListingTitle/EditListingTitle";
+import { EditListingDescription } from "@/modules/listings/components/EditListingDescription/EditListingDescription";
 
 type ListingWithRelations = InferSelectModel<typeof listings> & {
   reservations: (InferSelectModel<typeof listingReservations> & {
@@ -77,12 +79,22 @@ export const ListingOwnerPage = ({
       ? reservation.user.email.toLowerCase().includes(searchQuery.toLowerCase())
       : true
   );
+
+  const numberOfPendingReservations = reservations.filter(
+    (reservation) => reservation.status === "pending"
+  ).length;
   return (
     <main className="container mx-auto space-y-6 py-8">
       <div className="flex items-start justify-between">
         <div>
-          <Heading1>{title}</Heading1>
-          <p className="text-muted-foreground mt-2">{description}</p>
+          <EditListingTitle
+            currentTitle={title}
+            listingId={id}
+          />
+          <EditListingDescription
+            currentDescription={description}
+            listingId={id}
+          />
         </div>
         <Card className="group/edit relative w-[200px]">
           <EditListingPrice previousPrice={monthly_price} listingId={id} />
@@ -125,6 +137,7 @@ export const ListingOwnerPage = ({
           </CardHeader>
           <CardContent>
             <p className="text-2xl font-bold">{reservations.length}</p>
+            <p className="text-sm">Of which {numberOfPendingReservations} pending</p>
           </CardContent>
         </Card>
 
