@@ -11,6 +11,9 @@ export const reservationStatusEnumValues = [
   "accepted",
   "rejected",
 ] as const;
+export const listingStatusEnumValues = ["PUBLIC", "PRIVATE", "HIDDEN"] as const;
+
+export type ListingStatus  = (typeof listingStatusEnumValues)[number];
 export type UserVerified = (typeof userVerifiedEnumValues)[number];
 export type UserRole = (typeof userRoleEnumValues)[number];
 export type TenantSocial = (typeof tenantSocialsEnumValues)[number];

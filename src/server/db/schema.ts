@@ -12,11 +12,13 @@ import {
 } from "drizzle-orm/pg-core";
 import { type AdapterAccount } from "next-auth/adapters";
 import {
+  listingStatusEnumValues,
   reservationStatusEnumValues,
   tenantSocialsEnumValues,
   userRoleEnumValues,
-  userVerifiedEnumValues,
+  userVerifiedEnumValues
 } from "@/server/db/enums";
+import { point } from "drizzle-orm/pg-core/columns/point";
 
 export const userVerifiedEnum = pgEnum(
   "user_verified_enum",
@@ -111,6 +113,8 @@ export const verificationTokens = pgTable(
   })
 );
 
+export const listingStatusEnum = pgEnum("listing_status", listingStatusEnumValues)
+
 export const listings = pgTable("listings", {
   id: uuid().primaryKey().defaultRandom(),
   userId: text()
@@ -121,8 +125,11 @@ export const listings = pgTable("listings", {
   title: varchar().notNull(),
   description: varchar().notNull(),
   max_tenants: integer().notNull(),
-  current_capacity: integer().notNull(),
   monthly_price: integer().notNull(),
+  area: integer().notNull(),
+  rooms: integer().notNull(),
+  location: point({mode: "tuple"}).notNull(), // LONG LAT
+  listing_status: listingStatusEnum().notNull().default("HIDDEN"),
   createdAt: timestamp().defaultNow().notNull(),
 });
 
