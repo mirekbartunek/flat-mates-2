@@ -77,15 +77,24 @@ export const locationRouter = createTRPCRouter({
         title: feature.place_name,
         relevance: feature.relevance,
         text: feature.text,
-        place_name: feature.place_name,
+        place_name: feature.place_name, // street, city, country
       }));
+
       const hit = parsed.at(0);
+
       if (!hit) {
         throw new TRPCError({
           message: "Something went wrong while parsing data",
           code: "PARSE_ERROR",
         });
       }
+      const split = hit.place_name.split(",")
+      console.log({
+        street: split.at(0)?.trim(),
+        city: split.at(1)?.trim(),
+        country: split.at(2)?.trim()
+      })
+      console.log(split);
       return hit;
     }),
 });

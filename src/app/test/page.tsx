@@ -23,6 +23,17 @@ const Map = ({ onLocationSelect, initialLocation }: MapProps) => {
   const map = useRef<maplibregl.Map | null>(null);
   const marker = useRef<maplibregl.Marker | null>(null);
 
+  const [term, setTerm] = useState("");
+
+  const { mutate, data } = api.location.getCoordinatesByTerm.useMutation({
+    onSuccess: (res) => {
+      const hit = res.at(0);
+      const lng = hit.coordinates.at(0);
+      const lat = hit.coordinates.at(1);
+      marker.current?.setLngLat([lng, lat]);
+      map.current?.setCenter([lng, lat]);
+    },
+  });
   const { data: mapStyle } = api.location.getMapStyle.useQuery(undefined, {
     staleTime: Infinity,
     experimental_prefetchInRender: true,
@@ -96,20 +107,19 @@ const Map = ({ onLocationSelect, initialLocation }: MapProps) => {
   return (
     <>
       <div ref={mapContainer} className={`h-[400px] w-full rounded-lg`} />;
+      <Button onClick={() => mutate({ term })}>Send</Button>
+      <pre>{JSON.stringify(data, null, 2)}</pre>
+      <Input value={term} onChange={(e) => setTerm(e.target.value)} />
     </>
   );
 };
 
 export default function Component() {
-  const { mutate, data } = api.location.getCoordinatesByTerm.useMutation();
-  const [term, setTerm] = useState("");
   const [resolvedAdress, setResolvedAdress] = useState<null | Location>(null);
   return (
     <main>
       <h1>Test</h1>
-      <Input value={term} onChange={(e) => setTerm(e.target.value)} />
-      <Button onClick={() => mutate({ term })}>Send</Button>
-      <pre>{JSON.stringify(data, null, 2)}</pre>
+
       <Map
         onLocationSelect={(c) => setResolvedAdress(c)}
         initialLocation={{
