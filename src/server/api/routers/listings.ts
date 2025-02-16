@@ -11,7 +11,7 @@ import {
 } from "@/server/db";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import { eq, sql } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { resend } from "@/lib/resend";
 import { OwnerBookingMessage } from "@/components/emails/owner-booking-message";
 import { AcceptedTenantMessage } from "@/components/emails/tenant-accepted-email";
@@ -31,7 +31,13 @@ export const listingsRouter = createTRPCRouter({
             max_tenants: input.max_tenants,
             description: input.description,
             monthly_price: input.monthly_price,
-            current_capacity: input.current_capacity,
+            location: input.location,
+            area: input.area,
+            street: input.street,
+            zip: input.zip,
+            city: input.city,
+            country: input.country,
+            rooms: input.rooms,
           })
           .returning({ id: listings.id });
         if (!listing) {
@@ -91,7 +97,7 @@ export const listingsRouter = createTRPCRouter({
       })
     )
     .query(async ({ ctx, input }) => {
-      const { db, session } = ctx;
+      const { db } = ctx;
 
       const res = await db.query.listings.findFirst({
         where: eq(listings.id, input.listingId),
@@ -226,12 +232,14 @@ export const listingsRouter = createTRPCRouter({
               tenantId: user.id,
               listingId: res.listing.id,
             });
+            /*
             await tx
               .update(listings)
               .set({
                 current_capacity: sql`${listings.current_capacity} + 1`,
               })
               .where(eq(listings.id, res.listing.id));
+             */
           });
           await resend.emails.send({
             from: "Acme <onboarding@resend.dev>",

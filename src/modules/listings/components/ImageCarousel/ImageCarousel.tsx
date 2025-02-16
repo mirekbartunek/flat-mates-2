@@ -11,26 +11,30 @@ import { Trash2 } from "lucide-react";
 import { useState } from "react";
 import Autoplay from "embla-carousel-autoplay";
 
-type ImageCarouselProps = {
+  type ImageCarouselProps = {
   imageUrls: string[];
   showDelete?: boolean;
   animate?: boolean;
   showControls?: boolean;
+  onDelete?: (index: number) => void;
 };
+
 export const ImageCarousel = ({
   imageUrls,
   showDelete = false,
   animate = false,
   showControls = false,
+  onDelete,
 }: ImageCarouselProps) => {
   const [showActions, setShowActions] = useState<boolean>(false);
+
   return (
     <Carousel
       className="mx-auto w-full"
       plugins={animate ? [Autoplay({ delay: 5000 })] : undefined}
     >
       <CarouselContent>
-        {imageUrls.map((url) => (
+        {imageUrls.map((url, index) => (
           <CarouselItem key={url} className="relative aspect-square">
             <Image
               src={url}
@@ -41,12 +45,13 @@ export const ImageCarousel = ({
               className="rounded-md object-cover"
             />
             {showDelete && showActions ? (
-              <Trash2
-                className="absolute top-1 right-1 z-20 stroke-neutral-300"
-                width={20}
-                height={20}
-                onClick={() => alert("Deleted")}
-              />
+              <button
+                onClick={() => onDelete?.(index)}
+                className="absolute top-2 right-2 z-20 rounded-full bg-black/50 p-2 transition-colors hover:bg-black/70"
+                aria-label="Delete image"
+              >
+                <Trash2 className="stroke-white" width={20} height={20} />
+              </button>
             ) : null}
           </CarouselItem>
         ))}

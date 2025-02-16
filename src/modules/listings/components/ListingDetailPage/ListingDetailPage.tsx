@@ -2,7 +2,13 @@ import { db, listings } from "@/server/db";
 import { eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import { ImageCell } from "@/modules/listings/components/ImageCell/ImageCell";
-import { DollarSign, Users, Calendar } from "lucide-react";
+import {
+  DollarSign,
+  Users,
+  Calendar,
+  Square,
+  DoorOpen,
+} from "lucide-react";
 import { ContactBuyerModal } from "@/modules/listings/components/ContactBuyerModal/ContactBuyerModal";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,6 +19,7 @@ import { Link } from "next-view-transitions";
 import { getUrl, isAdmin } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 import { ListingAdminActions } from "@/modules/listings/components/ListingAdminActions/ListingAdminActions";
+import { ListingLocation } from "@/modules/listings/components/ListingLocation/ListingLocation";
 
 type ListingDetailPageProps = {
   listingId: string;
@@ -50,9 +57,10 @@ export const ListingDetailPage = async ({
 
   const imageUrls = listingDetails.files.map((f) => f.file?.url);
 
+  const addressString = `${listingDetails.street}, ${listingDetails.city}, ${listingDetails.country}`;
+
   return (
     <main className="container mx-auto space-y-8 py-8">
-      {/* Hero Section */}
       <div className="relative h-[400px] overflow-hidden rounded-xl">
         <div className="absolute inset-0">
           <ImageCell
@@ -68,7 +76,7 @@ export const ListingDetailPage = async ({
           <h1 className="mb-2 text-4xl font-bold">{listingDetails.title}</h1>
           <div className="flex items-center gap-2">
             <Badge variant="secondary" className="bg-white/20">
-              {listingDetails.current_capacity}/{listingDetails.max_tenants}{" "}
+              {listingDetails.tenants.length}/{listingDetails.max_tenants}{" "}
               Tenants
             </Badge>
             <Badge variant="secondary" className="bg-white/20">
@@ -108,6 +116,16 @@ export const ListingDetailPage = async ({
                   />
                 ))}
               </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Location</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p>{addressString}</p>
+              <ListingLocation coordinates={listingDetails.location} />
             </CardContent>
           </Card>
 
@@ -166,8 +184,8 @@ export const ListingDetailPage = async ({
                 <div>
                   <p className="font-medium">Capacity</p>
                   <p className="text-muted-foreground text-sm">
-                    {listingDetails.current_capacity}/
-                    {listingDetails.max_tenants} tenants
+                    {listingDetails.tenants.length}/{listingDetails.max_tenants}{" "}
+                    tenants
                   </p>
                 </div>
               </div>
@@ -190,6 +208,24 @@ export const ListingDetailPage = async ({
                       new Date(),
                       { addSuffix: true }
                     )}
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <Square className="text-muted-foreground h-5 w-5" />
+                <div>
+                  <p className="font-medium">Area</p>
+                  <p className="text-muted-foreground text-sm">
+                    {listingDetails.area} m<sup>2</sup>
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <DoorOpen className="text-muted-foreground h-5 w-5" />
+                <div>
+                  <p className="font-medium">Rooms</p>
+                  <p className="text-muted-foreground text-sm">
+                    {listingDetails.rooms} rooms
                   </p>
                 </div>
               </div>

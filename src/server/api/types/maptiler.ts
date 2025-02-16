@@ -1,9 +1,17 @@
+type PropertyKind = "road" | "road_relation" | "admin_area" | "place" | "street" | "virtual_street"
+export type Property = {
+  ref: string;
+  country_code: string;
+  kind: PropertyKind;
+}
+
 export type Feature = {
   id: string,
   text: string
   center: [number, number],
   place_name: string,
   relevance: number
+  properties: Property;
 }
 
 export type SearchResults = {
@@ -32,4 +40,15 @@ export const isSearchResult = (response: unknown): response is SearchResults => 
     typeof feature.center[0] === 'number' &&
     typeof feature.center[1] === 'number'
   );
+};
+
+type Address = {
+  street: string;
+  city: string;
+  country: string;
+  zip: string;
+}
+
+export const isValidAddress = (obj: object): obj is Address => {
+  return !Object.values(obj).some(value => value === undefined);
 };

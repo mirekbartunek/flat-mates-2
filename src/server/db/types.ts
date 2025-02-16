@@ -1,6 +1,9 @@
 import { users, listings, tenants, listingReservations } from "./index";
 import { typeToFlattenedError, z } from "zod";
-import { tenantSocialsEnumValues } from "@/server/db/enums";
+import {
+  listingStatusEnumValues,
+  tenantSocialsEnumValues,
+} from "@/server/db/enums";
 
 export type Users = typeof users.$inferSelect; // when queried
 export type Listings = typeof listings.$inferSelect;
@@ -17,6 +20,11 @@ export const newTenant = z.object({
     })
   ),
 });
+
+const pointSchema = z.tuple([
+  z.number().min(-180).max(180).describe("longitude"),
+  z.number().min(-90).max(90).describe("latitude"),
+]);
 
 export const createListingSchema = z.object({
   title: z
@@ -36,7 +44,7 @@ export const createListingSchema = z.object({
   }),
   monthly_price: z.number({
     message: "Monthly price must be included",
-  }),
+  }).min(0, {message: "Price cannot be negative"}),
   imageIds: z.string().array().min(1, {
     message:
       "Listing must include atleast 1 image. Have you clicked the Upload button?",
@@ -47,6 +55,32 @@ export const createListingSchema = z.object({
     })
     .default(0),
   tenants: z.array(newTenant).optional(),
+  listing_status: z.enum(listingStatusEnumValues).default("HIDDEN").optional(),
+  street: z.string({
+    message: "Street must be included",
+  }),
+  zip: z
+    .string()
+    .min(1, "ZIP code is required")
+    .max(10, "ZIP code too long")
+    .regex(
+      /^[A-Z0-9\s-]*$/i,
+      "ZIP code can only contain letters, numbers, spaces and hyphens"
+    )
+    .transform((val) => val.trim().toUpperCase()),
+  city: z.string({
+    message: "City must be included",
+  }),
+  country: z.string({
+    message: "Country must be included",
+  }),
+  location: pointSchema,
+  area: z.number({
+    message: "Area must be included"
+  }),
+  rooms: z.number({
+    message: "Number of rooms must be included"
+  })
 });
 export const socialEnum = z.enum(tenantSocialsEnumValues);
 

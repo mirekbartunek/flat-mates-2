@@ -16,7 +16,7 @@ import {
   reservationStatusEnumValues,
   tenantSocialsEnumValues,
   userRoleEnumValues,
-  userVerifiedEnumValues
+  userVerifiedEnumValues,
 } from "@/server/db/enums";
 import { point } from "drizzle-orm/pg-core/columns/point";
 
@@ -113,7 +113,10 @@ export const verificationTokens = pgTable(
   })
 );
 
-export const listingStatusEnum = pgEnum("listing_status", listingStatusEnumValues)
+export const listingStatusEnum = pgEnum(
+  "listing_status",
+  listingStatusEnumValues
+);
 
 export const listings = pgTable("listings", {
   id: uuid().primaryKey().defaultRandom(),
@@ -128,9 +131,13 @@ export const listings = pgTable("listings", {
   monthly_price: integer().notNull(),
   area: integer().notNull(),
   rooms: integer().notNull(),
-  location: point({mode: "tuple"}).notNull(), // LONG LAT
+  location: point({ mode: "tuple" }).notNull(), // LONG LAT
   listing_status: listingStatusEnum().notNull().default("HIDDEN"),
   createdAt: timestamp().defaultNow().notNull(),
+  street: text().notNull(),
+  zip: text().notNull(),
+  city: text().notNull(),
+  country: text().notNull(),
 });
 
 export const files = pgTable("files", {

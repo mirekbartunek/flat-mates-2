@@ -2,7 +2,10 @@ import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { z } from "zod";
 import { env } from "@/env";
 import { TRPCError } from "@trpc/server";
-import { isSearchResult, SearchResults } from "@/server/api/types/maptiler";
+import {
+  isSearchResult,
+  isValidAddress,
+} from "@/server/api/types/maptiler";
 import type { StyleSpecification } from "maplibre-gl";
 
 const MAPTILER_KEY = env.MAPTILER_API_KEY;
@@ -59,6 +62,7 @@ export const locationRouter = createTRPCRouter({
         `https://api.maptiler.com/geocoding/${input.long},${input.lat}.json?key=${MAPTILER_KEY}`
       );
       const data = (await res.json()) as unknown;
+
       if (res.status === 400) {
         throw new TRPCError({
           message:
@@ -66,6 +70,7 @@ export const locationRouter = createTRPCRouter({
           code: "BAD_REQUEST",
         });
       }
+
       if (!isSearchResult(data)) {
         console.log(data);
         throw new TRPCError({
@@ -73,28 +78,49 @@ export const locationRouter = createTRPCRouter({
           message: "Something went wrong while fetching from the external API",
         });
       }
-      const parsed = data.features.map((feature) => ({
+
+      const [firstResult] = data.features.map((feature) => ({
         title: feature.place_name,
         relevance: feature.relevance,
         text: feature.text,
-        place_name: feature.place_name, // street, city, country
+        place_name: feature.place_name,
+        kind: feature.properties.kind,
       }));
 
-      const hit = parsed.at(0);
-
-      if (!hit) {
+      if (!firstResult) {
         throw new TRPCError({
-          message: "Something went wrong while parsing data",
+          message: "No results found",
           code: "PARSE_ERROR",
         });
       }
-      const split = hit.place_name.split(",")
-      console.log({
-        street: split.at(0)?.trim(),
-        city: split.at(1)?.trim(),
-        country: split.at(2)?.trim()
-      })
-      console.log(split);
-      return hit;
+
+      if (firstResult.kind !== "street") {
+        throw new TRPCError({
+          message: "Location must be a street address",
+          code: "BAD_REQUEST",
+        });
+      }
+
+      const [street, cityWithZip, country] = firstResult.place_name
+        .split(",")
+        .map((s) => s.trim());
+      const zip = cityWithZip?.split(" ").slice(0, 2).join(" ");
+
+      const result = {
+        street,
+        city: cityWithZip,
+        country,
+        zip,
+      };
+
+      if (!isValidAddress(result)) {
+        console.error("Invalid result:", result);
+        throw new TRPCError({
+          message: "Failed to parse address components",
+          code: "PARSE_ERROR",
+        });
+      }
+
+      return result;
     }),
 });
