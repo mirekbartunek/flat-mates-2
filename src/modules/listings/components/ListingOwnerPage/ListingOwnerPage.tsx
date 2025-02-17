@@ -18,7 +18,7 @@ import {
   DollarSign,
   Check,
   X,
-  Trash2,
+  Trash2, Eye
 } from "lucide-react";
 
 import type { InferSelectModel } from "drizzle-orm";
@@ -38,6 +38,9 @@ import { EditListingPrice } from "@/modules/listings/components/EditListingPrice
 import { AddForeignTenantDialog } from "@/modules/listings/components/AddForeignTenantDialog/AddForeignTenantDialog";
 import { EditListingTitle } from "@/modules/listings/components/EditListingTitle/EditListingTitle";
 import { EditListingDescription } from "@/modules/listings/components/EditListingDescription/EditListingDescription";
+import { EditListingCapacity } from "@/modules/listings/components/EditListingCapacity/EditListingCapacity";
+import { EditListingStatus } from "@/modules/listings/components/EditListingStatus/EditListingStatus";
+import { displayListingStatusDescription } from "@/modules/listings/utils/displayListingStatusDescription";
 
 type ListingWithRelations = InferSelectModel<typeof listings> & {
   reservations: (InferSelectModel<typeof listingReservations> & {
@@ -58,6 +61,7 @@ export const ListingOwnerPage = ({
   tenants,
   id,
   reservations,
+  listing_status
 }: ListingOwnerPageProps) => {
   const router = useRouter();
   const { mutate } = api.listings.resolveReservationRequest.useMutation({
@@ -114,7 +118,8 @@ export const ListingOwnerPage = ({
       </div>
 
       <div className="grid grid-cols-3 gap-4">
-        <Card>
+        <Card className="group/edit relative ">
+          <EditListingCapacity previous_capacity={max_tenants}  listingId={id}/>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Users className="h-4 w-4" />
@@ -157,6 +162,19 @@ export const ListingOwnerPage = ({
               <p className="font-medium">{creator.name}</p>
               <p className="text-muted-foreground text-sm">Owner</p>
             </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Eye className="h-4 w-4"/>
+              Listing Status
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="flex items-start flex-col gap-3">
+            <EditListingStatus currentStatus={listing_status} listingId={id}/>
+            <p>{displayListingStatusDescription(listing_status)}</p>
           </CardContent>
         </Card>
       </div>

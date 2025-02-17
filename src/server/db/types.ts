@@ -77,10 +77,10 @@ export const createListingSchema = z.object({
   location: pointSchema,
   area: z.number({
     message: "Area must be included"
-  }),
+  }).min(0),
   rooms: z.number({
     message: "Number of rooms must be included"
-  })
+  }).min(0)
 });
 export const socialEnum = z.enum(tenantSocialsEnumValues);
 
@@ -113,6 +113,16 @@ export const updateListingSchema = createListingSchema.partial().extend({
 export const updatePriceFormSchema = z.object({
   monthly_price: z.number(),
 });
+
+export const updateListingCapacityFormSchema = z.object({
+  max_tenants: z.number()
+});
+
+export const updateListingStatusFormSchema = z.object({
+  listing_status: z.enum(listingStatusEnumValues)
+});
+
+export type UpdateListingCapacityFormSchema = z.infer<typeof updateListingCapacityFormSchema>;
 
 export type UpdatePriceFormSchema = z.infer<typeof updatePriceFormSchema>;
 

@@ -17,7 +17,6 @@ export const Listing = ({
   imageUrls,
   title,
   createdAt,
-  current_capacity,
   description,
 }: ListingProps) => {
   return (
@@ -56,7 +55,7 @@ export const Listing = ({
               <div className="flex items-center gap-2">
                 <Users className="text-muted-foreground h-4 w-4" />
                 <span>
-                  {current_capacity}/{max_tenants} tenants
+                  {max_tenants} tenants max
                 </span>
               </div>
               <div className="flex items-center gap-2">
@@ -65,10 +64,6 @@ export const Listing = ({
               </div>
             </div>
 
-            <Progress
-              value={(current_capacity / max_tenants) * 100}
-              className="h-1.5"
-            />
           </div>
         </div>
       </Link>

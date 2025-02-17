@@ -2,13 +2,7 @@ import { db, listings } from "@/server/db";
 import { eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import { ImageCell } from "@/modules/listings/components/ImageCell/ImageCell";
-import {
-  DollarSign,
-  Users,
-  Calendar,
-  Square,
-  DoorOpen,
-} from "lucide-react";
+import { DollarSign, Users, Calendar, Square, DoorOpen } from "lucide-react";
 import { ContactBuyerModal } from "@/modules/listings/components/ContactBuyerModal/ContactBuyerModal";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -55,12 +49,19 @@ export const ListingDetailPage = async ({
 
   if (!listingDetails) return notFound();
 
+  if (listingDetails.listing_status === "HIDDEN") {
+    if (listingDetails.userId !== user?.user.id) {
+      return notFound();
+    }
+  }
+
   const imageUrls = listingDetails.files.map((f) => f.file?.url);
 
   const addressString = `${listingDetails.street}, ${listingDetails.city}, ${listingDetails.country}`;
 
   return (
     <main className="container mx-auto space-y-8 py-8">
+      {listingDetails.listing_status === "HIDDEN" ? <div className="absolute bottom-1 right-1">This is only visible to you</div> : null}
       <div className="relative h-[400px] overflow-hidden rounded-xl">
         <div className="absolute inset-0">
           <ImageCell

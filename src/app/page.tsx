@@ -1,10 +1,11 @@
 import { ListingsPage } from "@/modules/listings";
-import { db } from "@/server/db";
+import { db, listings } from "@/server/db";
 import { buttonVariants } from "@/components/ui/button";
 import { getTranslations } from "next-intl/server";
 import { Link } from "next-view-transitions";
 import { PageTop } from "@/modules/layout/components";
 import { Home as HomeIcon, Search, Plus, ArrowRight } from "lucide-react";
+import { eq } from "drizzle-orm";
 
 export default async function Home() {
   const availableListings = await db.query.listings.findMany({
@@ -14,7 +15,8 @@ export default async function Home() {
           file: true,
         },
       },
-    },
+    }, where: eq(listings.listing_status, "PUBLIC")
+
   });
 
   const mappedListings = availableListings.map((listing) => ({

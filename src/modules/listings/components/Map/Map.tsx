@@ -146,12 +146,13 @@ export const Map = ({ onLocationSelect, initialLocation, className }: MapProps) 
           </div> : null}
       </div>
 
-      <form onSubmit={handleSearch} className="flex items-center gap-2">
+      <div className="flex items-center gap-2">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             value={term}
             onChange={(e) => setTerm(e.target.value)}
+
             placeholder="Search location..."
             className="pl-9"
           />
@@ -163,14 +164,14 @@ export const Map = ({ onLocationSelect, initialLocation, className }: MapProps) 
               <X className="h-4 w-4" />
             </button> : null}
         </div>
-        <Button type="submit" disabled={isLoading || !term.trim()}>
+        <Button type="button" onClick={handleSearch} disabled={isLoading || !term.trim()}>
           {isLoading ? (
             <Loader2 className="h-4 w-4 animate-spin" />
           ) : (
             "Search"
           )}
         </Button>
-      </form>
+      </div>
     </div>
   );
 };
