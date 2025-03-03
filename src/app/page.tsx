@@ -39,7 +39,7 @@ export default async function Home() {
             </h1>
           </div>
 
-          <p className="text-muted-foreground mx-auto mt-6 max-w-2xl text-center text-lg">
+            <p className="text-muted-foreground mx-auto mt-6 max-w-2xl text-center text-lg">
             {t("description")}
           </p>
 

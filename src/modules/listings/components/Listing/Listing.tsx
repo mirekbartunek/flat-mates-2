@@ -8,6 +8,7 @@ import { Progress } from "@/components/ui/progress";
 
 type ListingProps = Listings & {
   imageUrls: string[];
+  mode?: "OWNER_VIEW" | "USER_VIEW";
 };
 
 export const Listing = ({
@@ -18,6 +19,7 @@ export const Listing = ({
   title,
   createdAt,
   description,
+  mode = "USER_VIEW",
 }: ListingProps) => {
   return (
     <div className="group bg-card overflow-hidden rounded-xl transition-all hover:shadow-lg">
@@ -52,18 +54,15 @@ export const Listing = ({
 
           <div className="mt-auto space-y-3">
             <div className="flex items-center justify-between text-sm">
-              <div className="flex items-center gap-2">
-                <Users className="text-muted-foreground h-4 w-4" />
-                <span>
-                  {max_tenants} tenants max
-                </span>
-              </div>
+                <div className="flex items-center gap-2">
+                  <Users className="text-muted-foreground h-4 w-4" />
+                  <span>{max_tenants} tenants max</span>
+                </div>
               <div className="flex items-center gap-2">
                 <MapPin className="text-muted-foreground h-4 w-4" />
                 <span>Prague</span>
               </div>
             </div>
-
           </div>
         </div>
       </Link>

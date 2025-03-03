@@ -39,7 +39,7 @@ export const DialogPrimitive = ({
         onOpenChange ? onOpenChange(open) : null;
       }}
     >
-      <DialogTrigger className={dialogTriggerClassName}>
+      <DialogTrigger className={dialogTriggerClassName} asChild>
         {dialogTrigger}
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">

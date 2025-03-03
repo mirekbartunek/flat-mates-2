@@ -14,9 +14,24 @@ import { getUrl, isAdmin } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 import { ListingAdminActions } from "@/modules/listings/components/ListingAdminActions/ListingAdminActions";
 import { ListingLocation } from "@/modules/listings/components/ListingLocation/ListingLocation";
+import { type TenantSocial } from "@/server/db/enums";
+import { type JSX } from "react";
+import {
+  FacebookLogo,
+  InstagramLogo,
+  PinterestLogo,
+  XLogo,
+} from "@/components/icons";
 
 type ListingDetailPageProps = {
   listingId: string;
+};
+
+const tenantSocialIcon: Record<TenantSocial, JSX.Element> = {
+  instagram: <InstagramLogo className="fill-white w-5 h-5" />,
+  facebook: <FacebookLogo className="fill-white w-5 h-5" />,
+  pinterest: <PinterestLogo className="fill-white w-5 h-5" />,
+  x: <XLogo />,
 };
 
 export const ListingDetailPage = async ({
@@ -40,7 +55,11 @@ export const ListingDetailPage = async ({
       },
       tenants: {
         with: {
-          tenant: true,
+          tenant: {
+            with: {
+              socials: true,
+            },
+          },
         },
       },
     },
@@ -61,7 +80,11 @@ export const ListingDetailPage = async ({
 
   return (
     <main className="container mx-auto space-y-8 py-8">
-      {listingDetails.listing_status === "HIDDEN" ? <div className="absolute bottom-1 right-1">This is only visible to you</div> : null}
+      {listingDetails.listing_status === "HIDDEN" ? (
+        <div className="absolute right-1 bottom-1">
+          This is only visible to you
+        </div>
+      ) : null}
       <div className="relative h-[400px] overflow-hidden rounded-xl">
         <div className="absolute inset-0">
           <ImageCell
@@ -139,14 +162,21 @@ export const ListingDetailPage = async ({
                 <div className="grid grid-cols-2 gap-4">
                   {listingDetails.tenants.map(({ tenant }) => (
                     <div key={tenant?.id} className="flex items-center gap-3">
-                      <Avatar>
-                        <AvatarFallback>{tenant?.name.at(0)}</AvatarFallback>
-                      </Avatar>
+                        <Avatar className="self-start">
+                          <AvatarFallback>{tenant?.name.at(0)}</AvatarFallback>
+                        </Avatar>
                       <div>
                         <p className="font-medium">{tenant?.name}</p>
                         <p className="text-muted-foreground max-w-[200px] truncate text-sm">
                           {tenant?.bio}
                         </p>
+                        <div className="mt-2">
+                          {tenant.socials.map((social) => (
+                            <Link href={social.url} key={social.id} target="_blank">
+                              {tenantSocialIcon[social.social_enum]}
+                            </Link>
+                          ))}
+                        </div>
                       </div>
                     </div>
                   ))}
