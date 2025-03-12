@@ -9,7 +9,8 @@ export function cn(...inputs: ClassValue[]) {
 
 export const getUrl = () => {
   const isDev = env.NODE_ENV === "development";
-  return isDev ? "http://localhost:3000" : `https://${env.VERCEL_URL}`;
+
+  return isDev ? "http://localhost:3000" : `https://${"flat-mates-2-vercel.app"}`; // tohle je nejhorsi fix ale good enough
 };
 
 export const isNewListing = (creationDate: Date): boolean => {
