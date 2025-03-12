@@ -28,6 +28,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { BrandLogo } from "@/components/icons";
+import Link from "next/link";
 
 export const Header = () => {
   const t = useTranslations("Header");
@@ -187,7 +188,7 @@ const UserPopup = ({
   console.log(role);
   console.log(isVerified);
   return (
-    <div className="flex h-fit">
+    <Link className="flex h-fit gap-2" href="/me">
       <div>
         <Avatar>
           <AvatarImage src={image} alt={`Profile Image`} />
@@ -201,7 +202,7 @@ const UserPopup = ({
           {isVerified ? <Badge>VERIFIED</Badge> : null}
         </div>
       </div>
-    </div>
+    </Link>
   );
 };
 
