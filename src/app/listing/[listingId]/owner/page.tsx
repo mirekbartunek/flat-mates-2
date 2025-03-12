@@ -4,9 +4,10 @@ import { notFound } from "next/navigation";
 import { getServerAuthSession } from "@/server/auth";
 import { getTranslations } from "next-intl/server";
 import { ErrorPage } from "@/modules/layout";
-const Page = async ({ params }: { params: { listingId: Promise<string> } }) => {
+const Page = async ({ params }: { params: Promise<{ listingId: string }> }) => {
+  const { listingId } = await params;
   const details = await api.listings.getListingById({
-    listingId: await params.listingId,
+    listingId: listingId,
   });
 
   const unauthenticatedTranslations = await getTranslations("Unauthenticated");

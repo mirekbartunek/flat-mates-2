@@ -9,7 +9,7 @@ import { sql } from "drizzle-orm";
 const Page = async ({
   searchParams,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
   searchParams?: Promise<Record<"user", string | undefined>>;
 }) => {
   const u = await getServerAuthSession();

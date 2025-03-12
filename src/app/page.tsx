@@ -11,7 +11,7 @@ import { getFilteredListings } from "@/modules/listings/utils/getFilteredListing
 export default async function Home({
   searchParams,
 }: {
-  searchParams: Record<string, string | string[] | undefined>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const availableListings = await db.query.listings.findMany({
     with: {
@@ -23,8 +23,8 @@ export default async function Home({
     },
     where: eq(listings.listing_status, "PUBLIC"),
   });
-
-  const mappedListings = await getFilteredListings(searchParams);
+  const awaitedParams = await searchParams;
+  const mappedListings = await getFilteredListings(awaitedParams);
 
   const t = await getTranslations("Index");
 
