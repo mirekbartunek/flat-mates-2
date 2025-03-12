@@ -39,7 +39,7 @@ export const Header = () => {
   const components: { title: string; href: string; description: string }[] = [
     {
       title: t("flats.co-housing.title"),
-      href: "/offers?kind=co-housing",
+      href: "/",
       description: t("flats.co-housing.description"),
     },
   ];
