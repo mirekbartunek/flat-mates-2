@@ -108,7 +108,7 @@ export const ListingOwnerPage = ({
           </CardHeader>
           <CardContent>
             <p className="text-2xl font-bold">
-              ${monthly_price.toLocaleString()}
+              CZK{monthly_price.toLocaleString()}
             </p>
           </CardContent>
         </Card>

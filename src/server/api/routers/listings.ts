@@ -163,7 +163,7 @@ export const listingsRouter = createTRPCRouter({
         message: input.messageToOwner,
       });
       await resend.emails.send({
-        from: "Acme <onboarding@resend.dev>",
+        from: "Flat Mates <flatmates@miroslavbartunek.com>",
         to: listing.creator.email,
         subject: "Wohooo! Someone is interested in your listing!",
         react: OwnerBookingMessage({
@@ -219,7 +219,7 @@ export const listingsRouter = createTRPCRouter({
               .insert(tenants)
               .values({
                 name: res.user.name!,
-                bio: "TODO UDELAT TOHLE",
+                bio: "Flat Mates user!",
               })
               .returning();
             if (!user?.id) {
@@ -243,7 +243,7 @@ export const listingsRouter = createTRPCRouter({
              */
           });
           await resend.emails.send({
-            from: "Acme <onboarding@resend.dev>",
+            from: "Flat Mates <flatmates@miroslavbartunek.com>",
             to: res.user.email,
             subject: "Pack your bags! You just got accepted!",
             react: AcceptedTenantMessage({
@@ -264,7 +264,7 @@ export const listingsRouter = createTRPCRouter({
             })
             .where(eq(listingReservations.id, input.reservationId));
           await resend.emails.send({
-            from: "Acme <onboarding@resend.dev>",
+            from: "Flat Mates <flatmates@miroslavbartunek.com>",
             to: res.user.email,
             subject: `Update on your ${res.listing.title} application`,
             react: RejectedTenantMessage({
