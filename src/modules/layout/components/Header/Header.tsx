@@ -42,35 +42,6 @@ export const Header = () => {
       href: "/offers?kind=co-housing",
       description: t("flats.co-housing.description"),
     },
-    {
-      title: "Hover Card",
-      href: "/docs/primitives/hover-card",
-      description:
-        "For sighted users to preview content available behind a link.",
-    },
-    {
-      title: "Progress",
-      href: "/docs/primitives/progress",
-      description:
-        "Displays an indicator showing the completion progress of a task, typically displayed as a progress bar.",
-    },
-    {
-      title: "Scroll-area",
-      href: "/docs/primitives/scroll-area",
-      description: "Visually or semantically separates content.",
-    },
-    {
-      title: "Tabs",
-      href: "/docs/primitives/tabs",
-      description:
-        "A set of layered sections of content—known as tab panels—that are displayed one at a time.",
-    },
-    {
-      title: "Tooltip",
-      href: "/docs/primitives/tooltip",
-      description:
-        "A popup that displays information related to an element when the element receives keyboard focus or the mouse hovers over it.",
-    },
   ];
   return (
     <div className="flex max-w-full flex-row items-center justify-between px-5 py-2 sm:px-20">
@@ -88,7 +59,7 @@ export const Header = () => {
                 <li className="row-span-3">
                   <NavigationMenuLink asChild>
                     <TransitionLink
-                      href="/public"
+                      href="/"
                       className="flex h-full w-full flex-col justify-end rounded-md bg-rose-100 p-6 no-underline outline-hidden select-none focus:shadow-md dark:bg-rose-950"
                     >
                       <div className="mt-4 mb-2 text-lg font-medium">

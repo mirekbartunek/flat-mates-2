@@ -38,7 +38,7 @@ export const UserRow = ({
   verified_status,
   adminRole,
   id,
-  email
+  email,
 }: UserRowProps) => {
   const [formValues, setFormValues] = useState<{
     role: UserRole;
@@ -103,7 +103,10 @@ export const UserRow = ({
             <Avatar className="h-10 w-10">
               <AvatarFallback>{name?.[0]}</AvatarFallback>
             </Avatar>
-            <div className="text-sm flex flex-col"><p>{name}</p> <span className="text-xs text-primaey/50">{email}</span></div>
+            <div className="flex flex-col text-sm">
+              <p>{name}</p>{" "}
+              <span className="text-primaey/50 text-xs">{email}</span>
+            </div>
           </div>
 
           <div className="flex flex-1 flex-wrap items-center gap-4 md:flex-nowrap">

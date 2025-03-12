@@ -1,11 +1,12 @@
-import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
+import {
+  createTRPCRouter,
+  protectedProcedure,
+  publicProcedure,
+} from "@/server/api/trpc";
 import { z } from "zod";
 import { env } from "@/env";
 import { TRPCError } from "@trpc/server";
-import {
-  isSearchResult,
-  isValidAddress,
-} from "@/server/api/types/maptiler";
+import { isSearchResult, isValidAddress } from "@/server/api/types/maptiler";
 import type { StyleSpecification } from "maplibre-gl";
 
 const MAPTILER_KEY = env.MAPTILER_API_KEY;
@@ -44,7 +45,7 @@ export const locationRouter = createTRPCRouter({
       }));
       return parsed;
     }),
-  getMapStyle: protectedProcedure.query(async ({ ctx }) => {
+  getMapStyle: publicProcedure.query(async () => {
     const res = await fetch(
       `https://api.maptiler.com/maps/streets/style.json?key=${MAPTILER_KEY}`
     );

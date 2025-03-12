@@ -1,7 +1,7 @@
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import {
-  UpdateListingCapacityFormSchema,
+  type UpdateListingCapacityFormSchema,
   updateListingCapacityFormSchema,
 } from "@/server/db/types";
 import { zodResolver } from "@hookform/resolvers/zod";

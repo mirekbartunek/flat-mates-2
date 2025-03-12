@@ -5,7 +5,11 @@ import maplibregl from "maplibre-gl";
 import { Button } from "@/components/ui/button";
 import { MapPin } from "lucide-react";
 
-export const ListingLocation = ({ coordinates: [lng, lat] }: { coordinates: [number, number] }) => {
+export const ListingLocation = ({
+  coordinates: [lng, lat],
+}: {
+  coordinates: [number, number];
+}) => {
   const mapContainer = useRef<HTMLDivElement | null>(null);
   const map = useRef<maplibregl.Map | null>(null);
   const marker = useRef<maplibregl.Marker | null>(null);
@@ -16,7 +20,7 @@ export const ListingLocation = ({ coordinates: [lng, lat] }: { coordinates: [num
 
   const openInGoogleMaps = () => {
     const url = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
-    window.open(url, '_blank');
+    window.open(url, "_blank");
   };
 
   useEffect(() => {
@@ -29,7 +33,7 @@ export const ListingLocation = ({ coordinates: [lng, lat] }: { coordinates: [num
         interactive: false,
       });
 
-      mapInstance.on('load', () => {
+      mapInstance.on("load", () => {
         map.current = mapInstance;
 
         marker.current = new maplibregl.Marker({
@@ -43,14 +47,14 @@ export const ListingLocation = ({ coordinates: [lng, lat] }: { coordinates: [num
   }, [mapStyle, lng, lat]);
 
   return (
-    <div className="rounded-lg overflow-hidden border relative group">
+    <div className="group relative overflow-hidden rounded-lg border">
       <div ref={mapContainer} className="h-[300px] w-full" />
       <Button
         onClick={openInGoogleMaps}
-        className="absolute bottom-4 right-4 shadow-md opacity-90 hover:opacity-100"
+        className="absolute right-4 bottom-4 opacity-90 shadow-md hover:opacity-100"
         size="sm"
       >
-        <MapPin className="w-4 h-4 mr-2" />
+        <MapPin className="mr-2 h-4 w-4" />
         Open in Google Maps
       </Button>
     </div>

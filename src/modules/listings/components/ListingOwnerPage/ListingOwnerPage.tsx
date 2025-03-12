@@ -1,5 +1,4 @@
 "use client";
-import { Heading1 } from "@/modules/typography";
 import {
   Card,
   CardContent,
@@ -18,7 +17,8 @@ import {
   DollarSign,
   Check,
   X,
-  Trash2, Eye
+  Trash2,
+  Eye,
 } from "lucide-react";
 
 import type { InferSelectModel } from "drizzle-orm";
@@ -61,7 +61,7 @@ export const ListingOwnerPage = ({
   tenants,
   id,
   reservations,
-  listing_status
+  listing_status,
 }: ListingOwnerPageProps) => {
   const router = useRouter();
   const { mutate } = api.listings.resolveReservationRequest.useMutation({
@@ -91,10 +91,7 @@ export const ListingOwnerPage = ({
     <main className="container mx-auto space-y-6 py-8">
       <div className="flex items-start justify-between">
         <div>
-          <EditListingTitle
-            currentTitle={title}
-            listingId={id}
-          />
+          <EditListingTitle currentTitle={title} listingId={id} />
           <EditListingDescription
             currentDescription={description}
             listingId={id}
@@ -118,8 +115,8 @@ export const ListingOwnerPage = ({
       </div>
 
       <div className="grid grid-cols-3 gap-4">
-        <Card className="group/edit relative ">
-          <EditListingCapacity previous_capacity={max_tenants}  listingId={id}/>
+        <Card className="group/edit relative">
+          <EditListingCapacity previous_capacity={max_tenants} listingId={id} />
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Users className="h-4 w-4" />
@@ -142,7 +139,9 @@ export const ListingOwnerPage = ({
           </CardHeader>
           <CardContent>
             <p className="text-2xl font-bold">{reservations.length}</p>
-            <p className="text-sm">Of which {numberOfPendingReservations} pending</p>
+            <p className="text-sm">
+              Of which {numberOfPendingReservations} pending
+            </p>
           </CardContent>
         </Card>
 
@@ -168,12 +167,12 @@ export const ListingOwnerPage = ({
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Eye className="h-4 w-4"/>
+              <Eye className="h-4 w-4" />
               Listing Status
             </CardTitle>
           </CardHeader>
-          <CardContent className="flex items-start flex-col gap-3">
-            <EditListingStatus currentStatus={listing_status} listingId={id}/>
+          <CardContent className="flex flex-col items-start gap-3">
+            <EditListingStatus currentStatus={listing_status} listingId={id} />
             <p>{displayListingStatusDescription(listing_status)}</p>
           </CardContent>
         </Card>

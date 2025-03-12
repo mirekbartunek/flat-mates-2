@@ -80,7 +80,6 @@ export const UserProfilePage = async ({ userId }: UserProfilePageProps) => {
           */}
         </div>
       )}
-
     </main>
   );
 };

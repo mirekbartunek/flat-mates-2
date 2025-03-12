@@ -11,7 +11,7 @@ import { Trash2 } from "lucide-react";
 import { useState } from "react";
 import Autoplay from "embla-carousel-autoplay";
 
-  type ImageCarouselProps = {
+type ImageCarouselProps = {
   imageUrls: string[];
   showDelete?: boolean;
   animate?: boolean;

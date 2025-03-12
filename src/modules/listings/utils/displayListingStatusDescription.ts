@@ -7,6 +7,6 @@ export const displayListingStatusDescription = (status: ListingStatus) => {
     case "PRIVATE":
       return "Your listing is visible by link only";
     case "PUBLIC":
-      return "Your listing is visible for everyone"
+      return "Your listing is visible for everyone";
   }
-}
+};

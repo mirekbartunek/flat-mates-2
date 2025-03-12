@@ -1,5 +1,5 @@
-import { users, listings, tenants, listingReservations } from "./index";
-import { typeToFlattenedError, z } from "zod";
+import type { users, listings, tenants, listingReservations } from "./index";
+import { z } from "zod";
 import {
   listingStatusEnumValues,
   tenantSocialsEnumValues,
@@ -39,12 +39,18 @@ export const createListingSchema = z.object({
       message: "Description should be at least 20 characters long",
     })
     .trim(),
-  max_tenants: z.number({
-    message: "Maximal number of tenants must be included",
-  }),
-  monthly_price: z.number({
-    message: "Monthly price must be included",
-  }).min(0, {message: "Price cannot be negative"}),
+  max_tenants: z
+    .number({
+      message: "Maximal number of tenants must be included",
+    })
+    .min(1, {
+      message: "Listing should have 1 tenant",
+    }),
+  monthly_price: z
+    .number({
+      message: "Monthly price must be included",
+    })
+    .min(0, { message: "Price cannot be negative" }),
   imageIds: z.string().array().min(1, {
     message:
       "Listing must include atleast 1 image. Have you clicked the Upload button?",
@@ -75,12 +81,16 @@ export const createListingSchema = z.object({
     message: "Country must be included",
   }),
   location: pointSchema,
-  area: z.number({
-    message: "Area must be included"
-  }).min(0),
-  rooms: z.number({
-    message: "Number of rooms must be included"
-  }).min(0)
+  area: z
+    .number({
+      message: "Area must be included",
+    })
+    .min(0),
+  rooms: z
+    .number({
+      message: "Number of rooms must be included",
+    })
+    .min(0),
 });
 export const socialEnum = z.enum(tenantSocialsEnumValues);
 
@@ -115,14 +125,16 @@ export const updatePriceFormSchema = z.object({
 });
 
 export const updateListingCapacityFormSchema = z.object({
-  max_tenants: z.number()
+  max_tenants: z.number(),
 });
 
 export const updateListingStatusFormSchema = z.object({
-  listing_status: z.enum(listingStatusEnumValues)
+  listing_status: z.enum(listingStatusEnumValues),
 });
 
-export type UpdateListingCapacityFormSchema = z.infer<typeof updateListingCapacityFormSchema>;
+export type UpdateListingCapacityFormSchema = z.infer<
+  typeof updateListingCapacityFormSchema
+>;
 
 export type UpdatePriceFormSchema = z.infer<typeof updatePriceFormSchema>;
 

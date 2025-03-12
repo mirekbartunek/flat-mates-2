@@ -11,7 +11,10 @@ type EditListingDescriptionProps = {
   listingId: string;
 };
 
-export const EditListingDescription = ({ currentDescription, listingId }: EditListingDescriptionProps) => {
+export const EditListingDescription = ({
+  currentDescription,
+  listingId,
+}: EditListingDescriptionProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [description, setDescription] = useState(currentDescription);
 
@@ -23,19 +26,20 @@ export const EditListingDescription = ({ currentDescription, listingId }: EditLi
     onError: () => {
       toast.error("Failed to update description");
       setDescription(currentDescription);
-    }
+    },
   });
 
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
+      if (e.key === "Escape") {
         setDescription(currentDescription);
         setIsEditing(false);
       }
     };
 
-    document.addEventListener('keydown', handleEsc as EventListener);
-    return () => document.removeEventListener('keydown', handleEsc as EventListener);
+    document.addEventListener("keydown", handleEsc as EventListener);
+    return () =>
+      document.removeEventListener("keydown", handleEsc as EventListener);
   }, [currentDescription]);
 
   const handleSubmit = () => {
@@ -46,13 +50,11 @@ export const EditListingDescription = ({ currentDescription, listingId }: EditLi
 
   if (!isEditing) {
     return (
-      <div className="group relative flex gap-2 items-start">
-        <p className="text-muted-foreground mt-2 max-w-3xl">
-          {description}
-        </p>
+      <div className="group relative flex items-start gap-2">
+        <p className="text-muted-foreground mt-2 max-w-3xl">{description}</p>
         <button
           onClick={() => setIsEditing(true)}
-          className="mt-2 hidden group-hover:block text-muted-foreground hover:text-primary transition-colors"
+          className="text-muted-foreground hover:text-primary mt-2 hidden transition-colors group-hover:block"
         >
           <Pencil className="h-4 w-4" />
         </button>
@@ -65,7 +67,7 @@ export const EditListingDescription = ({ currentDescription, listingId }: EditLi
       <Textarea
         value={description}
         onChange={(e) => setDescription(e.target.value)}
-        className="min-h-[100px] resize-vertical"
+        className="resize-vertical min-h-[100px]"
         placeholder="Describe your property..."
         autoFocus
       />

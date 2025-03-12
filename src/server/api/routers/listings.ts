@@ -22,7 +22,7 @@ export const listingsRouter = createTRPCRouter({
     .input(createListingSchema)
     .mutation(async ({ ctx, input }) => {
       const { db, session } = ctx;
-      console.dir(input)
+      console.dir(input);
       const id = await db.transaction(async (tx) => {
         const [listing] = await tx
           .insert(listings)

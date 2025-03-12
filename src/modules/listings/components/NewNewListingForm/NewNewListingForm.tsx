@@ -38,9 +38,9 @@ import { Loader2 } from "lucide-react";
 import Map from "@/modules/listings/components/Map/Map";
 
 export const fileValidator = {
-  maxFileSize: '4MB',
+  maxFileSize: "4MB",
   maxFileCount: 10,
-  accepted: ['image/jpeg', 'image/png', 'image/webp'],
+  accepted: ["image/jpeg", "image/png", "image/webp"],
 };
 
 const steps = [
@@ -90,10 +90,10 @@ export const NewNewListingForm = () => {
       city: "",
       country: "",
       listing_status: "PRIVATE",
-      location: [0,0],
+      location: [0, 0],
       rooms: 0,
       zip: "",
-      street: ""
+      street: "",
     },
     mode: "onChange",
   });
@@ -119,7 +119,7 @@ export const NewNewListingForm = () => {
     } else {
       form.setValue("tenants", []);
     }
-  }, [form, hasTenants, form.watch("current_capacity")]);
+  }, [form, hasTenants, form.watch("current_capacity")]); // eslint-disable-line
 
   const router = useRouter();
   const { mutate, status } = api.listings.createNewListing.useMutation({
@@ -128,15 +128,15 @@ export const NewNewListingForm = () => {
       await confetti({
         particleCount: 100,
         origin: { y: 0.6 },
-        colors: ['#e11d48', '#be123c', '#fb7185']
+        colors: ["#e11d48", "#be123c", "#fb7185"],
       });
-      router.push(`listing/${listingId}`);
+      router.push(`/listing/${listingId}`);
     },
     onError: (error) => {
       toast.error("Failed to create listing", {
-        description: error.message
+        description: error.message,
       });
-    }
+    },
   });
 
   const handleNext = async () => {
@@ -160,18 +160,20 @@ export const NewNewListingForm = () => {
     }
   };
 
-  const getFieldsForStep = (step: number): (keyof z.infer<typeof createListingSchema>)[] => {
+  const getFieldsForStep = (
+    step: number
+  ): (keyof z.infer<typeof createListingSchema>)[] => {
     switch (step) {
       case 1:
-        return ['title', 'description'];
+        return ["title", "description"];
       case 2:
-        return ['street', 'city', 'country', 'zip', 'location'];
+        return ["street", "city", "country", "zip", "location"];
       case 3:
-        return ['max_tenants', 'current_capacity', 'tenants'];
+        return ["max_tenants", "current_capacity", "tenants"];
       case 4:
-        return ['monthly_price'];
+        return ["monthly_price"];
       case 5:
-        return ['imageIds'];
+        return ["imageIds"];
       default:
         return [];
     }
@@ -225,7 +227,8 @@ export const NewNewListingForm = () => {
                     />
                   </FormControl>
                   <FormDescription>
-                    Include important details about your property, amenities, and surroundings
+                    Include important details about your property, amenities,
+                    and surroundings
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -244,14 +247,18 @@ export const NewNewListingForm = () => {
                 form.setValue("zip", location.zip);
                 form.setValue("location", [location.lng, location.lat]);
               }}
-              initialLocation={form.watch("location")?.[0] ? {
-                lng: form.watch("location")[0],
-                lat: form.watch("location")[1]
-              } : undefined}
-              className="bg-card p-1 rounded-lg border shadow-sm"
+              initialLocation={
+                form.watch("location")?.[0]
+                  ? {
+                      lng: form.watch("location")[0],
+                      lat: form.watch("location")[1],
+                    }
+                  : undefined
+              }
+              className="bg-card rounded-lg border p-1 shadow-sm"
             />
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <FormField
                 control={form.control}
                 name="street"
@@ -259,7 +266,10 @@ export const NewNewListingForm = () => {
                   <FormItem>
                     <FormLabel>Street Address</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder="e.g., Václavské náměstí 1" />
+                      <Input
+                        {...field}
+                        placeholder="e.g., Václavské náměstí 1"
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -309,7 +319,7 @@ export const NewNewListingForm = () => {
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <FormField
                 control={form.control}
                 name="area"
@@ -320,11 +330,17 @@ export const NewNewListingForm = () => {
                       <Input
                         type="number"
                         {...field}
-                        onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                        onChange={(e) =>
+                          field.onChange(parseInt(e.target.value) ?? 0)
+                        }
+                        min={0}
+                        value={isNaN(field.value) ? 0 : field.value}
                         placeholder="e.g., 75"
                       />
                     </FormControl>
-                    <FormDescription>Total area of the property</FormDescription>
+                    <FormDescription>
+                      Total area of the property
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -340,7 +356,10 @@ export const NewNewListingForm = () => {
                       <Input
                         type="number"
                         {...field}
-                        onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                        onChange={(e) =>
+                          field.onChange(e.target.valueAsNumber ?? 0)
+                        }
+                        value={field.value ?? 0}
                         placeholder="e.g., 3"
                       />
                     </FormControl>
@@ -367,7 +386,9 @@ export const NewNewListingForm = () => {
                       id="max_tenants"
                       min={1}
                       {...field}
-                      onChange={(e) => field.onChange(e.target.valueAsNumber ?? 0)}
+                      onChange={(e) =>
+                        field.onChange(e.target.valueAsNumber ?? 0)
+                      }
                     />
                   </FormControl>
                   <FormDescription>
@@ -400,172 +421,183 @@ export const NewNewListingForm = () => {
                 </label>
               </div>
 
-              {hasTenants ? <div className="space-y-6">
-                <FormField
-                  control={form.control}
-                  name="current_capacity"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Current number of tenants</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="number"
-                          min={0}
-                          max={form.getValues("max_tenants")}
-                          {...field}
-                          onChange={(e) => field.onChange(e.target.valueAsNumber ?? 0)}
-                        />
-                      </FormControl>
-                      <FormDescription>
-                        Must be less than or equal to maximum tenants
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <div className="space-y-4">
-                  {Array.from({
-                    length: form.watch("current_capacity") || 0,
-                  }).map((_, index) => {
-                    const tenant = form.watch(`tenants.${index}`) || {
-                      name: "",
-                      bio: "",
-                      socials: [],
-                    };
-                    return (
-                      <Card key={index}>
-                        <CardHeader className="pb-4">
-                          <CardTitle className="text-lg font-semibold text-rose-500">
-                            Tenant {index + 1}
-                          </CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-6">
-                          <FormField
-                            control={form.control}
-                            name={`tenants.${index}.name`}
-                            defaultValue=""
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Name</FormLabel>
-                                <FormControl>
-                                  <Input
-                                    placeholder="Tenant's name"
-                                    type="text"
-                                    {...field}
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
+              {hasTenants ? (
+                <div className="space-y-6">
+                  <FormField
+                    control={form.control}
+                    name="current_capacity"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Current number of tenants</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            min={0}
+                            max={form.getValues("max_tenants")}
+                            {...field}
+                            onChange={(e) =>
+                              field.onChange(e.target.valueAsNumber ?? 0)
+                            }
                           />
+                        </FormControl>
+                        <FormDescription>
+                          Must be less than or equal to maximum tenants
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-                          <FormField
-                            control={form.control}
-                            name={`tenants.${index}.bio`}
-                            defaultValue=""
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Bio</FormLabel>
-                                <FormControl>
-                                  <Textarea
-                                    placeholder="Brief description of the tenant..."
-                                    className="resize-none"
-                                    {...field}
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-
-                          <div>
-                            <FormLabel>Social Media</FormLabel>
-                            <div className="mt-2 space-y-3">
-                              {(tenant.socials || []).map((_, socialIndex) => (
-                                <div
-                                  key={socialIndex}
-                                  className="flex items-center space-x-2"
-                                >
-                                  <Select
-                                    defaultValue={tenant.socials?.[socialIndex]?.label}
-                                    onValueChange={(value) =>
-                                      form.setValue(
-                                        `tenants.${index}.socials.${socialIndex}.label`,
-                                        value as TenantSocial
-                                      )
-                                    }
-                                  >
-                                    <SelectTrigger className="w-32">
-                                      <SelectValue placeholder="Platform" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                      {Object.values(socialEnum.Values).map(
-                                        (social) => (
-                                          <SelectItem key={social} value={social}>
-                                            {capitalizer(social)}
-                                          </SelectItem>
-                                        )
-                                      )}
-                                    </SelectContent>
-                                  </Select>
-
+                  <div className="space-y-4">
+                    {Array.from({
+                      length: form.watch("current_capacity") || 0,
+                    }).map((_, index) => {
+                      const tenant = form.watch(`tenants.${index}`) || {
+                        name: "",
+                        bio: "",
+                        socials: [],
+                      };
+                      return (
+                        <Card key={index}>
+                          <CardHeader className="pb-4">
+                            <CardTitle className="text-lg font-semibold text-rose-500">
+                              Tenant {index + 1}
+                            </CardTitle>
+                          </CardHeader>
+                          <CardContent className="space-y-6">
+                            <FormField
+                              control={form.control}
+                              name={`tenants.${index}.name`}
+                              defaultValue=""
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Name</FormLabel>
                                   <FormControl>
                                     <Input
-                                      type="url"
-                                      placeholder="Profile URL"
-                                      {...form.register(
-                                        `tenants.${index}.socials.${socialIndex}.value`
-                                      )}
+                                      placeholder="Tenant's name"
+                                      type="text"
+                                      {...field}
                                     />
                                   </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
 
-                                  <Button
-                                    type="button"
-                                    variant="destructive"
-                                    size="sm"
-                                    onClick={() => {
-                                      const currentSocials = form.getValues(
+                            <FormField
+                              control={form.control}
+                              name={`tenants.${index}.bio`}
+                              defaultValue=""
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Bio</FormLabel>
+                                  <FormControl>
+                                    <Textarea
+                                      placeholder="Brief description of the tenant..."
+                                      className="resize-none"
+                                      {...field}
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+
+                            <div>
+                              <FormLabel>Social Media</FormLabel>
+                              <div className="mt-2 space-y-3">
+                                {(tenant.socials || []).map(
+                                  (_, socialIndex) => (
+                                    <div
+                                      key={socialIndex}
+                                      className="flex items-center space-x-2"
+                                    >
+                                      <Select
+                                        defaultValue={
+                                          tenant.socials?.[socialIndex]?.label
+                                        }
+                                        onValueChange={(value) =>
+                                          form.setValue(
+                                            `tenants.${index}.socials.${socialIndex}.label`,
+                                            value as TenantSocial
+                                          )
+                                        }
+                                      >
+                                        <SelectTrigger className="w-32">
+                                          <SelectValue placeholder="Platform" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                          {Object.values(socialEnum.Values).map(
+                                            (social) => (
+                                              <SelectItem
+                                                key={social}
+                                                value={social}
+                                              >
+                                                {capitalizer(social)}
+                                              </SelectItem>
+                                            )
+                                          )}
+                                        </SelectContent>
+                                      </Select>
+
+                                      <FormControl>
+                                        <Input
+                                          type="url"
+                                          placeholder="Profile URL"
+                                          {...form.register(
+                                            `tenants.${index}.socials.${socialIndex}.value`
+                                          )}
+                                        />
+                                      </FormControl>
+
+                                      <Button
+                                        type="button"
+                                        variant="destructive"
+                                        size="sm"
+                                        onClick={() => {
+                                          const currentSocials = form.getValues(
+                                            `tenants.${index}.socials`
+                                          );
+                                          form.setValue(
+                                            `tenants.${index}.socials`,
+                                            currentSocials.filter(
+                                              (_, i) => i !== socialIndex
+                                            )
+                                          );
+                                        }}
+                                      >
+                                        Remove
+                                      </Button>
+                                    </div>
+                                  )
+                                )}
+
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => {
+                                    const currentSocials =
+                                      form.getValues(
                                         `tenants.${index}.socials`
-                                      );
-                                      form.setValue(
-                                        `tenants.${index}.socials`,
-                                        currentSocials.filter(
-                                          (_, i) => i !== socialIndex
-                                        )
-                                      );
-                                    }}
-                                  >
-                                    Remove
-                                  </Button>
-                                </div>
-                              ))}
-
-                              <Button
-                                type="button"
-                                variant="outline"
-                                size="sm"
-                                onClick={() => {
-                                  const currentSocials =
-                                    form.getValues(
-                                      `tenants.${index}.socials`
-                                    ) || [];
-                                  form.setValue(`tenants.${index}.socials`, [
-                                    ...currentSocials,
-                                    { label: "facebook", value: "" },
-                                  ]);
-                                }}
-                              >
-                                Add Social Media
-                              </Button>
+                                      ) || [];
+                                    form.setValue(`tenants.${index}.socials`, [
+                                      ...currentSocials,
+                                      { label: "facebook", value: "" },
+                                    ]);
+                                  }}
+                                >
+                                  Add Social Media
+                                </Button>
+                              </div>
                             </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    );
-                  })}
+                          </CardContent>
+                        </Card>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div> : null}
+              ) : null}
             </div>
           </section>
         );
@@ -587,7 +619,9 @@ export const NewNewListingForm = () => {
                       onChange={(e) => field.onChange(e.target.valueAsNumber)}
                     />
                   </FormControl>
-                  <FormDescription>Monthly rent in Czech Koruna</FormDescription>
+                  <FormDescription>
+                    Monthly rent in Czech Koruna
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -603,14 +637,15 @@ export const NewNewListingForm = () => {
                 <FormItem>
                   <FormLabel>Property Images</FormLabel>
                   <FormDescription>
-                    Upload up to {fileValidator.maxFileCount} images (max {fileValidator.maxFileSize} each)
+                    Upload up to {fileValidator.maxFileCount} images (max{" "}
+                    {fileValidator.maxFileSize} each)
                   </FormDescription>
                   <FormControl>
                     <UploadDropzone
                       endpoint="imageUploader"
                       config={{
                         ...fileValidator,
-                        cn
+                        cn,
                       }}
                       appearance={{
                         button: buttonVariants({
@@ -622,52 +657,63 @@ export const NewNewListingForm = () => {
                       }}
                       onUploadProgress={(progress) => {
                         return (
-                          <div className="w-full bg-secondary rounded-full h-2">
+                          <div className="bg-secondary h-2 w-full rounded-full">
                             <div
-                              className="bg-rose-500 h-2 rounded-full transition-all"
+                              className="h-2 rounded-full bg-rose-500 transition-all"
                               style={{ width: `${progress}%` }}
                             />
                           </div>
                         );
                       }}
                       onClientUploadComplete={(res) => {
-                        const ids = res.map((response) => response.serverData.ids).flat();
+                        const ids = res
+                          .map((response) => response.serverData.ids)
+                          .flat();
                         const urls = res.map((response) => response.url);
                         setImageUrls(urls);
                         field.onChange(ids);
                         setIsUploading(false);
-                        toast.success(`Successfully uploaded ${res.length} images`);
+                        toast.success(
+                          `Successfully uploaded ${res.length} images`
+                        );
                       }}
                       onUploadError={(err) => {
                         setIsUploading(false);
                         if (err.code === "TOO_MANY_FILES") {
-                          toast.error(`Maximum ${fileValidator.maxFileCount} images allowed`);
+                          toast.error(
+                            `Maximum ${fileValidator.maxFileCount} images allowed`
+                          );
                         } else if (err.code === "FILE_LIMIT_EXCEEDED") {
-                          toast.error(`Files must be under ${fileValidator.maxFileSize}`);
+                          toast.error(
+                            `Files must be under ${fileValidator.maxFileSize}`
+                          );
                         } else {
                           toast.error("Failed to upload images");
                         }
                       }}
                     />
                   </FormControl>
-                  {imageUrls && imageUrls.length > 0 ? <div className="mt-4">
-                    <div className="text-sm text-muted-foreground mb-2">
-                      {imageUrls.length} of {fileValidator.maxFileCount} images uploaded
+                  {imageUrls && imageUrls.length > 0 ? (
+                    <div className="mt-4">
+                      <div className="text-muted-foreground mb-2 text-sm">
+                        {imageUrls.length} of {fileValidator.maxFileCount}{" "}
+                        images uploaded
+                      </div>
+                      <ImageCarousel
+                        imageUrls={imageUrls}
+                        showDelete
+                        showControls
+                        onDelete={(index) => {
+                          const newUrls = [...imageUrls];
+                          newUrls.splice(index, 1);
+                          setImageUrls(newUrls);
+                          const newIds = [...field.value];
+                          newIds.splice(index, 1);
+                          field.onChange(newIds);
+                        }}
+                      />
                     </div>
-                    <ImageCarousel
-                      imageUrls={imageUrls}
-                      showDelete
-                      showControls
-                      onDelete={(index) => {
-                        const newUrls = [...imageUrls];
-                        newUrls.splice(index, 1);
-                        setImageUrls(newUrls);
-                        const newIds = [...field.value];
-                        newIds.splice(index, 1);
-                        field.onChange(newIds);
-                      }}
-                    />
-                  </div> : null}
+                  ) : null}
                   <FormMessage />
                 </FormItem>
               )}
@@ -675,110 +721,114 @@ export const NewNewListingForm = () => {
               name="imageIds"
             />
           </section>
-
         );
       default:
         return null;
-
     }
   };
-        return (
-          <div className="container mx-auto py-8">
-            <div className="relative mx-auto max-w-3xl space-y-8">
-              {/* Progress Bar Card */}
-              <div className="bg-card rounded-lg border p-6 shadow-sm">
-                <div className="mb-6">
-                  <div className="mb-4 flex justify-between">
-                    {steps.map((step, index) => (
-                      <div key={index} className="flex flex-col items-center">
-                        <div
-                          className={cn(
-                            "flex h-10 w-10 items-center justify-center rounded-full transition-colors",
-                            index <= currentStep
-                              ? "bg-rose-500 text-white"
-                              : index < currentStep
-                                ? "bg-rose-200 text-rose-700"
-                                : "bg-secondary text-muted-foreground"
-                          )}
-                        >
-                          {index + 1}
-                        </div>
-                        <span className="mt-2 text-center text-sm font-medium max-w-[100px] truncate">
+  return (
+    <div className="container mx-auto py-8">
+      <div className="relative mx-auto max-w-3xl space-y-8">
+        {/* Progress Bar Card */}
+        <div className="bg-card rounded-lg border p-6 shadow-sm">
+          <div className="mb-6">
+            <div className="mb-4 flex justify-between">
+              {steps.map((step, index) => (
+                <div key={index} className="flex flex-col items-center">
+                  <div
+                    className={cn(
+                      "flex h-10 w-10 items-center justify-center rounded-full transition-colors",
+                      index <= currentStep
+                        ? "bg-rose-500 text-white"
+                        : index < currentStep
+                          ? "bg-rose-200 text-rose-700"
+                          : "bg-secondary text-muted-foreground"
+                    )}
+                  >
+                    {index + 1}
+                  </div>
+                  <span className="mt-2 max-w-[100px] truncate text-center text-sm font-medium">
                     {step.title}
                   </span>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="bg-secondary h-2 rounded-full">
-                    <div
-                      className="h-full rounded-full bg-rose-500 transition-all duration-300"
-                      style={{
-                        width: `${(currentStep / (steps.length - 1)) * 100}%`,
-                      }}
-                    />
-                  </div>
                 </div>
-              </div>
-
-              {/* Form Content */}
-              <div className="bg-card rounded-lg border p-6 shadow-sm">
-                <div className="mb-6">
-                  <h2 className="text-2xl font-bold text-rose-500">
-                    {steps[currentStep]?.title}
-                  </h2>
-                  <p className="text-muted-foreground mt-1">
-                    {steps[currentStep]?.description}
-                  </p>
-                </div>
-
-                <Form {...form}>
-                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-                    <Fragment key={currentStep}>{renderStep()}</Fragment>
-
-                    <div className="flex items-center justify-between pt-4 border-t">
-                      <Button
-                        variant="outline"
-                        type="button"
-                        onClick={handlePrevious}
-                        disabled={currentStep === 0}
-                      >
-                        Previous
-                      </Button>
-
-                      {currentStep === steps.length - 1 ? (
-                        <Button
-                          type="submit"
-                          disabled={status === "pending" || isUploading}
-                          className="min-w-[100px]"
-                        >
-                          {status === "pending" ? (
-                            <>
-                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                              Saving...
-                            </>
-                          ) : (
-                            "Publish"
-                          )}
-                        </Button>
-                      ) : (
-                        <Button
-                          onClick={handleNext}
-                          type="button"
-                          key={currentStep + 1}
-                        >
-                          Next
-                        </Button>
-                      )}
-                    </div>
-                  </form>
-                </Form>
-              </div>
-
-              {/* Optional: Help text */}
-              <p className="text-center text-sm text-muted-foreground">
-                Need help? Contact support at <a href="mailto:support@flatmates.com" className="text-rose-500 hover:underline">support@flatmates.com</a>
-              </p>
+              ))}
+            </div>
+            <div className="bg-secondary h-2 rounded-full">
+              <div
+                className="h-full rounded-full bg-rose-500 transition-all duration-300"
+                style={{
+                  width: `${(currentStep / (steps.length - 1)) * 100}%`,
+                }}
+              />
             </div>
           </div>
-        );
-  }
+        </div>
+
+        {/* Form Content */}
+        <div className="bg-card rounded-lg border p-6 shadow-sm">
+          <div className="mb-6">
+            <h2 className="text-2xl font-bold text-rose-500">
+              {steps[currentStep]?.title}
+            </h2>
+            <p className="text-muted-foreground mt-1">
+              {steps[currentStep]?.description}
+            </p>
+          </div>
+
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+              <Fragment key={currentStep}>{renderStep()}</Fragment>
+
+              <div className="flex items-center justify-between border-t pt-4">
+                <Button
+                  variant="outline"
+                  type="button"
+                  onClick={handlePrevious}
+                  disabled={currentStep === 0}
+                >
+                  Previous
+                </Button>
+
+                {currentStep === steps.length - 1 ? (
+                  <Button
+                    type="submit"
+                    disabled={status === "pending" || isUploading}
+                    className="min-w-[100px]"
+                  >
+                    {status === "pending" ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Saving...
+                      </>
+                    ) : (
+                      "Publish"
+                    )}
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={handleNext}
+                    type="button"
+                    key={currentStep + 1}
+                  >
+                    Next
+                  </Button>
+                )}
+              </div>
+            </form>
+          </Form>
+        </div>
+
+        {/* Optional: Help text */}
+        <p className="text-muted-foreground text-center text-sm">
+          Need help? Contact support at{" "}
+          <a
+            href="mailto:support@flatmates.com"
+            className="text-rose-500 hover:underline"
+          >
+            support@flatmates.com
+          </a>
+        </p>
+      </div>
+    </div>
+  );
+};

@@ -1,1 +1,1 @@
-export * from "./FilterListings";
+export * from "./ListingsFilter";

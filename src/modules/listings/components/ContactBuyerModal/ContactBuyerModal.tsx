@@ -26,8 +26,12 @@ import { DialogFooter } from "@/components/ui/dialog";
 
 type ContactBuyerModalProps = {
   listingId: string;
+  disabled?: boolean;
 };
-export const ContactBuyerModal = ({ listingId }: ContactBuyerModalProps) => {
+export const ContactBuyerModal = ({
+  listingId,
+  disabled = false,
+}: ContactBuyerModalProps) => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isOpen, setIsOpen] = useState(false);
 
@@ -54,7 +58,7 @@ export const ContactBuyerModal = ({ listingId }: ContactBuyerModalProps) => {
     mutate({
       listingId,
       messageToOwner: data.message,
-      tenantId: sessionData?.user.id!,
+      tenantId: sessionData?.user.id!, // eslint-disable-line
     });
   };
 
@@ -65,7 +69,7 @@ export const ContactBuyerModal = ({ listingId }: ContactBuyerModalProps) => {
           form.reset();
         }
       }}
-      dialogTrigger={<Button>I&#39;m interested</Button>}
+      dialogTrigger={<Button disabled={disabled}>I&#39;m interested</Button>}
       dialogTitle={"Are you sure?"}
       dialogDescription={"This action will contact the property owner."}
       dialogBody={
@@ -115,7 +119,7 @@ export const ContactBuyerModal = ({ listingId }: ContactBuyerModalProps) => {
               />
             </div>
             <DialogFooter>
-              <Button type="submit" disabled={isPending}>
+              <Button type="submit" disabled={isPending || disabled}>
                 Contact owner
               </Button>
             </DialogFooter>

@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, KeyboardEvent } from "react";
+import { useState, useEffect, type KeyboardEvent } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Pencil, Check, X } from "lucide-react";
@@ -11,7 +11,10 @@ type EditListingTitleProps = {
   listingId: string;
 };
 
-export const EditListingTitle = ({ currentTitle, listingId }: EditListingTitleProps) => {
+export const EditListingTitle = ({
+  currentTitle,
+  listingId,
+}: EditListingTitleProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState(currentTitle);
 
@@ -23,19 +26,23 @@ export const EditListingTitle = ({ currentTitle, listingId }: EditListingTitlePr
     onError: () => {
       toast.error("Failed to update title");
       setTitle(currentTitle);
-    }
+    },
   });
 
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
+      if (e.key === "Escape") {
         setTitle(currentTitle);
         setIsEditing(false);
       }
     };
 
-    document.addEventListener('keydown', handleEsc as unknown as EventListener);
-    return () => document.removeEventListener('keydown', handleEsc as unknown as EventListener);
+    document.addEventListener("keydown", handleEsc as unknown as EventListener);
+    return () =>
+      document.removeEventListener(
+        "keydown",
+        handleEsc as unknown as EventListener
+      );
   }, [currentTitle]);
 
   const handleSubmit = () => {
@@ -45,7 +52,7 @@ export const EditListingTitle = ({ currentTitle, listingId }: EditListingTitlePr
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       e.preventDefault();
       handleSubmit();
     }
@@ -57,7 +64,7 @@ export const EditListingTitle = ({ currentTitle, listingId }: EditListingTitlePr
         <h1 className="text-4xl font-bold">{title}</h1>
         <button
           onClick={() => setIsEditing(true)}
-          className="hidden group-hover:block text-muted-foreground hover:text-primary transition-colors"
+          className="text-muted-foreground hover:text-primary hidden transition-colors group-hover:block"
         >
           <Pencil className="h-5 w-5" />
         </button>
@@ -71,7 +78,7 @@ export const EditListingTitle = ({ currentTitle, listingId }: EditListingTitlePr
         value={title}
         onChange={(e) => setTitle(e.target.value)}
         onKeyDown={handleKeyDown}
-        className="text-4xl font-bold h-auto py-1 max-w-xl"
+        className="h-auto max-w-xl py-1 text-4xl font-bold"
         autoFocus
       />
       <Button

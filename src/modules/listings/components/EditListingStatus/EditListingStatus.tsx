@@ -1,6 +1,12 @@
 "use client";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ListingStatus, listingStatusEnumValues } from "@/server/db/enums";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { type ListingStatus, listingStatusEnumValues } from "@/server/db/enums";
 import { api } from "@/trpc/react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -12,7 +18,10 @@ type EditListingStatusProps = {
   listingId: string;
 };
 
-export const EditListingStatus = ({ currentStatus, listingId }: EditListingStatusProps) => {
+export const EditListingStatus = ({
+  currentStatus,
+  listingId,
+}: EditListingStatusProps) => {
   const [isChanging, setIsChanging] = useState(false);
   const router = useRouter();
   const { mutate } = api.listings.editListing.useMutation({
@@ -27,7 +36,7 @@ export const EditListingStatus = ({ currentStatus, listingId }: EditListingStatu
     onError: () => {
       toast.error("Failed to update listing status");
       setIsChanging(false);
-    }
+    },
   });
 
   return (
@@ -37,7 +46,7 @@ export const EditListingStatus = ({ currentStatus, listingId }: EditListingStatu
       onValueChange={(value: ListingStatus) => {
         mutate({
           id: listingId,
-          listing_status: value
+          listing_status: value,
         });
       }}
     >

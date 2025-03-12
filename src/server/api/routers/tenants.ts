@@ -32,7 +32,7 @@ export const tenantsRouter = createTRPCRouter({
     .mutation(async ({ input, ctx }) => {
       const { db } = ctx;
       await db.transaction(async (tx) => {
-        const addedTenant = await tx
+        await tx
           .insert(tenants)
           .values({
             name: input.name,

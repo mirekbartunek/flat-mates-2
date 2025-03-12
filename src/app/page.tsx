@@ -6,8 +6,13 @@ import { Link } from "next-view-transitions";
 import { PageTop } from "@/modules/layout/components";
 import { Home as HomeIcon, Search, Plus, ArrowRight } from "lucide-react";
 import { eq } from "drizzle-orm";
+import { getFilteredListings } from "@/modules/listings/utils/getFilteredListings";
 
-export default async function Home() {
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: Record<string, string | string[] | undefined>;
+}) {
   const availableListings = await db.query.listings.findMany({
     with: {
       files: {
@@ -15,14 +20,11 @@ export default async function Home() {
           file: true,
         },
       },
-    }, where: eq(listings.listing_status, "PUBLIC")
-
+    },
+    where: eq(listings.listing_status, "PUBLIC"),
   });
 
-  const mappedListings = availableListings.map((listing) => ({
-    ...listing,
-    imageUrls: listing.files.map((f) => f.file?.url).filter(Boolean),
-  }));
+  const mappedListings = await getFilteredListings(searchParams);
 
   const t = await getTranslations("Index");
 
@@ -39,7 +41,7 @@ export default async function Home() {
             </h1>
           </div>
 
-            <p className="text-muted-foreground mx-auto mt-6 max-w-2xl text-center text-lg">
+          <p className="text-muted-foreground mx-auto mt-6 max-w-2xl text-center text-lg">
             {t("description")}
           </p>
 

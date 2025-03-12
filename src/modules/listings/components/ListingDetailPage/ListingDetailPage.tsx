@@ -2,7 +2,14 @@ import { db, listings } from "@/server/db";
 import { eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import { ImageCell } from "@/modules/listings/components/ImageCell/ImageCell";
-import { DollarSign, Users, Calendar, Square, DoorOpen } from "lucide-react";
+import {
+  DollarSign,
+  Users,
+  Calendar,
+  Square,
+  DoorOpen,
+  EyeOff,
+} from "lucide-react";
 import { ContactBuyerModal } from "@/modules/listings/components/ContactBuyerModal/ContactBuyerModal";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -28,9 +35,9 @@ type ListingDetailPageProps = {
 };
 
 const tenantSocialIcon: Record<TenantSocial, JSX.Element> = {
-  instagram: <InstagramLogo className="fill-white w-5 h-5" />,
-  facebook: <FacebookLogo className="fill-white w-5 h-5" />,
-  pinterest: <PinterestLogo className="fill-white w-5 h-5" />,
+  instagram: <InstagramLogo className="h-5 w-5 fill-white" />,
+  facebook: <FacebookLogo className="h-5 w-5 fill-white" />,
+  pinterest: <PinterestLogo className="h-5 w-5 fill-white" />,
   x: <XLogo />,
 };
 
@@ -81,8 +88,9 @@ export const ListingDetailPage = async ({
   return (
     <main className="container mx-auto space-y-8 py-8">
       {listingDetails.listing_status === "HIDDEN" ? (
-        <div className="absolute right-1 bottom-1">
-          This is only visible to you
+        <div className="fixed right-4 bottom-4 z-50 flex items-center gap-2 rounded-lg bg-black/85 px-4 py-2.5 text-sm font-medium text-white shadow-lg">
+          <EyeOff className="h-5 w-5" />
+          <span>Visible to you only</span>
         </div>
       ) : null}
       <div className="relative h-[400px] overflow-hidden rounded-xl">
@@ -162,9 +170,9 @@ export const ListingDetailPage = async ({
                 <div className="grid grid-cols-2 gap-4">
                   {listingDetails.tenants.map(({ tenant }) => (
                     <div key={tenant?.id} className="flex items-center gap-3">
-                        <Avatar className="self-start">
-                          <AvatarFallback>{tenant?.name.at(0)}</AvatarFallback>
-                        </Avatar>
+                      <Avatar className="self-start">
+                        <AvatarFallback>{tenant?.name.at(0)}</AvatarFallback>
+                      </Avatar>
                       <div>
                         <p className="font-medium">{tenant?.name}</p>
                         <p className="text-muted-foreground max-w-[200px] truncate text-sm">
@@ -172,7 +180,11 @@ export const ListingDetailPage = async ({
                         </p>
                         <div className="mt-2">
                           {tenant.socials.map((social) => (
-                            <Link href={social.url} key={social.id} target="_blank">
+                            <Link
+                              href={social.url}
+                              key={social.id}
+                              target="_blank"
+                            >
                               {tenantSocialIcon[social.social_enum]}
                             </Link>
                           ))}
@@ -271,7 +283,7 @@ export const ListingDetailPage = async ({
                 Go to dashboard
               </Link>
             ) : (
-              <ContactBuyerModal listingId={listingId} />
+              <ContactBuyerModal listingId={listingId} disabled={!user} />
             )}
             {isAdmin(user?.user.role ?? "USER") ? (
               <ListingAdminActions listingId={listingId} />

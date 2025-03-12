@@ -1,14 +1,14 @@
 import type { Listings } from "@/server/db/types";
 import Link from "next/link";
 import { ImageCarousel } from "@/modules/listings/components/ImageCarousel/ImageCarousel";
-import { MapPin, Users } from "lucide-react";
+import { MapPin, Users, Navigation } from "lucide-react";
 import { isNewListing } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
 
 type ListingProps = Listings & {
   imageUrls: string[];
   mode?: "OWNER_VIEW" | "USER_VIEW";
+  distance?: number; // Add optional distance property
 };
 
 export const Listing = ({
@@ -19,7 +19,8 @@ export const Listing = ({
   title,
   createdAt,
   description,
-  mode = "USER_VIEW",
+  city,
+  distance, // Add distance to destructured props
 }: ListingProps) => {
   return (
     <div className="group bg-card overflow-hidden rounded-xl transition-all hover:shadow-lg">
@@ -33,6 +34,15 @@ export const Listing = ({
           {isNewListing(createdAt) ? (
             <div className="absolute top-4 left-4">
               <Badge className="bg-green-500/80 text-white">New</Badge>
+            </div>
+          ) : null}
+          {/* Display distance badge if available */}
+          {distance !== undefined ? (
+            <div className="absolute top-4 right-4">
+              <Badge className="flex items-center gap-1 bg-rose-500/90 text-white">
+                <Navigation className="h-3 w-3" />
+                {distance.toFixed(1)} km
+              </Badge>
             </div>
           ) : null}
           <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent" />
@@ -54,13 +64,19 @@ export const Listing = ({
 
           <div className="mt-auto space-y-3">
             <div className="flex items-center justify-between text-sm">
-                <div className="flex items-center gap-2">
-                  <Users className="text-muted-foreground h-4 w-4" />
-                  <span>{max_tenants} tenants max</span>
-                </div>
+              <div className="flex items-center gap-2">
+                <Users className="text-muted-foreground h-4 w-4" />
+                <span>{max_tenants} tenants max</span>
+              </div>
               <div className="flex items-center gap-2">
                 <MapPin className="text-muted-foreground h-4 w-4" />
-                <span>Prague</span>
+                <span>{city}</span>
+                {/* Show distance as text near location if available */}
+                {distance !== undefined ? (
+                  <span className="font-medium text-rose-500">
+                    ({distance.toFixed(1)} km away)
+                  </span>
+                ) : null}
               </div>
             </div>
           </div>

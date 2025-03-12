@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { getServerAuthSession } from "@/server/auth";
 import { getTranslations } from "next-intl/server";
 import { ErrorPage } from "@/modules/layout";
-const Page = async ({ params }: { params: { listingId: string } }) => {
+const Page = async ({ params }: { params: { listingId: Promise<string> } }) => {
   const details = await api.listings.getListingById({
     listingId: await params.listingId,
   });

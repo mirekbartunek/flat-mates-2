@@ -97,12 +97,8 @@
           "name": "account_user_id_user_id_fk",
           "tableFrom": "account",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -110,10 +106,7 @@
       "compositePrimaryKeys": {
         "account_provider_provider_account_id_pk": {
           "name": "account_provider_provider_account_id_pk",
-          "columns": [
-            "provider",
-            "provider_account_id"
-          ]
+          "columns": ["provider", "provider_account_id"]
         }
       },
       "uniqueConstraints": {},
@@ -170,12 +163,8 @@
           "name": "files_uploadedBy_user_id_fk",
           "tableFrom": "files",
           "tableTo": "user",
-          "columnsFrom": [
-            "uploadedBy"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["uploadedBy"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -216,12 +205,8 @@
           "name": "listing_files_listingId_listings_id_fk",
           "tableFrom": "listing_files",
           "tableTo": "listings",
-          "columnsFrom": [
-            "listingId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["listingId"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -229,12 +214,8 @@
           "name": "listing_files_fileId_files_id_fk",
           "tableFrom": "listing_files",
           "tableTo": "files",
-          "columnsFrom": [
-            "fileId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["fileId"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -303,12 +284,8 @@
           "name": "listing_reservations_listing_id_listings_id_fk",
           "tableFrom": "listing_reservations",
           "tableTo": "listings",
-          "columnsFrom": [
-            "listing_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["listing_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -316,12 +293,8 @@
           "name": "listing_reservations_user_id_user_id_fk",
           "tableFrom": "listing_reservations",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -362,12 +335,8 @@
           "name": "listing_tenants_listingId_listings_id_fk",
           "tableFrom": "listing_tenants",
           "tableTo": "listings",
-          "columnsFrom": [
-            "listingId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["listingId"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -375,12 +344,8 @@
           "name": "listing_tenants_tenantId_tenants_id_fk",
           "tableFrom": "listing_tenants",
           "tableTo": "tenants",
-          "columnsFrom": [
-            "tenantId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["tenantId"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -472,12 +437,8 @@
           "name": "listings_userId_user_id_fk",
           "tableFrom": "listings",
           "tableTo": "user",
-          "columnsFrom": [
-            "userId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["userId"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -533,12 +494,8 @@
           "name": "session_user_id_user_id_fk",
           "tableFrom": "session",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -586,12 +543,8 @@
           "name": "tenant_socials_tenantId_tenants_id_fk",
           "tableFrom": "tenant_socials",
           "tableTo": "tenants",
-          "columnsFrom": [
-            "tenantId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["tenantId"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -721,10 +674,7 @@
       "compositePrimaryKeys": {
         "verification_token_identifier_token_pk": {
           "name": "verification_token_identifier_token_pk",
-          "columns": [
-            "identifier",
-            "token"
-          ]
+          "columns": ["identifier", "token"]
         }
       },
       "uniqueConstraints": {},
@@ -737,47 +687,27 @@
     "public.listing_status": {
       "name": "listing_status",
       "schema": "public",
-      "values": [
-        "PUBLIC",
-        "PRIVATE",
-        "HIDDEN"
-      ]
+      "values": ["PUBLIC", "PRIVATE", "HIDDEN"]
     },
     "public.reservation_status": {
       "name": "reservation_status",
       "schema": "public",
-      "values": [
-        "pending",
-        "accepted",
-        "rejected"
-      ]
+      "values": ["pending", "accepted", "rejected"]
     },
     "public.socials": {
       "name": "socials",
       "schema": "public",
-      "values": [
-        "instagram",
-        "facebook",
-        "x",
-        "pinterest"
-      ]
+      "values": ["instagram", "facebook", "x", "pinterest"]
     },
     "public.user_role_enum": {
       "name": "user_role_enum",
       "schema": "public",
-      "values": [
-        "USER",
-        "ADMIN",
-        "SUPERADMIN"
-      ]
+      "values": ["USER", "ADMIN", "SUPERADMIN"]
     },
     "public.user_verified_enum": {
       "name": "user_verified_enum",
       "schema": "public",
-      "values": [
-        "VERIFIED",
-        "UNVERIFIED"
-      ]
+      "values": ["VERIFIED", "UNVERIFIED"]
     }
   },
   "schemas": {},
