@@ -7,19 +7,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { formatDistance } from "date-fns";
-import {
-  Users,
-  Home,
-  Calendar,
-  DollarSign,
-  Check,
-  X,
-  Trash2,
-  Eye,
-} from "lucide-react";
+import { Users, Home, Calendar, DollarSign, Trash2, Eye } from "lucide-react";
 
 import type { InferSelectModel } from "drizzle-orm";
 import type {
@@ -41,6 +30,7 @@ import { EditListingDescription } from "@/modules/listings/components/EditListin
 import { EditListingCapacity } from "@/modules/listings/components/EditListingCapacity/EditListingCapacity";
 import { EditListingStatus } from "@/modules/listings/components/EditListingStatus/EditListingStatus";
 import { displayListingStatusDescription } from "@/modules/listings/utils/displayListingStatusDescription";
+import { ReservationCard } from "@/modules/listings/components/ReservationCard/ReservationCard";
 
 type ListingWithRelations = InferSelectModel<typeof listings> & {
   reservations: (InferSelectModel<typeof listingReservations> & {
@@ -64,18 +54,14 @@ export const ListingOwnerPage = ({
   listing_status,
 }: ListingOwnerPageProps) => {
   const router = useRouter();
-  const { mutate } = api.listings.resolveReservationRequest.useMutation({
-    onSuccess: () => {
-      toast("Successfully resolved request");
-      router.refresh();
-    },
-  });
+
   const { mutate: deleteTenant } = api.tenants.removeTenant.useMutation({
     onSuccess: () => {
       toast("Successfully removed tenant from listing!");
       router.refresh();
     },
   });
+
   const [searchQuery, setSearchQuery] = useState("");
 
   const filteredReservations = reservations.filter((reservation) =>
@@ -227,83 +213,11 @@ export const ListingOwnerPage = ({
               onChange={(e) => setSearchQuery(e.target.value)}
             />
             {filteredReservations.map((reservation) => (
-              <Card key={reservation.id}>
-                <CardHeader>
-                  <div className="flex items-start justify-between">
-                    <div className="space-y-1">
-                      <CardTitle>Reservation Request</CardTitle>
-                      <CardDescription>
-                        Created{" "}
-                        {formatDistance(
-                          new Date(reservation.createdAt),
-                          new Date(),
-                          { addSuffix: true }
-                        )}
-                      </CardDescription>
-                      <CardDescription>
-                        Created by {reservation.user.name} -{" "}
-                        <a
-                          href={`mailto:${reservation.user.email}`}
-                          className="underline"
-                        >
-                          {reservation.user.email}
-                        </a>
-                      </CardDescription>
-                    </div>
-                    <Badge
-                      variant={
-                        reservation.status === "accepted"
-                          ? "default"
-                          : reservation.status === "rejected"
-                            ? "destructive"
-                            : "secondary"
-                      }
-                    >
-                      {reservation.status}
-                    </Badge>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {reservation.message ? (
-                      <p className="text-muted-foreground">
-                        {reservation.message}
-                      </p>
-                    ) : null}
-
-                    {reservation.status === "pending" ? (
-                      <div className="flex gap-2">
-                        <Button
-                          onClick={() =>
-                            mutate({
-                              reservationId: reservation.id,
-                              action: "ACCEPT",
-                            })
-                          }
-                          variant="outline"
-                          className="flex items-center gap-2 text-green-600 hover:bg-green-50 hover:text-green-700"
-                        >
-                          <Check className="h-4 w-4" />
-                          Accept
-                        </Button>
-                        <Button
-                          onClick={() =>
-                            mutate({
-                              reservationId: reservation.id,
-                              action: "REJECT",
-                            })
-                          }
-                          variant="outline"
-                          className="flex items-center gap-2 text-red-600 hover:bg-red-50 hover:text-red-700"
-                        >
-                          <X className="h-4 w-4" />
-                          Reject
-                        </Button>
-                      </div>
-                    ) : null}
-                  </div>
-                </CardContent>
-              </Card>
+              <ReservationCard
+                {...reservation}
+                key={reservation.id}
+                disableActions={tenants.length === max_tenants}
+              />
             ))}
           </div>
         </TabsContent>

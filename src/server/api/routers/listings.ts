@@ -168,7 +168,7 @@ export const listingsRouter = createTRPCRouter({
         subject: "Wohooo! Someone is interested in your listing!",
         react: OwnerBookingMessage({
           ownerName: listing.creator.name!,
-          linkToDashBoard: `https://flatmates.com/listing/${listing.id}/dashboard`,
+          linkToDashBoard: `https://flat-matess-2-vercel.app/listing/${listing.id}/dashboard`,
           tenantName: tenant.name!,
           propertyTitle: listing.title,
           tenantEmail: tenant.email,
@@ -191,6 +191,7 @@ export const listingsRouter = createTRPCRouter({
           listing: {
             with: {
               creator: true,
+              tenants: true,
             },
           },
           user: true,
@@ -208,6 +209,7 @@ export const listingsRouter = createTRPCRouter({
           message: "Only listing owner can perform such action",
         });
       }
+      let isListingFull = false;
       switch (input.action) {
         case "ACCEPT": {
           await db.transaction(async (tx) => {
@@ -254,6 +256,13 @@ export const listingsRouter = createTRPCRouter({
               monthlyPrice: res.listing.monthly_price,
             }),
           });
+          if (res.listing.tenants.length + 1 === res.listing.max_tenants) {
+            await db
+              .update(listings)
+              .set({ listing_status: "PRIVATE" })
+              .where(eq(listings.id, res.listing.id));
+            isListingFull = true;
+          }
           break;
         }
         case "REJECT": {
@@ -275,6 +284,9 @@ export const listingsRouter = createTRPCRouter({
           });
         }
       }
+      return {
+        isListingFull,
+      };
     }),
   editListing: protectedProcedure
     .input(updateListingSchema)
