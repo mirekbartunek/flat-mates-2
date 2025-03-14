@@ -65,6 +65,7 @@ export default async function Home({
                 size: "lg",
                 className: "group",
               })}
+              prefetch={true}
               href="/list-your-property"
             >
               <Plus className="mr-2 h-5 w-5 transition-transform duration-500 ease-in-out group-hover:rotate-[180deg]" />
