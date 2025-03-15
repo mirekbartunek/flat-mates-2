@@ -85,6 +85,10 @@ export const ListingDetailPage = async ({
 
   const addressString = `${listingDetails.street}, ${listingDetails.city}, ${listingDetails.country}`;
 
+  const isUserInListing = user
+    ? listingDetails.tenants.some((tenant) => tenant.id === user.user.id)
+    : false;
+
   return (
     <main className="container mx-auto space-y-8 py-8">
       {listingDetails.listing_status === "HIDDEN" ? (
@@ -283,7 +287,10 @@ export const ListingDetailPage = async ({
                 Go to dashboard
               </Link>
             ) : (
-              <ContactBuyerModal listingId={listingId} disabled={!user} />
+              <ContactBuyerModal
+                listingId={listingId}
+                disabled={!user || !isUserInListing}
+              />
             )}
             {isAdmin(user?.user.role ?? "USER") ? (
               <ListingAdminActions listingId={listingId} />

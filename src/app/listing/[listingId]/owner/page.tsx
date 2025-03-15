@@ -2,16 +2,12 @@ import { ListingOwnerPage } from "@/modules/listings/components/ListingOwnerPage
 import { api } from "@/trpc/server";
 import { notFound } from "next/navigation";
 import { getServerAuthSession } from "@/server/auth";
-import { getTranslations } from "next-intl/server";
 import { ErrorPage } from "@/modules/layout";
 const Page = async ({ params }: { params: Promise<{ listingId: string }> }) => {
   const { listingId } = await params;
   const details = await api.listings.getListingById({
     listingId: listingId,
   });
-
-  const unauthenticatedTranslations = await getTranslations("Unauthenticated");
-  const unauthorizedTranslations = await getTranslations("Unauthorized");
 
   const user = await getServerAuthSession();
   const mappedListing = {
@@ -22,10 +18,12 @@ const Page = async ({ params }: { params: Promise<{ listingId: string }> }) => {
   };
   if (!user)
     return (
-      <ErrorPage
-        title={unauthenticatedTranslations("title")}
-        desc={unauthenticatedTranslations("description")}
-      />
+      <main>
+        <ErrorPage
+          title="Unauthenticated"
+          desc="You must be authenticated to access this page"
+        />
+      </main>
     );
   if (!details) {
     return notFound();
@@ -33,10 +31,12 @@ const Page = async ({ params }: { params: Promise<{ listingId: string }> }) => {
 
   if (user.user.id !== details.userId) {
     return (
-      <ErrorPage
-        title={unauthorizedTranslations("title")}
-        desc={unauthorizedTranslations("description")}
-      />
+      <main>
+        <ErrorPage
+          title="Unauthorized"
+          desc="You are not authorized to view this page"
+        />
+      </main>
     );
   }
 

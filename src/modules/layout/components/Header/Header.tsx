@@ -2,8 +2,7 @@
 import * as React from "react";
 import { Link as TransitionLink } from "next-view-transitions";
 
-import { useTranslations } from "next-intl";
-import { Moon, Sun } from "lucide-react";
+import { Moon, Sun, Shield } from "lucide-react";
 import { useTheme } from "next-themes";
 import { api } from "@/trpc/react";
 import {
@@ -14,9 +13,9 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { signIn } from "next-auth/react";
-import { cn } from "@/lib/utils";
+import { cn, isAdmin } from "@/lib/utils";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -31,7 +30,6 @@ import { BrandLogo } from "@/components/icons";
 import Link from "next/link";
 
 export const Header = () => {
-  const t = useTranslations("Header");
   const { data: user, isLoading } = api.users.publicMe.useQuery(undefined, {
     staleTime: 1000 * 60,
     refetchInterval: 1000 * 120,
@@ -39,9 +37,9 @@ export const Header = () => {
   });
   const components: { title: string; href: string; description: string }[] = [
     {
-      title: t("flats.co-housing.title"),
+      title: "Co-housing",
       href: "/",
-      description: t("flats.co-housing.description"),
+      description: "Flats for more tenants, perfect for students",
     },
   ];
   return (
@@ -53,7 +51,7 @@ export const Header = () => {
         <NavigationMenuList>
           <NavigationMenuItem>
             <NavigationMenuTrigger className="text-xs sm:text-sm">
-              {t("heading")}
+              About
             </NavigationMenuTrigger>
             <NavigationMenuContent>
               <ul className="grid gap-1 p-6 sm:gap-3 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
@@ -67,16 +65,19 @@ export const Header = () => {
                         Flat Mates
                       </div>
                       <p className="text-muted-foreground text-sm leading-tight">
-                        {t("description")}
+                        Leasing and co-renting flats has never been easier
                       </p>
                     </TransitionLink>
                   </NavigationMenuLink>
                 </li>
-                <ListItem href="/list-your-property" title={t("offer.title")}>
-                  {t("offer.description")}
+                <ListItem
+                  href="/list-your-property"
+                  title="I want to lease a flat"
+                >
+                  Identify yourself on one of our points and start renting
                 </ListItem>
-                <ListItem href="/#listings" title={t("tenant.title")}>
-                  {t("tenant.description")}
+                <ListItem href="/#listings" title={"I want to rent a flat"}>
+                  Choose from the offers that suit your needs
                 </ListItem>
               </ul>
             </NavigationMenuContent>
@@ -102,6 +103,16 @@ export const Header = () => {
         </NavigationMenuList>
       </NavigationMenu>
       <div className="flex items-center gap-3">
+        {user && isAdmin(user.role) ? (
+          <Link
+            href="/admin"
+            className={buttonVariants({
+              variant: "outline",
+            })}
+          >
+            <Shield className="h-[1.2rem] w-[1.2rem]" />
+          </Link>
+        ) : null}
         <ModeToggle />
         {isLoading ? (
           <UserPopupSkeleton />

@@ -16,7 +16,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { RIGHT_TO_CHANGE_ROLES, RIGHT_TO_VERIFY_USERS } from "@/lib/constants";
+import {
+  CAN_MODIFY_ROLE,
+  RIGHT_TO_CHANGE_ROLES,
+  RIGHT_TO_VERIFY_USERS,
+} from "@/lib/constants";
 import { Button } from "@/components/ui/button";
 import type { FormEvent } from "react";
 import { useRouter } from "next/navigation";
@@ -50,10 +54,13 @@ export const UserRow = ({
 
   const router = useRouter();
 
+  // Zkontroluj, jestli aktuální admin může upravovat tohoto uživatele
+  const canModifyThisUser = CAN_MODIFY_ROLE[adminRole].includes(role);
+
   const { mutate: mutateVerification } = api.admin.verifyUser.useMutation({
-    onError: () =>
+    onError: (error) =>
       toast.error("Whoops!", {
-        description: "Something went wrong",
+        description: error.message || "Something went wrong",
       }),
     onSuccess: () => {
       router.refresh();
@@ -70,15 +77,15 @@ export const UserRow = ({
         description: "Changed user role",
       });
     },
-    onError: () =>
+    onError: (error) =>
       toast.error("Whoops", {
-        description: "Something went wrong",
+        description: error.message || "Something went wrong",
       }),
   });
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    if (!(formValues.role === role)) {
+    if (!(formValues.role === role) && canModifyThisUser) {
       mutateUserRole({
         userId: id,
         role: formValues.role,
@@ -118,6 +125,7 @@ export const UserRow = ({
                   role: res,
                 })
               }
+              disabled={!canModifyThisUser}
             >
               <SelectTrigger className="w-[200px]">
                 <SelectValue placeholder="User role" />
@@ -167,9 +175,10 @@ export const UserRow = ({
 
             <Button
               disabled={
-                formValues.role === role
+                !canModifyThisUser ||
+                (formValues.role === role
                   ? formValues.verified_status === verified_status
-                  : false
+                  : false)
               }
               type="submit"
               className="ml-auto"

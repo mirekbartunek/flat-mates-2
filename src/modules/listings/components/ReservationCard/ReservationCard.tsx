@@ -41,7 +41,7 @@ export const ReservationCard = ({
 }: ReservationCardProps) => {
   const router = useRouter();
 
-  const [showFullListingModal, setShowFullListingModal] = useState(true);
+  const [showFullListingModal, setShowFullListingModal] = useState(false);
 
   const { mutate, isPending } =
     api.listings.resolveReservationRequest.useMutation({

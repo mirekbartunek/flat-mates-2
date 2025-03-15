@@ -1,5 +1,4 @@
 import type { Listings } from "@/server/db/types";
-import { getTranslations } from "next-intl/server";
 import { Listing, ListingsFilter } from "@/modules/listings";
 
 type ListingAndImages = Listings & {
@@ -11,8 +10,6 @@ type LandingPageProps = {
 };
 
 export const ListingsPage = async ({ listings }: LandingPageProps) => {
-  const t = await getTranslations("Listings");
-
   if (listings.length === 0) {
     return (
       <main
@@ -20,7 +17,7 @@ export const ListingsPage = async ({ listings }: LandingPageProps) => {
         id="listings"
       >
         <div className="text-center">
-          <h2 className="text-2xl font-semibold">{t("not-found")}</h2>
+          <h2 className="text-2xl font-semibold">Look for your new housing</h2>
           <p className="text-muted-foreground mt-2">
             Check back later for new properties
           </p>
@@ -35,7 +32,7 @@ export const ListingsPage = async ({ listings }: LandingPageProps) => {
         {/* Header and filter section */}
         <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
           <div>
-            <h2 className="text-3xl font-bold">{t("title")}</h2>
+            <h2 className="text-3xl font-bold">No offers yet :(</h2>
             <p className="text-muted-foreground mt-1">
               Showing {listings.length} available properties
             </p>

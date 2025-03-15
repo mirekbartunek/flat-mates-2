@@ -1,7 +1,6 @@
 import { ListingsPage } from "@/modules/listings";
 import { db, listings } from "@/server/db";
 import { buttonVariants } from "@/components/ui/button";
-import { getTranslations } from "next-intl/server";
 import { Link } from "next-view-transitions";
 import { PageTop } from "@/modules/layout/components";
 import { Home as HomeIcon, Search, Plus, ArrowRight } from "lucide-react";
@@ -24,9 +23,7 @@ export default async function Home({
     where: eq(listings.listing_status, "PUBLIC"),
   });
   const awaitedParams = await searchParams;
-  const mappedListings = await getFilteredListings(awaitedParams);
-
-  const t = await getTranslations("Index");
+  const mappedListings = await getFilteredListings(awaitedParams); // pridat suspense
 
   return (
     <>
@@ -37,12 +34,12 @@ export default async function Home({
           <div className="flex items-center justify-center gap-2">
             <HomeIcon className="h-12 w-12 text-rose-500" />
             <h1 className="text-4xl font-bold tracking-tight text-rose-500 md:text-5xl lg:text-6xl">
-              {t("title")}
+              Flat Mates
             </h1>
           </div>
 
           <p className="text-muted-foreground mx-auto mt-6 max-w-2xl text-center text-lg">
-            {t("description")}
+            Rent flats with your mates
           </p>
 
           <div className="mt-10 flex flex-col justify-center gap-4 sm:flex-row">
@@ -55,7 +52,7 @@ export default async function Home({
               href="#listings"
             >
               <Search className="mr-2 h-5 w-5" />
-              {t("buttons.search-listings")}
+              Search listings
               <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
             </Link>
 
@@ -69,7 +66,7 @@ export default async function Home({
               href="/list-your-property"
             >
               <Plus className="mr-2 h-5 w-5 transition-transform duration-500 ease-in-out group-hover:rotate-[180deg]" />
-              {t("buttons.new-listing")}
+              List your property
             </Link>
           </div>
 

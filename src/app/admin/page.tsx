@@ -1,7 +1,6 @@
 import { getServerAuthSession } from "@/server/auth";
 import { ADMIN_ROLES } from "@/lib/constants";
 import { ErrorPage } from "@/modules/layout";
-import { getTranslations } from "next-intl/server";
 import { AdminPage } from "@/modules/admin/components/AdminPage/AdminPage";
 import { db } from "@/server/db";
 import { sql } from "drizzle-orm";
@@ -13,15 +12,13 @@ const Page = async ({
   searchParams?: Promise<Record<"user", string | undefined>>;
 }) => {
   const u = await getServerAuthSession();
-  const unauthenticatedTranslations = await getTranslations("Unauthenticated");
-  const unauthorizedTranslations = await getTranslations("Unauthorized");
 
   if (!u?.user.id) {
     return (
       <main>
         <ErrorPage
-          title={unauthenticatedTranslations("title")}
-          desc={unauthenticatedTranslations("description")}
+          title="Unauthenticated"
+          desc="You must be authenticated to access this page"
         />
       </main>
     );
@@ -31,8 +28,8 @@ const Page = async ({
     return (
       <main>
         <ErrorPage
-          title={unauthorizedTranslations("title")}
-          desc={unauthorizedTranslations("description")}
+          title="Unauthorized"
+          desc="You are not authorized to view this page"
         />
       </main>
     );

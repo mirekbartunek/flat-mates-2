@@ -1,7 +1,11 @@
 import { adminProcedure, createTRPCRouter } from "@/server/api/trpc";
 import z from "zod";
 import { userRoleEnumValues, userVerifiedEnumValues } from "@/server/db/enums";
-import { RIGHT_TO_CHANGE_ROLES, RIGHT_TO_VERIFY_USERS } from "@/lib/constants";
+import {
+  CAN_MODIFY_ROLE,
+  RIGHT_TO_CHANGE_ROLES,
+  RIGHT_TO_VERIFY_USERS,
+} from "@/lib/constants";
 import { TRPCError } from "@trpc/server";
 import { users } from "@/server/db";
 import { eq } from "drizzle-orm";
@@ -40,18 +44,37 @@ export const adminRouter = createTRPCRouter({
     )
     .mutation(async ({ input, ctx }) => {
       const { session, db } = ctx;
-      const canChangeUserRole = RIGHT_TO_CHANGE_ROLES[session.user.role];
-      if (!canChangeUserRole) {
+      const canChangeToRoles = RIGHT_TO_CHANGE_ROLES[session.user.role];
+
+      if (!canChangeToRoles.includes(input.role)) {
         throw new TRPCError({
           code: "UNAUTHORIZED",
-          message: "Your role is not sufficient",
+          message: "You cannot assign this role",
         });
       }
-      const res = await db
+
+      const targetUser = await db.query.users.findFirst({
+        where: eq(users.id, input.userId),
+        columns: { role: true },
+      });
+
+      if (!targetUser) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "User not found",
+        });
+      }
+
+      if (!CAN_MODIFY_ROLE[session.user.role].includes(targetUser.role)) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "You don't have permission to modify this user's role",
+        });
+      }
+
+      await db
         .update(users)
         .set({ role: input.role })
         .where(eq(users.id, input.userId));
-
-      return res;
     }),
 });
