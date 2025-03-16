@@ -5,6 +5,7 @@ import { getServerAuthSession } from "@/server/auth";
 import { NewNewListingForm } from "@/modules/listings/components/NewNewListingForm/NewNewListingForm";
 const Page = async () => {
   const session = await getServerAuthSession();
+
   if (!session?.user.id) {
     return (
       <main>
@@ -15,10 +16,13 @@ const Page = async () => {
       </main>
     );
   }
+
   const dbUser = await db.query.users.findFirst({
     where: eq(users.id, session.user.id),
   });
+
   const role = dbUser?.verified_status;
+
   if (role === "UNVERIFIED")
     return (
       <main>
@@ -28,11 +32,12 @@ const Page = async () => {
         />
       </main>
     );
+
   return (
     <main>
       <PageTop>
         <h1 className="text-4xl font-bold tracking-tight text-rose-500 md:text-5xl lg:text-6xl">
-          Create a new listing1
+          Create a new listing
         </h1>
       </PageTop>
       <section className="container">

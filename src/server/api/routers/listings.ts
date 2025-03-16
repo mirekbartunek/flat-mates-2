@@ -1,6 +1,7 @@
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { createListingSchema, updateListingSchema } from "@/server/db/types";
 import {
+  files,
   listingFiles,
   listingReservations,
   listings,
@@ -382,5 +383,94 @@ export const listingsRouter = createTRPCRouter({
         throw new TRPCError({ message: "Unauthorized", code: "UNAUTHORIZED" });
 
       await db.delete(listings).where(eq(listings.id, listing.id));
+    }),
+  addImagesToListing: protectedProcedure
+    .input(
+      z.object({
+        listingId: z.string(),
+        fileIds: z.array(z.string()),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { db, session } = ctx;
+
+      const listing = await db.query.listings.findFirst({
+        where: eq(listings.id, input.listingId),
+      });
+
+      if (!listing) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Listing not found",
+        });
+      }
+
+      if (listing.userId !== session.user.id) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "Only listing owner can add images to this listing",
+        });
+      }
+
+      await db.insert(listingFiles).values(
+        input.fileIds.map((fileId) => ({
+          listingId: input.listingId,
+          fileId: fileId,
+        }))
+      );
+
+      return { success: true };
+    }),
+  removeImageFromListing: protectedProcedure
+    .input(
+      z.object({
+        listingId: z.string(),
+        fileId: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { db, session } = ctx;
+
+      const listing = await db.query.listings.findFirst({
+        where: eq(listings.id, input.listingId),
+      });
+
+      if (!listing) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Listing not found",
+        });
+      }
+
+      if (listing.userId !== session.user.id) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "Only listing owner can remove images from this listing",
+        });
+      }
+
+      await db.transaction(async (tx) => {
+        const linkRecord = await tx.query.listingFiles.findFirst({
+          where:
+            eq(listingFiles.listingId, input.listingId) &&
+            eq(listingFiles.fileId, input.fileId),
+        });
+
+        if (!linkRecord) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "File not found in this listing",
+          });
+        }
+
+        await tx
+          .delete(listingFiles)
+          .where(
+            eq(listingFiles.listingId, input.listingId) &&
+              eq(listingFiles.fileId, input.fileId)
+          );
+
+        await tx.delete(files).where(eq(files.id, input.fileId));
+      });
     }),
 });

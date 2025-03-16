@@ -26,3 +26,11 @@ export const RIGHT_TO_VERIFY_USERS: Record<UserRole, boolean> = {
   SUPERADMIN: true,
   USER: false,
 };
+
+export const MAX_FILE_COUNT = 10;
+
+export const fileValidator = {
+  maxFileSize: "4MB",
+  maxFileCount: 10,
+  accepted: ["image/jpeg", "image/png", "image/webp"],
+};

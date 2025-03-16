@@ -1,15 +1,36 @@
 import { ListingOwnerPage } from "@/modules/listings/components/ListingOwnerPage/ListingOwnerPage";
-import { api } from "@/trpc/server";
 import { notFound } from "next/navigation";
 import { getServerAuthSession } from "@/server/auth";
 import { ErrorPage } from "@/modules/layout";
+import { eq } from "drizzle-orm";
+import { db, listings } from "@/server/db";
 const Page = async ({ params }: { params: Promise<{ listingId: string }> }) => {
   const { listingId } = await params;
-  const details = await api.listings.getListingById({
-    listingId: listingId,
+  const details = await db.query.listings.findFirst({
+    where: eq(listings.id, listingId),
+    with: {
+      reservations: {
+        with: {
+          user: true,
+        },
+      },
+      creator: true,
+      tenants: {
+        with: {
+          tenant: true,
+        },
+      },
+      files: {
+        with: {
+          file: true,
+        },
+      },
+    },
   });
 
   const user = await getServerAuthSession();
+
+  if (!details) return notFound();
   const mappedListing = {
     ...details,
     tenants: details.tenants.map((t) => ({

@@ -36,12 +36,7 @@ import {
 import type { TenantSocial } from "@/server/db/enums";
 import { Loader2 } from "lucide-react";
 import Map from "@/modules/listings/components/Map/Map";
-
-export const fileValidator = {
-  maxFileSize: "4MB",
-  maxFileCount: 10,
-  accepted: ["image/jpeg", "image/png", "image/webp"],
-};
+import { fileValidator } from "@/lib/constants";
 
 const steps = [
   {
@@ -334,7 +329,6 @@ export const NewNewListingForm = () => {
                           field.onChange(parseInt(e.target.value) ?? 0)
                         }
                         min={0}
-                        value={isNaN(field.value) ? 0 : field.value}
                         placeholder="e.g., 75"
                       />
                     </FormControl>
@@ -359,7 +353,6 @@ export const NewNewListingForm = () => {
                         onChange={(e) =>
                           field.onChange(e.target.valueAsNumber ?? 0)
                         }
-                        value={field.value ?? 0}
                         placeholder="e.g., 3"
                       />
                     </FormControl>
@@ -764,7 +757,6 @@ export const NewNewListingForm = () => {
           </div>
         </div>
 
-        {/* Form Content */}
         <div className="bg-card rounded-lg border p-6 shadow-sm">
           <div className="mb-6">
             <h2 className="text-2xl font-bold text-rose-500">
@@ -818,14 +810,13 @@ export const NewNewListingForm = () => {
           </Form>
         </div>
 
-        {/* Optional: Help text */}
         <p className="text-muted-foreground text-center text-sm">
           Need help? Contact support at{" "}
           <a
-            href="mailto:support@flatmates.com"
+            href="mailto:flat-mates-support@miroslavbartunek.com"
             className="text-rose-500 hover:underline"
           >
-            support@flatmates.com
+            flat-mates-support@miroslavbartunek.com
           </a>
         </p>
       </div>

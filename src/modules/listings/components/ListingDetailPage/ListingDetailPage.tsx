@@ -90,14 +90,14 @@ export const ListingDetailPage = async ({
     : false;
 
   return (
-    <main className="container mx-auto space-y-8 py-8">
+    <main className="container mx-auto max-w-full space-y-8 px-4 py-8">
       {listingDetails.listing_status === "HIDDEN" ? (
         <div className="fixed right-4 bottom-4 z-50 flex items-center gap-2 rounded-lg bg-black/85 px-4 py-2.5 text-sm font-medium text-white shadow-lg">
           <EyeOff className="h-5 w-5" />
           <span>Visible to you only</span>
         </div>
       ) : null}
-      <div className="relative h-[400px] overflow-hidden rounded-xl">
+      <div className="relative h-[250px] overflow-hidden rounded-xl sm:h-[300px] md:h-[400px]">
         <div className="absolute inset-0">
           <ImageCell
             src={imageUrls.at(0)!}
@@ -108,9 +108,11 @@ export const ListingDetailPage = async ({
           />
           <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent" />
         </div>
-        <div className="absolute bottom-0 p-8 text-white">
-          <h1 className="mb-2 text-4xl font-bold">{listingDetails.title}</h1>
-          <div className="flex items-center gap-2">
+        <div className="absolute bottom-0 p-4 text-white sm:p-6 md:p-8">
+          <h1 className="mb-2 text-2xl font-bold sm:text-3xl md:text-4xl">
+            {listingDetails.title}
+          </h1>
+          <div className="flex flex-wrap items-center gap-2">
             <Badge variant="secondary" className="bg-white/20">
               {listingDetails.tenants.length}/{listingDetails.max_tenants}{" "}
               Tenants
@@ -122,14 +124,14 @@ export const ListingDetailPage = async ({
         </div>
       </div>
 
-      <div className="grid gap-8 md:grid-cols-3">
+      <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
         <div className="space-y-6 md:col-span-2">
           <Card>
             <CardHeader>
               <CardTitle>About this property</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-muted-foreground">
+              <p className="text-muted-foreground overflow-hidden break-words">
                 {listingDetails.description}
               </p>
             </CardContent>
@@ -139,19 +141,17 @@ export const ListingDetailPage = async ({
             <CardHeader>
               <CardTitle>Gallery</CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
-                {imageUrls.map((image) => (
-                  <ImageCell
-                    key={image}
-                    src={image}
-                    alt="Property image"
-                    width={300}
-                    height={300}
-                    className="rounded-lg transition hover:opacity-90"
-                  />
-                ))}
-              </div>
+            <CardContent className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+              {imageUrls.map((image) => (
+                <ImageCell
+                  key={image}
+                  src={image}
+                  alt="Property image"
+                  width={300}
+                  height={300}
+                  className="aspect-square w-full rounded-md border object-cover"
+                />
+              ))}
             </CardContent>
           </Card>
 
@@ -160,8 +160,12 @@ export const ListingDetailPage = async ({
               <CardTitle>Location</CardTitle>
             </CardHeader>
             <CardContent>
-              <p>{addressString}</p>
-              <ListingLocation coordinates={listingDetails.location} />
+              <p className="break-words">{addressString}</p>
+
+              {/* Jediná změna - přidaná výška */}
+              <div className="mt-4 h-[350px] overflow-hidden rounded-lg">
+                <ListingLocation coordinates={listingDetails.location} />
+              </div>
             </CardContent>
           </Card>
 
@@ -171,23 +175,24 @@ export const ListingDetailPage = async ({
                 <CardTitle>Current Tenants</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                   {listingDetails.tenants.map(({ tenant }) => (
-                    <div key={tenant?.id} className="flex items-center gap-3">
-                      <Avatar className="self-start">
+                    <div key={tenant?.id} className="flex items-start gap-3">
+                      <Avatar className="flex-shrink-0">
                         <AvatarFallback>{tenant?.name.at(0)}</AvatarFallback>
                       </Avatar>
-                      <div>
-                        <p className="font-medium">{tenant?.name}</p>
-                        <p className="text-muted-foreground max-w-[200px] truncate text-sm">
+                      <div className="min-w-0">
+                        <p className="truncate font-medium">{tenant?.name}</p>
+                        <p className="text-muted-foreground line-clamp-2 text-sm">
                           {tenant?.bio}
                         </p>
-                        <div className="mt-2">
+                        <div className="mt-2 flex flex-wrap gap-2">
                           {tenant.socials.map((social) => (
                             <Link
                               href={social.url}
                               key={social.id}
                               target="_blank"
+                              className="inline-block"
                             >
                               {tenantSocialIcon[social.social_enum]}
                             </Link>
@@ -208,14 +213,16 @@ export const ListingDetailPage = async ({
               <CardTitle>Listed by</CardTitle>
             </CardHeader>
             <CardContent className="flex items-center gap-4">
-              <Avatar className="h-12 w-12">
+              <Avatar className="h-12 w-12 flex-shrink-0">
                 <AvatarImage>{listingDetails.creator.image}</AvatarImage>
                 <AvatarFallback>
                   {listingDetails.creator.name?.[0]}
                 </AvatarFallback>
               </Avatar>
-              <div>
-                <p className="font-medium">{listingDetails.creator.name}</p>
+              <div className="min-w-0">
+                <p className="truncate font-medium">
+                  {listingDetails.creator.name}
+                </p>
                 <p className="text-muted-foreground text-sm">Property Owner</p>
               </div>
             </CardContent>
@@ -227,7 +234,7 @@ export const ListingDetailPage = async ({
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center gap-3">
-                <Users className="text-muted-foreground h-5 w-5" />
+                <Users className="text-muted-foreground h-5 w-5 flex-shrink-0" />
                 <div>
                   <p className="font-medium">Capacity</p>
                   <p className="text-muted-foreground text-sm">
@@ -237,7 +244,7 @@ export const ListingDetailPage = async ({
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <DollarSign className="text-muted-foreground h-5 w-5" />
+                <DollarSign className="text-muted-foreground h-5 w-5 flex-shrink-0" />
                 <div>
                   <p className="font-medium">Monthly Rent</p>
                   <p className="text-muted-foreground text-sm">
@@ -246,7 +253,7 @@ export const ListingDetailPage = async ({
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <Calendar className="text-muted-foreground h-5 w-5" />
+                <Calendar className="text-muted-foreground h-5 w-5 flex-shrink-0" />
                 <div>
                   <p className="font-medium">Listed</p>
                   <p className="text-muted-foreground text-sm">
@@ -259,7 +266,7 @@ export const ListingDetailPage = async ({
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <Square className="text-muted-foreground h-5 w-5" />
+                <Square className="text-muted-foreground h-5 w-5 flex-shrink-0" />
                 <div>
                   <p className="font-medium">Area</p>
                   <p className="text-muted-foreground text-sm">
@@ -268,7 +275,7 @@ export const ListingDetailPage = async ({
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <DoorOpen className="text-muted-foreground h-5 w-5" />
+                <DoorOpen className="text-muted-foreground h-5 w-5 flex-shrink-0" />
                 <div>
                   <p className="font-medium">Rooms</p>
                   <p className="text-muted-foreground text-sm">
@@ -278,11 +285,11 @@ export const ListingDetailPage = async ({
               </div>
             </CardContent>
           </Card>
-          <div className="flex flex-row gap-5">
+          <div className="flex flex-col gap-3 sm:flex-row">
             {user?.user.id === listingDetails.creator.id ? (
               <Link
                 href={`${getUrl()}/listing/${listingDetails.id}/owner`}
-                className={buttonVariants()}
+                className={buttonVariants({ className: "w-full sm:w-auto" })}
               >
                 Go to dashboard
               </Link>

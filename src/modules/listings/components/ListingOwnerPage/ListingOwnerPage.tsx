@@ -11,11 +11,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Users, Home, Calendar, DollarSign, Trash2, Eye } from "lucide-react";
 
 import type { InferSelectModel } from "drizzle-orm";
-import type {
-  listingReservations,
-  listings,
-  tenants,
-  users,
+import {
+  type files,
+  type listingReservations,
+  type listings,
+  type tenants,
+  type users,
 } from "@/server/db";
 import { Button } from "@/components/ui/button";
 import { api } from "@/trpc/react";
@@ -31,6 +32,9 @@ import { EditListingCapacity } from "@/modules/listings/components/EditListingCa
 import { EditListingStatus } from "@/modules/listings/components/EditListingStatus/EditListingStatus";
 import { displayListingStatusDescription } from "@/modules/listings/utils/displayListingStatusDescription";
 import { ReservationCard } from "@/modules/listings/components/ReservationCard/ReservationCard";
+import { ImageCell } from "@/modules/listings/components/ImageCell/ImageCell";
+import { AddListingImageModal } from "@/modules/listings/components/AddListingImageModal/AddListingImageModal";
+import { MAX_FILE_COUNT } from "@/lib/constants";
 
 type ListingWithRelations = InferSelectModel<typeof listings> & {
   reservations: (InferSelectModel<typeof listingReservations> & {
@@ -40,8 +44,16 @@ type ListingWithRelations = InferSelectModel<typeof listings> & {
   tenants: {
     tenant: InferSelectModel<typeof tenants>;
   }[];
+  files: {
+    id: string;
+    listingId: string;
+    fileId: string;
+    file: InferSelectModel<typeof files>;
+  }[];
 };
+
 type ListingOwnerPageProps = ListingWithRelations;
+
 export const ListingOwnerPage = ({
   title,
   description,
@@ -52,6 +64,7 @@ export const ListingOwnerPage = ({
   id,
   reservations,
   listing_status,
+  files,
 }: ListingOwnerPageProps) => {
   const router = useRouter();
 
@@ -61,6 +74,14 @@ export const ListingOwnerPage = ({
       router.refresh();
     },
   });
+
+  const { mutate: removeImage } =
+    api.listings.removeImageFromListing.useMutation({
+      onSuccess: () => {
+        toast.success("Successfully removed image");
+        router.refresh();
+      },
+    });
 
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -73,17 +94,21 @@ export const ListingOwnerPage = ({
   const numberOfPendingReservations = reservations.filter(
     (reservation) => reservation.status === "pending"
   ).length;
+
+  const imageUrlsWithId = files.map((f) => ({ url: f.file.url, id: f.fileId }));
+
   return (
-    <main className="container mx-auto space-y-6 py-8">
-      <div className="flex items-start justify-between">
-        <div>
+    <main className="container mx-auto space-y-6 px-4 py-6 md:py-8">
+      {/* Title, description and price section */}
+      <div className="flex flex-col items-start gap-6 md:flex-row md:justify-between">
+        <div className="w-full md:w-auto">
           <EditListingTitle currentTitle={title} listingId={id} />
           <EditListingDescription
             currentDescription={description}
             listingId={id}
           />
         </div>
-        <Card className="group/edit relative w-[200px]">
+        <Card className="group/edit relative mt-4 w-full sm:w-[200px] md:mt-0">
           <EditListingPrice previousPrice={monthly_price} listingId={id} />
           <CardHeader className="space-y-1">
             <div className="flex items-center gap-2">
@@ -100,7 +125,8 @@ export const ListingOwnerPage = ({
         </Card>
       </div>
 
-      <div className="grid grid-cols-3 gap-4">
+      {/* Info cards grid */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Card className="group/edit relative">
           <EditListingCapacity previous_capacity={max_tenants} listingId={id} />
           <CardHeader>
@@ -159,19 +185,56 @@ export const ListingOwnerPage = ({
           </CardHeader>
           <CardContent className="flex flex-col items-start gap-3">
             <EditListingStatus currentStatus={listing_status} listingId={id} />
-            <p>{displayListingStatusDescription(listing_status)}</p>
+            <p className="text-sm">
+              {displayListingStatusDescription(listing_status)}
+            </p>
           </CardContent>
         </Card>
       </div>
 
+      {/* Images section */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Images</CardTitle>
+        </CardHeader>
+        <CardContent className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+          {imageUrlsWithId.map((image) => (
+            <ImageCell
+              key={image.id}
+              src={image.url}
+              alt="Property image"
+              allowDelete={true}
+              onDelete={() => removeImage({ listingId: id, fileId: image.id })}
+              width={300}
+              height={300}
+              className="aspect-square w-full rounded-md border object-cover"
+            />
+          ))}
+
+          {imageUrlsWithId.length < MAX_FILE_COUNT ? (
+            <div className="aspect-square w-full overflow-hidden rounded-md border">
+              <AddListingImageModal
+                listingId={id}
+                onImagesAdded={() => router.refresh()}
+              />
+            </div>
+          ) : null}
+        </CardContent>
+      </Card>
+
+      {/* Tabs section */}
       <Tabs defaultValue="tenants" className="w-full">
-        <TabsList>
-          <TabsTrigger value="tenants">Current Tenants</TabsTrigger>
-          <TabsTrigger value="reservations">Reservations</TabsTrigger>
+        <TabsList className="w-full sm:w-auto">
+          <TabsTrigger value="tenants" className="flex-1 sm:flex-none">
+            Current Tenants
+          </TabsTrigger>
+          <TabsTrigger value="reservations" className="flex-1 sm:flex-none">
+            Reservations
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="tenants" className="mt-6">
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {tenants.map(({ tenant }) => (
               <Card key={tenant.id} className="group relative">
                 <Button
@@ -183,15 +246,17 @@ export const ListingOwnerPage = ({
                     })
                   }
                 >
-                  <Trash2 />
+                  <Trash2 className="h-4 w-4" />
                 </Button>
-                <CardHeader className="flex flex-row items-center gap-4">
+                <CardHeader className="flex flex-row items-center gap-4 p-4 sm:p-6">
                   <Avatar>
                     <AvatarFallback>{tenant.name[0]}</AvatarFallback>
                   </Avatar>
                   <div>
-                    <CardTitle>{tenant.name}</CardTitle>
-                    <CardDescription className="mt-1.5">
+                    <CardTitle className="text-base sm:text-lg">
+                      {tenant.name}
+                    </CardTitle>
+                    <CardDescription className="mt-1 text-xs sm:text-sm">
                       {tenant.bio}
                     </CardDescription>
                   </div>
@@ -211,14 +276,21 @@ export const ListingOwnerPage = ({
               type="search"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
+              className="max-w-full sm:max-w-md"
             />
-            {filteredReservations.map((reservation) => (
-              <ReservationCard
-                {...reservation}
-                key={reservation.id}
-                disableActions={tenants.length === max_tenants}
-              />
-            ))}
+            {filteredReservations.length > 0 ? (
+              filteredReservations.map((reservation) => (
+                <ReservationCard
+                  {...reservation}
+                  key={reservation.id}
+                  disableActions={tenants.length === max_tenants}
+                />
+              ))
+            ) : (
+              <p className="text-muted-foreground py-4">
+                No reservations found.
+              </p>
+            )}
           </div>
         </TabsContent>
       </Tabs>

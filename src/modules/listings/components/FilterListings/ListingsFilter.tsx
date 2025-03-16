@@ -72,14 +72,13 @@ export function ListingsFilter() {
   };
 
   return (
-    <div className="mb-6 space-y-4">
-      <div className="flex flex-wrap gap-3">
-        {/* Sort filter */}
+    <div className="mb-6 space-y-6">
+      <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
         <Select
           value={filters.sort}
           onValueChange={(value) => handleFilterChange("sort", value)}
         >
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="w-full sm:w-[180px]">
             <SelectValue placeholder="Sort by" />
           </SelectTrigger>
           <SelectContent>
@@ -92,12 +91,11 @@ export function ListingsFilter() {
           </SelectContent>
         </Select>
 
-        {/* Capacity filter */}
         <Select
           value={filters.capacity}
           onValueChange={(value) => handleFilterChange("capacity", value)}
         >
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="w-full sm:w-[180px]">
             <SelectValue placeholder="Filter by capacity" />
           </SelectTrigger>
           <SelectContent>
@@ -108,71 +106,81 @@ export function ListingsFilter() {
           </SelectContent>
         </Select>
 
-        {/* City filter */}
         <Input
-          className="w-[180px]"
+          className="w-full sm:w-[180px]"
           placeholder="Filter by city"
           value={filters.city}
           onChange={(e) => handleFilterChange("city", e.target.value)}
         />
 
-        {/* Location filter */}
-        <LocationFilter />
+        <div className="w-full sm:w-auto">
+          <LocationFilter />
+        </div>
       </div>
 
-      <div className="flex flex-wrap gap-4">
-        {/* Price range */}
-        <div className="flex items-center gap-2">
-          <Input
-            type="number"
-            placeholder="Min price"
-            className="w-28"
-            value={filters.minPrice}
-            onChange={(e) => handleFilterChange("minPrice", e.target.value)}
-          />
-          <span>to</span>
-          <Input
-            type="number"
-            placeholder="Max price"
-            className="w-28"
-            value={filters.maxPrice}
-            onChange={(e) => handleFilterChange("maxPrice", e.target.value)}
-          />
+      <div className="grid grid-cols-1 gap-4 sm:flex sm:flex-wrap sm:items-center">
+        <div className="flex items-center">
+          <div className="mr-2 w-20 text-sm">Price range:</div>
+          <div className="flex items-center gap-2">
+            <Input
+              type="number"
+              placeholder="Min"
+              className="w-[80px]"
+              value={filters.minPrice}
+              onChange={(e) => handleFilterChange("minPrice", e.target.value)}
+            />
+            <span className="text-sm">to</span>
+            <Input
+              type="number"
+              placeholder="Max"
+              className="w-[80px]"
+              value={filters.maxPrice}
+              onChange={(e) => handleFilterChange("maxPrice", e.target.value)}
+            />
+          </div>
         </div>
 
-        {/* Rooms filter */}
-        <div className="flex items-center gap-2">
-          <span>Min rooms:</span>
+        <div className="flex items-center">
+          <div className="mr-2 w-20 text-sm">Min rooms:</div>
           <Input
             type="number"
             min="1"
-            className="w-20"
+            className="w-[80px]"
             value={filters.minRooms}
             onChange={(e) => handleFilterChange("minRooms", e.target.value)}
           />
         </div>
 
-        {/* Area filter */}
-        <div className="flex items-center gap-2">
-          <span>Min area:</span>
-          <Input
-            type="number"
-            min="1"
-            className="w-20"
-            value={filters.minArea}
-            onChange={(e) => handleFilterChange("minArea", e.target.value)}
-          />
-          <span>m²</span>
+        <div className="flex items-center">
+          <div className="mr-2 w-20 text-sm">Min area:</div>
+          <div className="flex items-center gap-2">
+            <Input
+              type="number"
+              min="1"
+              className="w-[80px]"
+              value={filters.minArea}
+              onChange={(e) => handleFilterChange("minArea", e.target.value)}
+            />
+            <span className="text-sm">m²</span>
+          </div>
         </div>
 
-        {/* Filter buttons */}
-        <div className="ml-auto flex gap-2">
+        <div className="flex gap-2 sm:ml-auto">
           {searchParams.toString() ? (
-            <Button variant="outline" onClick={clearAllFilters} type="button">
+            <Button
+              variant="outline"
+              onClick={clearAllFilters}
+              type="button"
+              className="flex-1 sm:flex-none"
+            >
               Clear Filters
             </Button>
           ) : null}
-          <Button onClick={applyFilters} type="button">
+          <Button
+            onClick={applyFilters}
+            type="button"
+            className="flex-1 sm:flex-none"
+          >
             Apply Filters
           </Button>
         </div>

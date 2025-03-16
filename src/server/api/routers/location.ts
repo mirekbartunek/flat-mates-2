@@ -51,7 +51,7 @@ export const locationRouter = createTRPCRouter({
     );
     return (await res.json()) as StyleSpecification;
   }),
-  getAdressByCoords: protectedProcedure
+  getAdressByCoords: publicProcedure
     .input(
       z.object({
         lat: z.number(),
