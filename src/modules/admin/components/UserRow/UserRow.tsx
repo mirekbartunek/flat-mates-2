@@ -54,7 +54,6 @@ export const UserRow = ({
 
   const router = useRouter();
 
-  // Zkontroluj, jestli aktuální admin může upravovat tohoto uživatele
   const canModifyThisUser = CAN_MODIFY_ROLE[adminRole].includes(role);
 
   const { mutate: mutateVerification } = api.admin.verifyUser.useMutation({

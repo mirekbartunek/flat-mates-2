@@ -40,6 +40,7 @@ export const users = pgTable("user", {
 export const usersRelations = relations(users, ({ many }) => ({
   accounts: many(accounts),
   listings: many(listings),
+  tenants: many(tenants),
 }));
 
 export const accounts = pgTable(
@@ -171,6 +172,7 @@ export const tenants = pgTable("tenants", {
   id: uuid().primaryKey().defaultRandom(),
   name: text().notNull(),
   bio: text().notNull(),
+  flat_mates_user_id: text().references(() => users.id), // i added this row, update the relations
 });
 
 export const socialEnum = pgEnum("socials", tenantSocialsEnumValues);
@@ -245,9 +247,13 @@ export const listingFilesRelations = relations(listingFiles, ({ one }) => ({
   }),
 }));
 
-export const tenantsRelations = relations(tenants, ({ many }) => ({
+export const tenantsRelations = relations(tenants, ({ many, one }) => ({
   socials: many(tenantSocials),
   listings: many(listingTenants),
+  user: one(users, {
+    fields: [tenants.flat_mates_user_id],
+    references: [users.id],
+  }),
 }));
 
 export const tenantSocialsRelations = relations(tenantSocials, ({ one }) => ({

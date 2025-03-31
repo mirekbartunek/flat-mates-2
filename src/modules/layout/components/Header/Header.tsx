@@ -1,10 +1,8 @@
 "use client";
 import * as React from "react";
 import { Link as TransitionLink } from "next-view-transitions";
-
 import { Moon, Sun, Shield } from "lucide-react";
 import { useTheme } from "next-themes";
-import { api } from "@/trpc/react";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -14,7 +12,7 @@ import {
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import { cn, isAdmin } from "@/lib/utils";
 import {
   DropdownMenu,
@@ -30,11 +28,9 @@ import { BrandLogo } from "@/components/icons";
 import Link from "next/link";
 
 export const Header = () => {
-  const { data: user, isLoading } = api.users.publicMe.useQuery(undefined, {
-    staleTime: 1000 * 60,
-    refetchInterval: 1000 * 120,
-    throwOnError: false,
-  });
+  const { data: sessionData, status } = useSession();
+  const user = sessionData?.user;
+
   const components: { title: string; href: string; description: string }[] = [
     {
       title: "Co-housing",
@@ -42,29 +38,34 @@ export const Header = () => {
       description: "Flats for more tenants, perfect for students",
     },
   ];
+
   return (
-    <div className="flex max-w-full flex-row items-center justify-between px-5 py-2 sm:px-20">
-      <NavigationMenu>
-        <TransitionLink href="/">
+    <div className="flex max-w-full flex-row items-center justify-between px-2 py-2 sm:px-5 lg:px-20">
+      <NavigationMenu className="relative">
+        <TransitionLink
+          href="/"
+          className="absolute top-1/2 left-0 z-20 -translate-y-1/2"
+        >
           <BrandLogo className="text-primary dark:text-primary h-6 w-6" />
         </TransitionLink>
-        <NavigationMenuList>
+
+        <NavigationMenuList className="space-x-1 pl-8 sm:space-x-2 sm:pl-12">
           <NavigationMenuItem>
-            <NavigationMenuTrigger className="text-xs sm:text-sm">
+            <NavigationMenuTrigger className="h-auto px-2 py-1 text-[11px] sm:px-3 sm:py-1.5 sm:text-xs">
               About
             </NavigationMenuTrigger>
             <NavigationMenuContent>
-              <ul className="grid gap-1 p-6 sm:gap-3 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
+              <ul className="grid gap-1 p-3 sm:gap-3 sm:p-6 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
                 <li className="row-span-3">
                   <NavigationMenuLink asChild>
                     <TransitionLink
                       href="/"
-                      className="flex h-full w-full flex-col justify-end rounded-md bg-rose-100 p-6 no-underline outline-hidden select-none focus:shadow-md dark:bg-rose-950"
+                      className="flex h-full w-full flex-col justify-end rounded-md bg-rose-100 p-3 no-underline outline-hidden select-none focus:shadow-md sm:p-6 dark:bg-rose-950"
                     >
-                      <div className="mt-4 mb-2 text-lg font-medium">
+                      <div className="mt-2 mb-1 text-base font-medium sm:mt-4 sm:mb-2 sm:text-lg">
                         Flat Mates
                       </div>
-                      <p className="text-muted-foreground text-sm leading-tight">
+                      <p className="text-muted-foreground text-xs leading-tight sm:text-sm">
                         Leasing and co-renting flats has never been easier
                       </p>
                     </TransitionLink>
@@ -83,11 +84,11 @@ export const Header = () => {
             </NavigationMenuContent>
           </NavigationMenuItem>
           <NavigationMenuItem>
-            <NavigationMenuTrigger className="text-xs sm:text-sm">
+            <NavigationMenuTrigger className="h-auto px-2 py-1 text-[11px] sm:px-3 sm:py-1.5 sm:text-xs">
               Flats
             </NavigationMenuTrigger>
             <NavigationMenuContent>
-              <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
+              <ul className="grid w-[300px] gap-2 p-3 sm:w-[400px] sm:gap-3 sm:p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
                 {components.map((component) => (
                   <ListItem
                     key={component.title}
@@ -102,19 +103,23 @@ export const Header = () => {
           </NavigationMenuItem>
         </NavigationMenuList>
       </NavigationMenu>
-      <div className="flex items-center gap-3">
+
+      <div className="flex items-center gap-1 sm:gap-3">
         {user && isAdmin(user.role) ? (
           <Link
             href="/admin"
-            className={buttonVariants({
-              variant: "outline",
-            })}
+            className={cn(
+              buttonVariants({ variant: "outline", size: "icon" }),
+              "h-8 w-8 sm:h-9 sm:w-9"
+            )}
           >
-            <Shield className="h-[1.2rem] w-[1.2rem]" />
+            <Shield className="h-4 w-4 sm:h-[1.2rem] sm:w-[1.2rem]" />
           </Link>
         ) : null}
+
         <ModeToggle />
-        {isLoading ? (
+
+        {status === "loading" ? (
           <UserPopupSkeleton />
         ) : user ? (
           <UserPopup
@@ -124,9 +129,13 @@ export const Header = () => {
             role={user.role}
           />
         ) : (
-          <>
-            <Button onClick={() => signIn("google")}>Log in</Button>
-          </>
+          <Button
+            onClick={() => signIn("google")}
+            size="sm"
+            className="px-2 text-xs sm:px-3 sm:text-sm"
+          >
+            Log in
+          </Button>
         )}
       </div>
     </div>
@@ -143,13 +152,15 @@ const ListItem = React.forwardRef<
         <a
           ref={ref}
           className={cn(
-            "hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground block space-y-1 rounded-md p-3 leading-none no-underline outline-hidden transition-colors select-none",
+            "hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground block space-y-1 rounded-md p-2 leading-none no-underline outline-hidden transition-colors select-none sm:p-3",
             className
           )}
           {...props}
         >
-          <div className="text-sm leading-none font-medium">{title}</div>
-          <p className="text-muted-foreground line-clamp-2 text-sm leading-snug">
+          <div className="text-xs leading-none font-medium sm:text-sm">
+            {title}
+          </div>
+          <p className="text-muted-foreground line-clamp-2 text-xs leading-snug sm:text-sm">
             {children}
           </p>
         </a>
@@ -158,15 +169,16 @@ const ListItem = React.forwardRef<
   );
 });
 ListItem.displayName = "ListItem";
+
 const ModeToggle = () => {
   const { setTheme } = useTheme();
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="icon">
-          <Sun className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
-          <Moon className="absolute h-[1.2rem] w-[1.2rem] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
+        <Button variant="outline" size="icon" className="h-8 w-8 sm:h-9 sm:w-9">
+          <Sun className="h-4 w-4 scale-100 rotate-0 transition-all sm:h-[1.2rem] sm:w-[1.2rem] dark:scale-0 dark:-rotate-90" />
+          <Moon className="absolute h-4 w-4 scale-0 rotate-90 transition-all sm:h-[1.2rem] sm:w-[1.2rem] dark:scale-100 dark:rotate-0" />
           <span className="sr-only">Toggle theme</span>
         </Button>
       </DropdownMenuTrigger>
@@ -184,6 +196,7 @@ const ModeToggle = () => {
     </DropdownMenu>
   );
 };
+
 const UserPopup = ({
   image,
   name,
@@ -196,21 +209,30 @@ const UserPopup = ({
   isVerified: boolean;
 }) => {
   const isAdmin = role === "ADMIN" || role === "SUPERADMIN";
-  console.log(role);
-  console.log(isVerified);
+
   return (
-    <Link className="flex h-fit gap-2" href="/me">
+    <Link className="flex h-fit gap-1 sm:gap-2" href="/me">
       <div>
-        <Avatar>
+        <Avatar className="h-8 w-8 sm:h-9 sm:w-9">
           <AvatarImage src={image} alt={`Profile Image`} />
-          <AvatarFallback>{name}</AvatarFallback>
+          <AvatarFallback>{name.charAt(0)}</AvatarFallback>
         </Avatar>
       </div>
       <div className="flex flex-col">
-        <p>{name}</p>
-        <div className="flex gap-2">
-          {isAdmin ? <Badge>{role}</Badge> : null}
-          {isVerified ? <Badge>VERIFIED</Badge> : null}
+        <p className="max-w-[50px] truncate text-xs sm:max-w-none sm:text-sm">
+          {name}
+        </p>
+        <div className="flex flex-wrap gap-0.5 sm:gap-1">
+          {isAdmin ? (
+            <Badge className="px-1 py-0 text-[9px] sm:px-2 sm:py-0 sm:text-xs">
+              {role}
+            </Badge>
+          ) : null}
+          {isVerified ? (
+            <Badge className="px-1 py-0 text-[9px] sm:px-2 sm:py-0 sm:text-xs">
+              VERIFIED
+            </Badge>
+          ) : null}
         </div>
       </div>
     </Link>
@@ -219,15 +241,14 @@ const UserPopup = ({
 
 const UserPopupSkeleton = () => {
   return (
-    <div className="flex h-fit items-center gap-2">
+    <div className="flex h-fit items-center gap-1 sm:gap-2">
       <div>
-        <Skeleton className="h-12 w-12 rounded-full" />
+        <Skeleton className="h-8 w-8 rounded-full sm:h-9 sm:w-9" />
       </div>
       <div className="flex flex-col gap-1">
-        <Skeleton className="h-4 w-[100px]" />
-        <div className="flex gap-2">
-          <Skeleton className="h-4 w-[50px]" />
-          <Skeleton className="h-4 w-[50px]" />
+        <Skeleton className="h-3 w-[40px] sm:h-4 sm:w-[50px]" />
+        <div className="flex gap-0.5 sm:gap-1">
+          <Skeleton className="h-3 w-[30px] sm:h-4 sm:w-[40px]" />
         </div>
       </div>
     </div>

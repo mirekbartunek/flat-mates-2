@@ -13,10 +13,8 @@ type ListingWithDistance = ListingWithImages & {
 export async function getFilteredListings(
   searchParams: Record<string, string | string[] | undefined>
 ) {
-  // Začínáme s základní podmínkou pro PUBLIC listings
   const whereConditions = [eq(listings.listing_status, "PUBLIC")];
 
-  // Aplikace filtru kapacity
   if (searchParams.capacity && searchParams.capacity !== "all") {
     switch (searchParams.capacity) {
       case "1-2":
@@ -33,12 +31,10 @@ export async function getFilteredListings(
     }
   }
 
-  // Aplikace filtru města
   if (searchParams.city) {
     whereConditions.push(like(listings.city, `%${String(searchParams.city)}%`));
   }
 
-  // Aplikace cenového rozpětí
   if (searchParams.minPrice) {
     whereConditions.push(
       gte(listings.monthly_price, parseInt(String(searchParams.minPrice)))
@@ -50,21 +46,18 @@ export async function getFilteredListings(
     );
   }
 
-  // Aplikace filtru minimálního počtu pokojů
   if (searchParams.minRooms) {
     whereConditions.push(
       gte(listings.rooms, parseInt(String(searchParams.minRooms)))
     );
   }
 
-  // Aplikace filtru minimální plochy
   if (searchParams.minArea) {
     whereConditions.push(
       gte(listings.area, parseInt(String(searchParams.minArea)))
     );
   }
 
-  // Určení řazení
   const sort = searchParams.sort ? String(searchParams.sort) : "newest";
   let orderBy;
   switch (sort) {
@@ -90,7 +83,6 @@ export async function getFilteredListings(
       orderBy = [desc(listings.createdAt)];
   }
 
-  // Provádíme databázový dotaz s filtrací a řazením
   const allListings = await db.query.listings.findMany({
     where: and(...whereConditions),
     with: {
@@ -103,9 +95,7 @@ export async function getFilteredListings(
     orderBy: orderBy,
   });
 
-  // Mapujeme výsledky pro přidání obrázků
   const mappedListings: ListingWithImages[] = allListings.map((listing) => {
-    // Extrahování URL obrázků
     const imageUrls: string[] = [];
     for (const fileRel of listing.files) {
       if (fileRel.file?.url) {
@@ -119,7 +109,6 @@ export async function getFilteredListings(
     };
   });
 
-  // Aplikace filtru vzdálenosti (nelze provést v databázi bez zvláštní podpory)
   const lat = searchParams.lat ? parseFloat(String(searchParams.lat)) : null;
   const lng = searchParams.lng ? parseFloat(String(searchParams.lng)) : null;
   const radius = searchParams.radius
@@ -137,6 +126,9 @@ export async function getFilteredListings(
         ...listing,
         distance,
       } as ListingWithDistance;
+    });
+    console.dir(withDistance, {
+      depth: Infinity,
     });
 
     return withDistance

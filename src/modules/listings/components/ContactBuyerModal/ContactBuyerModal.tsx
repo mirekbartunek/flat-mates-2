@@ -45,9 +45,8 @@ export const ContactBuyerModal = ({
 
   const { mutate, isPending } = api.listings.bookListing.useMutation({
     onSuccess: () => {
-      toast("Success nemas translaci", {
-        description:
-          "Owner is contacted. They will be in touch soon nemas translaci",
+      toast("Success", {
+        description: "Owner is contacted. They will be in touch soon",
       });
       form.reset();
       setIsOpen(false);

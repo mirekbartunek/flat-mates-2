@@ -17,7 +17,7 @@ type DialogPrimitiveProps = {
   dialogDescription: ReactNode;
   dialogBody: ReactNode;
   dialogFooter?: ReactNode;
-  inForm?: boolean; // assumes that dialogFooter is in dialogBody
+  inForm?: boolean;
 };
 export const DialogPrimitive = ({
   onOpenChange,

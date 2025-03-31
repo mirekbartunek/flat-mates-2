@@ -52,7 +52,6 @@ export const ImageCell = ({
       setConfirmDelete(false);
     } else {
       setConfirmDelete(true);
-      // Automaticky resetuj potvrzení po 3 sekundách
       setTimeout(() => setConfirmDelete(false), 3000);
     }
   };
@@ -89,23 +88,23 @@ export const ImageCell = ({
       {isOpened
         ? createPortal(
             <div
-              className="fixed top-0 left-0 z-[100] flex h-screen w-screen items-center justify-center bg-neutral-800/80"
+              className="fixed inset-0 z-[100] flex items-center justify-center bg-neutral-900/90 p-4 md:p-8"
               onClick={() => setIsOpened(false)}
-              onKeyDown={(key) =>
-                key.key === "Escape" ? setIsOpened(false) : null
-              }
             >
-              {isLoading ? (
-                <Skeleton className="bg-secondary absolute inset-0 m-auto size-4/12" />
-              ) : null}
-              <Image
-                {...props}
-                width={800}
-                height={800}
-                fill={false}
-                alt={props.alt || "Listing image detail"}
-                onLoad={() => setIsLoading(false)}
-              />
+              <div className="relative max-h-[85vh] max-w-[85vw] overflow-hidden rounded-lg">
+                {isLoading ? (
+                  <Skeleton className="absolute inset-0 m-auto h-20 w-20" />
+                ) : null}
+                <Image
+                  {...props}
+                  width={1200}
+                  height={1200}
+                  sizes="(max-width: 768px) 90vw, 70vw"
+                  className="max-h-[85vh] max-w-[85vw] object-contain"
+                  alt={props.alt || "Listing image detail"}
+                  onLoad={() => setIsLoading(false)}
+                />
+              </div>
             </div>,
             document.body
           )

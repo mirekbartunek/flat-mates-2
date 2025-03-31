@@ -22,6 +22,7 @@ export const locationRouter = createTRPCRouter({
       const res = await fetch(
         `https://api.maptiler.com/geocoding/${encodeURIComponent(input.term)}.json?key=${MAPTILER_KEY}`
       );
+      console.log(res.url);
       const data = (await res.json()) as unknown;
       if (res.status === 400) {
         throw new TRPCError({
@@ -38,6 +39,7 @@ export const locationRouter = createTRPCRouter({
         });
       }
       const parsed = data.features.map((feature) => ({
+        // TODO: return one only
         title: feature.place_name,
         relevance: feature.relevance,
         text: feature.text,

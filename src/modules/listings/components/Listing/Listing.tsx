@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 type ListingProps = Listings & {
   imageUrls: string[];
   mode?: "OWNER_VIEW" | "USER_VIEW";
-  distance?: number; // Add optional distance property
+  distance?: number;
 };
 
 export const Listing = ({
@@ -20,7 +20,7 @@ export const Listing = ({
   createdAt,
   description,
   city,
-  distance, // Add distance to destructured props
+  distance,
 }: ListingProps) => {
   return (
     <div className="group bg-card overflow-hidden rounded-xl transition-all hover:shadow-lg">
@@ -36,7 +36,6 @@ export const Listing = ({
               <Badge className="bg-green-500/80 text-white">New</Badge>
             </div>
           ) : null}
-          {/* Display distance badge if available */}
           {distance !== undefined ? (
             <div className="absolute top-4 right-4">
               <Badge className="flex items-center gap-1 bg-rose-500/90 text-white">
@@ -71,12 +70,6 @@ export const Listing = ({
               <div className="flex items-center gap-2">
                 <MapPin className="text-muted-foreground h-4 w-4" />
                 <span>{city}</span>
-                {/* Show distance as text near location if available */}
-                {distance !== undefined ? (
-                  <span className="font-medium text-rose-500">
-                    ({distance.toFixed(1)} km away)
-                  </span>
-                ) : null}
               </div>
             </div>
           </div>

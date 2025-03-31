@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Pencil } from "lucide-react";
+import { Pencil, Check, X } from "lucide-react";
 import { api } from "@/trpc/react";
 import { toast } from "sonner";
 
@@ -48,26 +48,41 @@ export const EditListingDescription = ({
     }
   };
 
+  // Obsluha tapnutí/kliknutí na popis
+  const handleDescriptionClick = () => {
+    if (!isEditing) {
+      setIsEditing(true);
+    }
+  };
+
   if (!isEditing) {
     return (
-      <div className="group relative flex items-start gap-2">
-        <p className="text-muted-foreground mt-2 max-w-3xl">{description}</p>
-        <button
-          onClick={() => setIsEditing(true)}
-          className="text-muted-foreground hover:text-primary mt-2 hidden transition-colors group-hover:block"
-        >
-          <Pencil className="h-4 w-4" />
-        </button>
+      <div className="group relative w-full">
+        <div className="relative flex items-start pr-8">
+          <p
+            className="text-muted-foreground mt-2 w-full cursor-pointer"
+            onClick={handleDescriptionClick}
+          >
+            {description}
+          </p>
+          <button
+            onClick={() => setIsEditing(true)}
+            className="text-muted-foreground hover:text-primary absolute top-2 right-0 transition-colors md:hidden md:group-hover:block"
+            aria-label="Edit description"
+          >
+            <Pencil className="h-4 w-4" />
+          </button>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-2">
+    <div className="w-full space-y-2">
       <Textarea
         value={description}
         onChange={(e) => setDescription(e.target.value)}
-        className="resize-vertical min-h-[100px]"
+        className="resize-vertical min-h-[100px] w-full"
         placeholder="Describe your property..."
         autoFocus
       />
@@ -77,7 +92,7 @@ export const EditListingDescription = ({
           disabled={isPending || description === currentDescription}
           onClick={handleSubmit}
         >
-          Save
+          <Check className="mr-1 h-4 w-4" /> Save
         </Button>
         <Button
           size="sm"
@@ -87,7 +102,7 @@ export const EditListingDescription = ({
             setIsEditing(false);
           }}
         >
-          Cancel
+          <X className="mr-1 h-4 w-4" /> Cancel
         </Button>
       </div>
     </div>

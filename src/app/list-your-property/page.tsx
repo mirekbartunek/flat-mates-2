@@ -32,9 +32,11 @@ const Page = async () => {
           </article>
         </section>
         {u?.user.verified_status === "VERIFIED" ? (
-          <p>
+          <p className="font-bold">
             It seems like you are verified, go ahead, make that listing!{" "}
-            <Link href="/listing/new">Start here</Link>
+            <Link href="/listing/new" className="text-blue-500 underline">
+              Start here
+            </Link>
           </p>
         ) : null}
       </div>

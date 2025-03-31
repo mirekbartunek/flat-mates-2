@@ -23,7 +23,6 @@ export const listingsRouter = createTRPCRouter({
     .input(createListingSchema)
     .mutation(async ({ ctx, input }) => {
       const { db, session } = ctx;
-      console.dir(input);
       const id = await db.transaction(async (tx) => {
         const [listing] = await tx
           .insert(listings)
@@ -169,7 +168,7 @@ export const listingsRouter = createTRPCRouter({
         subject: "Wohooo! Someone is interested in your listing!",
         react: OwnerBookingMessage({
           ownerName: listing.creator.name!,
-          linkToDashBoard: `https://flat-matess-2-vercel.app/listing/${listing.id}/dashboard`,
+          linkToDashBoard: `https://flat-mates-2-vercel.app/listing/${listing.id}/dashboard`,
           tenantName: tenant.name!,
           propertyTitle: listing.title,
           tenantEmail: tenant.email,
@@ -214,15 +213,19 @@ export const listingsRouter = createTRPCRouter({
       switch (input.action) {
         case "ACCEPT": {
           await db.transaction(async (tx) => {
-            await tx.update(listingReservations).set({
-              status: "accepted",
-            });
+            await tx
+              .update(listingReservations)
+              .set({
+                status: "accepted",
+              })
+              .where(eq(listingReservations.id, input.reservationId));
 
             const [user] = await tx
               .insert(tenants)
               .values({
                 name: res.user.name!,
                 bio: "Flat Mates user!",
+                flat_mates_user_id: res.user.id,
               })
               .returning();
             if (!user?.id) {
@@ -376,11 +379,13 @@ export const listingsRouter = createTRPCRouter({
           message: "Listing not found",
           code: "NOT_FOUND",
         });
+
       if (
-        listing.userId !== session.user.id ||
+        listing.userId !== session.user.id &&
         !["ADMIN", "SUPERADMIN"].includes(session.user.role)
-      )
+      ) {
         throw new TRPCError({ message: "Unauthorized", code: "UNAUTHORIZED" });
+      }
 
       await db.delete(listings).where(eq(listings.id, listing.id));
     }),

@@ -35,6 +35,7 @@ import { ReservationCard } from "@/modules/listings/components/ReservationCard/R
 import { ImageCell } from "@/modules/listings/components/ImageCell/ImageCell";
 import { AddListingImageModal } from "@/modules/listings/components/AddListingImageModal/AddListingImageModal";
 import { MAX_FILE_COUNT } from "@/lib/constants";
+import { DialogPrimitive } from "@/modules/listings/components/DialogPrimitive/DialogPrimitive";
 
 type ListingWithRelations = InferSelectModel<typeof listings> & {
   reservations: (InferSelectModel<typeof listingReservations> & {
@@ -83,6 +84,16 @@ export const ListingOwnerPage = ({
       },
     });
 
+  const { mutate: deleteListing } = api.listings.removeListing.useMutation({
+    onSuccess: () => {
+      toast.success("Listing has been deleted successfully");
+      router.push("/listings");
+    },
+    onError: (error) => {
+      toast.error(`Failed to delete listing: ${error.message}`);
+    },
+  });
+
   const [searchQuery, setSearchQuery] = useState("");
 
   const filteredReservations = reservations.filter((reservation) =>
@@ -98,106 +109,158 @@ export const ListingOwnerPage = ({
   const imageUrlsWithId = files.map((f) => ({ url: f.file.url, id: f.fileId }));
 
   return (
-    <main className="container mx-auto space-y-6 px-4 py-6 md:py-8">
-      {/* Title, description and price section */}
-      <div className="flex flex-col items-start gap-6 md:flex-row md:justify-between">
-        <div className="w-full md:w-auto">
-          <EditListingTitle currentTitle={title} listingId={id} />
-          <EditListingDescription
-            currentDescription={description}
-            listingId={id}
-          />
+    <main className="container mx-auto space-y-4 px-3 py-4 sm:space-y-6 sm:px-4 sm:py-6 md:py-8">
+      <div className="flex flex-col gap-4 sm:gap-6">
+        <div className="flex flex-col md:flex-row md:items-start md:justify-between">
+          <div className="flex w-full flex-col gap-2 md:max-w-[70%]">
+            <div className="flex items-start justify-between">
+              <EditListingTitle currentTitle={title} listingId={id} />
+            </div>
+
+            <div className="w-full overflow-hidden break-words">
+              <EditListingDescription
+                currentDescription={description}
+                listingId={id}
+              />
+            </div>
+
+            <DialogPrimitive
+              dialogTrigger={
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  className="mt-2 flex w-fit items-center gap-1"
+                >
+                  <Trash2 className="h-4 w-4" />
+                  Delete Listing
+                </Button>
+              }
+              dialogTitle="Delete Listing"
+              dialogDescription="Are you sure you want to delete this listing?"
+              dialogBody={
+                <div>
+                  <p className="text-muted-foreground text-sm">
+                    This action cannot be undone. This will permanently delete
+                    this listing and remove all associated data including
+                    reservations and tenant assignments.
+                  </p>
+                </div>
+              }
+              dialogFooter={
+                <div className="flex w-full justify-between">
+                  <Button
+                    variant="destructive"
+                    onClick={() => deleteListing({ listingId: id })}
+                  >
+                    Delete
+                  </Button>
+                </div>
+              }
+            />
+          </div>
+          <Card className="group/edit relative mt-4 w-full md:mt-0 md:w-[200px] md:flex-shrink-0">
+            <EditListingPrice previousPrice={monthly_price} listingId={id} />
+            <CardHeader className="space-y-1 p-4 sm:p-6">
+              <div className="flex items-center gap-2">
+                <DollarSign className="h-4 w-4" />
+                <CardTitle className="text-base sm:text-lg">Price</CardTitle>
+              </div>
+              <CardDescription className="text-xs sm:text-sm">
+                Monthly rent
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="p-4 pt-0 sm:p-6 sm:pt-0">
+              <p className="text-lg font-bold sm:text-2xl">
+                CZK{monthly_price.toLocaleString()}
+              </p>
+            </CardContent>
+          </Card>
         </div>
-        <Card className="group/edit relative mt-4 w-full sm:w-[200px] md:mt-0">
-          <EditListingPrice previousPrice={monthly_price} listingId={id} />
-          <CardHeader className="space-y-1">
-            <div className="flex items-center gap-2">
-              <DollarSign className="h-4 w-4" />
-              <CardTitle>Price</CardTitle>
-            </div>
-            <CardDescription>Monthly rent</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">
-              CZK{monthly_price.toLocaleString()}
-            </p>
-          </CardContent>
-        </Card>
+
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <Card className="group/edit relative">
+            <EditListingCapacity
+              previous_capacity={max_tenants}
+              listingId={id}
+            />
+            <CardHeader className="p-4 sm:p-6">
+              <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                <Users className="h-4 w-4" />
+                Occupancy
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-4 pt-0 sm:p-6 sm:pt-0">
+              <p className="text-lg font-bold sm:text-2xl">
+                {tenants.length}/{max_tenants}
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="p-4 sm:p-6">
+              <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                <Calendar className="h-4 w-4" />
+                Reservations
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-4 pt-0 sm:p-6 sm:pt-0">
+              <p className="text-lg font-bold sm:text-2xl">
+                {reservations.length}
+              </p>
+              <p className="text-xs sm:text-sm">
+                Of which {numberOfPendingReservations} pending
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="p-4 sm:p-6">
+              <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                <Home className="h-4 w-4" />
+                Listed by
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="flex items-center gap-2 p-4 pt-0 sm:gap-3 sm:p-6 sm:pt-0">
+              <Avatar className="h-8 w-8 sm:h-10 sm:w-10">
+                <AvatarImage src={creator.image ?? ""} />
+                <AvatarFallback>{creator.name?.[0]}</AvatarFallback>
+              </Avatar>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-medium sm:text-base">
+                  {creator.name}
+                </p>
+                <p className="text-muted-foreground text-xs sm:text-sm">
+                  Owner
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="p-4 sm:p-6">
+              <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                <Eye className="h-4 w-4" />
+                Listing Status
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="flex flex-col items-start gap-2 p-4 pt-0 sm:gap-3 sm:p-6 sm:pt-0">
+              <EditListingStatus
+                currentStatus={listing_status}
+                listingId={id}
+              />
+              <p className="text-xs leading-tight sm:text-sm">
+                {displayListingStatusDescription(listing_status)}
+              </p>
+            </CardContent>
+          </Card>
+        </div>
       </div>
 
-      {/* Info cards grid */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card className="group/edit relative">
-          <EditListingCapacity previous_capacity={max_tenants} listingId={id} />
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Users className="h-4 w-4" />
-              Occupancy
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">
-              {tenants.length}/{max_tenants}
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Calendar className="h-4 w-4" />
-              Reservations
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">{reservations.length}</p>
-            <p className="text-sm">
-              Of which {numberOfPendingReservations} pending
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Home className="h-4 w-4" />
-              Listed by
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="flex items-center gap-3">
-            <Avatar>
-              <AvatarImage src={creator.image ?? ""} />
-              <AvatarFallback>{creator.name?.[0]}</AvatarFallback>
-            </Avatar>
-            <div>
-              <p className="font-medium">{creator.name}</p>
-              <p className="text-muted-foreground text-sm">Owner</p>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Eye className="h-4 w-4" />
-              Listing Status
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="flex flex-col items-start gap-3">
-            <EditListingStatus currentStatus={listing_status} listingId={id} />
-            <p className="text-sm">
-              {displayListingStatusDescription(listing_status)}
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Images section */}
       <Card>
-        <CardHeader>
-          <CardTitle>Images</CardTitle>
+        <CardHeader className="p-4 sm:p-6">
+          <CardTitle className="text-base sm:text-lg">Images</CardTitle>
         </CardHeader>
-        <CardContent className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+        <CardContent className="grid grid-cols-2 gap-2 p-4 pt-0 sm:grid-cols-3 sm:gap-3 sm:p-6 sm:pt-0 md:grid-cols-4 lg:grid-cols-5">
           {imageUrlsWithId.map((image) => (
             <ImageCell
               key={image.id}
@@ -222,24 +285,20 @@ export const ListingOwnerPage = ({
         </CardContent>
       </Card>
 
-      {/* Tabs section */}
       <Tabs defaultValue="tenants" className="w-full">
-        <TabsList className="w-full sm:w-auto">
-          <TabsTrigger value="tenants" className="flex-1 sm:flex-none">
-            Current Tenants
-          </TabsTrigger>
-          <TabsTrigger value="reservations" className="flex-1 sm:flex-none">
-            Reservations
-          </TabsTrigger>
+        <TabsList className="grid w-full grid-cols-2 sm:flex sm:w-auto">
+          <TabsTrigger value="tenants">Current Tenants</TabsTrigger>
+          <TabsTrigger value="reservations">Reservations</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="tenants" className="mt-6">
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <TabsContent value="tenants" className="mt-4 sm:mt-6">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
             {tenants.map(({ tenant }) => (
               <Card key={tenant.id} className="group relative">
                 <Button
                   variant="ghost"
                   className="hover:bg-primary absolute top-1 right-1 hidden border-none group-hover:block"
+                  size="sm"
                   onClick={() =>
                     deleteTenant({
                       tenantId: tenant.id,
@@ -248,15 +307,15 @@ export const ListingOwnerPage = ({
                 >
                   <Trash2 className="h-4 w-4" />
                 </Button>
-                <CardHeader className="flex flex-row items-center gap-4 p-4 sm:p-6">
-                  <Avatar>
+                <CardHeader className="flex flex-row items-center gap-2 p-3 sm:gap-4 sm:p-6">
+                  <Avatar className="h-8 w-8 flex-shrink-0 sm:h-10 sm:w-10">
                     <AvatarFallback>{tenant.name[0]}</AvatarFallback>
                   </Avatar>
-                  <div>
-                    <CardTitle className="text-base sm:text-lg">
+                  <div className="min-w-0 flex-1">
+                    <CardTitle className="truncate text-sm sm:text-base">
                       {tenant.name}
                     </CardTitle>
-                    <CardDescription className="mt-1 text-xs sm:text-sm">
+                    <CardDescription className="mt-0.5 line-clamp-2 text-xs sm:mt-1 sm:text-sm">
                       {tenant.bio}
                     </CardDescription>
                   </div>
@@ -269,8 +328,8 @@ export const ListingOwnerPage = ({
           </div>
         </TabsContent>
 
-        <TabsContent value="reservations" className="mt-6">
-          <div className="space-y-4">
+        <TabsContent value="reservations" className="mt-4 sm:mt-6">
+          <div className="space-y-3 sm:space-y-4">
             <Input
               placeholder="Filter by email"
               type="search"
@@ -278,19 +337,21 @@ export const ListingOwnerPage = ({
               onChange={(e) => setSearchQuery(e.target.value)}
               className="max-w-full sm:max-w-md"
             />
-            {filteredReservations.length > 0 ? (
-              filteredReservations.map((reservation) => (
-                <ReservationCard
-                  {...reservation}
-                  key={reservation.id}
-                  disableActions={tenants.length === max_tenants}
-                />
-              ))
-            ) : (
-              <p className="text-muted-foreground py-4">
-                No reservations found.
-              </p>
-            )}
+            <div className="space-y-3 sm:space-y-4">
+              {filteredReservations.length > 0 ? (
+                filteredReservations.map((reservation) => (
+                  <ReservationCard
+                    {...reservation}
+                    key={reservation.id}
+                    disableActions={tenants.length === max_tenants}
+                  />
+                ))
+              ) : (
+                <p className="text-muted-foreground py-3 text-sm sm:py-4">
+                  No reservations found.
+                </p>
+              )}
+            </div>
           </div>
         </TabsContent>
       </Tabs>

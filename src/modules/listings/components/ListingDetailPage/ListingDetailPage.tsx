@@ -69,6 +69,7 @@ export const ListingDetailPage = async ({
           },
         },
       },
+      reservations: true,
     },
   });
   const user = await getServerAuthSession();
@@ -86,13 +87,21 @@ export const ListingDetailPage = async ({
   const addressString = `${listingDetails.street}, ${listingDetails.city}, ${listingDetails.country}`;
 
   const isUserInListing = user
-    ? listingDetails.tenants.some((tenant) => tenant.id === user.user.id)
+    ? listingDetails.tenants.some(
+        (tenant) => tenant.tenant.flat_mates_user_id === user.user.id
+      )
+    : false;
+
+  const isUserInReservations = user
+    ? listingDetails.reservations.some(
+        (tenant) => tenant.user_id === user.user.id
+      )
     : false;
 
   return (
     <main className="container mx-auto max-w-full space-y-8 px-4 py-8">
       {listingDetails.listing_status === "HIDDEN" ? (
-        <div className="fixed right-4 bottom-4 z-50 flex items-center gap-2 rounded-lg bg-black/85 px-4 py-2.5 text-sm font-medium text-white shadow-lg">
+        <div className="border-primary fixed right-4 bottom-4 z-50 flex items-center gap-2 rounded-lg border-1 bg-black/85 px-4 py-2.5 text-sm font-medium text-white shadow-lg">
           <EyeOff className="h-5 w-5" />
           <span>Visible to you only</span>
         </div>
@@ -296,7 +305,7 @@ export const ListingDetailPage = async ({
             ) : (
               <ContactBuyerModal
                 listingId={listingId}
-                disabled={!user || !isUserInListing}
+                disabled={!user || isUserInListing || isUserInReservations}
               />
             )}
             {isAdmin(user?.user.role ?? "USER") ? (

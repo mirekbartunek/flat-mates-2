@@ -34,7 +34,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import type { TenantSocial } from "@/server/db/enums";
-import { Loader2 } from "lucide-react";
+import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import Map from "@/modules/listings/components/Map/Map";
 import { fileValidator } from "@/lib/constants";
 
@@ -70,6 +70,7 @@ export const NewNewListingForm = () => {
   const [imageUrls, setImageUrls] = useState<string[] | null>(null);
   const [hasTenants, setHasTenants] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [isGeocoding, setIsGeocoding] = useState(false);
 
   const form = useForm<z.infer<typeof createListingSchema>>({
     resolver: zodResolver(createListingSchema),
@@ -134,10 +135,52 @@ export const NewNewListingForm = () => {
     },
   });
 
+  const geocodeMutation = api.location.getCoordinatesByTerm.useMutation({
+    onSuccess: (results) => {
+      if (results && results.length > 0) {
+        const [lng, lat] = results[0]!.coordinates;
+        form.setValue("location", [lng, lat]);
+        setIsGeocoding(false);
+        setCurrentStep((prev) => prev + 1);
+      } else {
+        toast.error(
+          "Could not find coordinates for this address. Please check the address or use the map."
+        );
+        setIsGeocoding(false);
+      }
+    },
+    onError: () => {
+      toast.error("Could not resolve address location");
+      setIsGeocoding(false);
+    },
+  });
+
   const handleNext = async () => {
     const isValid = await form.trigger(getFieldsForStep(currentStep));
-    if (isValid && currentStep < steps.length - 1) {
-      setCurrentStep((prev) => prev + 1);
+
+    if (isValid) {
+      if (currentStep === 2) {
+        const street = form.getValues("street");
+        const city = form.getValues("city");
+
+        if (
+          street &&
+          city &&
+          (!form.getValues("location")?.[0] ||
+            form.getValues("location")?.[0] === 0)
+        ) {
+          const country = form.getValues("country");
+          const addressQuery = `${street}, ${city}${country ? `, ${country}` : ""}`;
+
+          setIsGeocoding(true);
+          geocodeMutation.mutate({ term: addressQuery });
+          return;
+        }
+      }
+
+      if (currentStep < steps.length - 1) {
+        setCurrentStep((prev) => prev + 1);
+      }
     }
   };
 
@@ -362,6 +405,12 @@ export const NewNewListingForm = () => {
                 )}
               />
             </div>
+            {isGeocoding ? (
+              <div className="bg-secondary/50 flex items-center rounded-md border p-3 text-sm">
+                <Loader2 className="text-primary mr-2 h-4 w-4 animate-spin" />
+                <span>Resolving address coordinates...</span>
+              </div>
+            ) : null}
           </section>
         );
       case 3:
@@ -720,55 +769,112 @@ export const NewNewListingForm = () => {
     }
   };
   return (
-    <div className="container mx-auto py-8">
-      <div className="relative mx-auto max-w-3xl space-y-8">
-        {/* Progress Bar Card */}
-        <div className="bg-card rounded-lg border p-6 shadow-sm">
-          <div className="mb-6">
-            <div className="mb-4 flex justify-between">
-              {steps.map((step, index) => (
-                <div key={index} className="flex flex-col items-center">
+    <div className="container mx-auto px-4 py-6 sm:py-8">
+      <div className="relative mx-auto max-w-3xl space-y-6 sm:space-y-8">
+        {/* Progress Bar Card - Responzivní verze */}
+        <div className="bg-card rounded-lg border p-4 shadow-sm sm:p-6">
+          <div className="mb-4 sm:mb-6">
+            {/* Mobilní verze progress indikátoru - viditelná pouze na malých obrazovkách */}
+            <div className="mb-4 flex flex-col items-center sm:hidden">
+              <div className="mb-3 flex w-full items-center justify-between">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 w-8 p-0"
+                  onClick={handlePrevious}
+                  disabled={currentStep === 0}
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+
+                <div className="text-center">
                   <div
                     className={cn(
-                      "flex h-10 w-10 items-center justify-center rounded-full transition-colors",
-                      index <= currentStep
-                        ? "bg-rose-500 text-white"
-                        : index < currentStep
-                          ? "bg-rose-200 text-rose-700"
-                          : "bg-secondary text-muted-foreground"
+                      "mx-auto flex h-10 w-10 items-center justify-center rounded-full",
+                      "bg-rose-500 text-white"
                     )}
                   >
-                    {index + 1}
+                    {currentStep + 1}
                   </div>
-                  <span className="mt-2 max-w-[100px] truncate text-center text-sm font-medium">
-                    {step.title}
+                  <span className="mt-1 block text-sm font-medium">
+                    {steps[currentStep]?.title}
+                  </span>
+                  <span className="text-muted-foreground text-xs">
+                    Step {currentStep + 1} of {steps.length}
                   </span>
                 </div>
-              ))}
+
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 w-8 p-0"
+                  onClick={() => currentStep < steps.length - 1 && handleNext()}
+                  disabled={currentStep === steps.length - 1 || isGeocoding}
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
+
+              <div className="bg-secondary h-2 w-full rounded-full">
+                <div
+                  className="h-full rounded-full bg-rose-500 transition-all duration-300"
+                  style={{
+                    width: `${(currentStep / (steps.length - 1)) * 100}%`,
+                  }}
+                />
+              </div>
             </div>
-            <div className="bg-secondary h-2 rounded-full">
-              <div
-                className="h-full rounded-full bg-rose-500 transition-all duration-300"
-                style={{
-                  width: `${(currentStep / (steps.length - 1)) * 100}%`,
-                }}
-              />
+
+            {/* Desktop verze progress indikátoru - skrytá na malých obrazovkách */}
+            <div className="hidden sm:block">
+              <div className="mb-4 grid grid-cols-6 gap-2">
+                {steps.map((step, index) => (
+                  <div key={index} className="flex flex-col items-center">
+                    <div
+                      className={cn(
+                        "flex h-10 w-10 items-center justify-center rounded-full transition-colors",
+                        index <= currentStep
+                          ? "bg-rose-500 text-white"
+                          : index < currentStep
+                            ? "bg-rose-200 text-rose-700"
+                            : "bg-secondary text-muted-foreground"
+                      )}
+                    >
+                      {index + 1}
+                    </div>
+                    <span className="mt-2 max-w-[80px] truncate text-center text-xs font-medium">
+                      {step.title}
+                    </span>
+                  </div>
+                ))}
+              </div>
+              <div className="bg-secondary h-2 rounded-full">
+                <div
+                  className="h-full rounded-full bg-rose-500 transition-all duration-300"
+                  style={{
+                    width: `${(currentStep / (steps.length - 1)) * 100}%`,
+                  }}
+                />
+              </div>
             </div>
           </div>
         </div>
 
-        <div className="bg-card rounded-lg border p-6 shadow-sm">
-          <div className="mb-6">
-            <h2 className="text-2xl font-bold text-rose-500">
+        <div className="bg-card rounded-lg border p-4 shadow-sm sm:p-6">
+          <div className="mb-4 sm:mb-6">
+            <h2 className="text-xl font-bold text-rose-500 sm:text-2xl">
               {steps[currentStep]?.title}
             </h2>
-            <p className="text-muted-foreground mt-1">
+            <p className="text-muted-foreground mt-1 text-sm sm:text-base">
               {steps[currentStep]?.description}
             </p>
           </div>
 
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="space-y-6 sm:space-y-8"
+            >
               <Fragment key={currentStep}>{renderStep()}</Fragment>
 
               <div className="flex items-center justify-between border-t pt-4">
@@ -780,7 +886,6 @@ export const NewNewListingForm = () => {
                 >
                   Previous
                 </Button>
-
                 {currentStep === steps.length - 1 ? (
                   <Button
                     type="submit"
@@ -800,9 +905,16 @@ export const NewNewListingForm = () => {
                   <Button
                     onClick={handleNext}
                     type="button"
-                    key={currentStep + 1}
+                    disabled={isGeocoding}
                   >
-                    Next
+                    {isGeocoding && currentStep === 2 ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Resolving...
+                      </>
+                    ) : (
+                      "Next"
+                    )}
                   </Button>
                 )}
               </div>
@@ -810,7 +922,7 @@ export const NewNewListingForm = () => {
           </Form>
         </div>
 
-        <p className="text-muted-foreground text-center text-sm">
+        <p className="text-muted-foreground text-center text-xs sm:text-sm">
           Need help? Contact support at{" "}
           <a
             href="mailto:flat-mates-support@miroslavbartunek.com"

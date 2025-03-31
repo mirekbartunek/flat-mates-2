@@ -1,5 +1,6 @@
 import type { Listings } from "@/server/db/types";
 import { Listing, ListingsFilter } from "@/modules/listings";
+import { ResetHomePageParams } from "@/modules/listings/components/ResetHomePageParams/ResetHomePageParams";
 
 type ListingAndImages = Listings & {
   imageUrls: string[];
@@ -16,11 +17,12 @@ export const ListingsPage = async ({ listings }: LandingPageProps) => {
         className="flex flex-col items-center justify-center gap-4 py-12"
         id="listings"
       >
-        <div className="text-center">
+        <div className="flex flex-col items-center gap-2">
           <h2 className="text-2xl font-semibold">Look for your new housing</h2>
           <p className="text-muted-foreground mt-2">
             Check back later for new properties
           </p>
+          <ResetHomePageParams />
         </div>
       </main>
     );

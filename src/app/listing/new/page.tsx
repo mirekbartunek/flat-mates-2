@@ -1,6 +1,4 @@
 import { ErrorPage, PageTop } from "@/modules/layout";
-import { db, users } from "@/server/db";
-import { eq } from "drizzle-orm";
 import { getServerAuthSession } from "@/server/auth";
 import { NewNewListingForm } from "@/modules/listings/components/NewNewListingForm/NewNewListingForm";
 const Page = async () => {
@@ -17,13 +15,7 @@ const Page = async () => {
     );
   }
 
-  const dbUser = await db.query.users.findFirst({
-    where: eq(users.id, session.user.id),
-  });
-
-  const role = dbUser?.verified_status;
-
-  if (role === "UNVERIFIED")
+  if (session.user.verified_status === "UNVERIFIED")
     return (
       <main>
         <ErrorPage

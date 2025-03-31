@@ -39,7 +39,7 @@ export const AddListingImageModal = ({
   return (
     <DialogPrimitive
       dialogTrigger={
-        <Card className="flex h-full w-full cursor-pointer items-center justify-center bg-black text-white hover:bg-black/80">
+        <Card className="flex h-full w-full cursor-pointer items-center justify-center hover:bg-white/80 dark:bg-black dark:text-white dark:hover:bg-black/80">
           <div className="flex items-center gap-3">
             <Plus className="h-6 w-6" />
             <span className="text-xl">Add image</span>

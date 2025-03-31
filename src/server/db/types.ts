@@ -1,4 +1,11 @@
-import type { users, listings, tenants, listingReservations } from "./index";
+import type {
+  users,
+  listings,
+  tenants,
+  listingReservations,
+  listingFiles,
+  files,
+} from "./index";
 import { z } from "zod";
 import {
   listingStatusEnumValues,
@@ -8,7 +15,9 @@ import {
 export type Users = typeof users.$inferSelect; // when queried
 export type Listings = typeof listings.$inferSelect;
 export type Tenants = typeof tenants.$inferSelect;
-export type Resevations = typeof listingReservations.$inferSelect;
+export type Reservations = typeof listingReservations.$inferSelect;
+export type ListingFiles = typeof listingFiles.$inferSelect;
+export type Files = typeof files.$inferSelect;
 
 export const newTenant = z.object({
   name: z.string().min(1, { message: "Tenant name is required" }),
