@@ -48,7 +48,6 @@ export const EditListingDescription = ({
     }
   };
 
-  // Obsluha tapnutí/kliknutí na popis
   const handleDescriptionClick = () => {
     if (!isEditing) {
       setIsEditing(true);

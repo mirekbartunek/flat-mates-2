@@ -58,7 +58,6 @@ export const EditListingTitle = ({
     }
   };
 
-  // Obsluha dotyku pro mobilní zařízení
   const handleTitleClick = () => {
     if (!isEditing) {
       setIsEditing(true);

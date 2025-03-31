@@ -31,7 +31,6 @@ export function LocationFilter() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  // Parse values from URL with proper fallbacks
   const currentRadius = searchParams.get("radius") ?? "5";
   const currentLat = searchParams.get("lat");
   const currentLng = searchParams.get("lng");
@@ -51,22 +50,17 @@ export function LocationFilter() {
       : null
   );
 
-  // Check if location filter is active
   const isLocationFilterActive = Boolean(currentLat && currentLng);
 
-  // Handler for location selection from map
   const handleLocationSelect = (location: LocationInfo) => {
     setTempLocation(location);
   };
 
-  // Apply the location filter
   const applyFilter = () => {
     if (!tempLocation) return;
 
-    // Create params from current URL
     const params = new URLSearchParams(searchParams.toString());
 
-    // Update location params
     params.set("lat", tempLocation.lat.toString());
     params.set("lng", tempLocation.lng.toString());
     params.set("radius", radiusValue.toString());
@@ -75,17 +69,13 @@ export function LocationFilter() {
     params.set("country", tempLocation.country);
     params.set("zip", tempLocation.zip);
 
-    // Navigate with updated params
     router.push(`${pathname}?${params.toString()}`, { scroll: false });
     setDialogOpen(false);
   };
 
-  // Clear the location filter
   const clearFilter = () => {
-    // Create params from current URL
     const params = new URLSearchParams(searchParams.toString());
 
-    // Remove location params
     params.delete("lat");
     params.delete("lng");
     params.delete("radius");
@@ -94,7 +84,6 @@ export function LocationFilter() {
     params.delete("country");
     params.delete("zip");
 
-    // Navigate with updated params
     router.push(`${pathname}?${params.toString()}`, { scroll: false });
     setTempLocation(null);
     setDialogOpen(false);

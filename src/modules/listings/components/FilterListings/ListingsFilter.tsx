@@ -35,7 +35,6 @@ export function ListingsFilter() {
   const applyFilters = () => {
     const params = new URLSearchParams(searchParams.toString());
 
-    // Update params with our form values
     Object.entries(filters).forEach(([key, value]) => {
       if (value && value !== "all") {
         params.set(key, value);
@@ -48,7 +47,6 @@ export function ListingsFilter() {
   };
 
   const clearAllFilters = () => {
-    // Clear only our form filters, preserve location
     const params = new URLSearchParams();
 
     ["lat", "lng", "radius", "street", "city", "country", "zip"].forEach(

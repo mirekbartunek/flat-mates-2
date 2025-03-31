@@ -10,13 +10,13 @@ export function cn(...inputs: ClassValue[]) {
 export const getUrl = () => {
   const isDev = env.NODE_ENV === "development";
 
-  return isDev ? "http://localhost:3000" : "https://flat-mates-2.vercel.app"; // tohle je nejhorsi fix ale good enough
+  return isDev ? "http://localhost:3000" : "https://flat-mates-2.vercel.app";
 };
 
 export const isNewListing = (creationDate: Date): boolean => {
   const now = new Date();
-  const timeDiff = now.getTime() - creationDate.getTime(); // Difference in milliseconds
-  const daysDiff = timeDiff / (1000 * 60 * 60 * 24); // Convert milliseconds to days
+  const timeDiff = now.getTime() - creationDate.getTime();
+  const daysDiff = timeDiff / (1000 * 60 * 60 * 24);
   return daysDiff < 5;
 };
 

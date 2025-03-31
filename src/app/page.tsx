@@ -23,8 +23,7 @@ export default async function Home({
     where: eq(listings.listing_status, "PUBLIC"),
   });
   const awaitedParams = await searchParams;
-  const mappedListings = await getFilteredListings(awaitedParams); // pridat suspense
-
+  const mappedListings = await getFilteredListings(awaitedParams);
   return (
     <>
       <div className="relative overflow-hidden">

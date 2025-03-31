@@ -1,6 +1,6 @@
 import { ErrorPage, PageTop } from "@/modules/layout";
 import { getServerAuthSession } from "@/server/auth";
-import { NewNewListingForm } from "@/modules/listings/components/NewNewListingForm/NewNewListingForm";
+import { NewListingForm } from "@/modules/listings/components/NewListingForm/NewListingForm";
 const Page = async () => {
   const session = await getServerAuthSession();
 
@@ -33,7 +33,7 @@ const Page = async () => {
         </h1>
       </PageTop>
       <section className="container">
-        <NewNewListingForm />
+        <NewListingForm />
       </section>
     </main>
   );

@@ -171,7 +171,6 @@ export const ListingDetailPage = async ({
             <CardContent>
               <p className="break-words">{addressString}</p>
 
-              {/* Jediná změna - přidaná výška */}
               <div className="mt-4 h-[350px] overflow-hidden rounded-lg">
                 <ListingLocation coordinates={listingDetails.location} />
               </div>

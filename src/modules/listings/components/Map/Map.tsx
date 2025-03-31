@@ -41,13 +41,12 @@ export const Map = ({
   const { mutate: searchLocation, isPending: isSearchLoading } =
     api.location.getCoordinatesByTerm.useMutation({
       onSuccess: (res) => {
-        const hit = res.at(0);
-        if (!hit) {
+        if (!res) {
           toast.error("Location not found");
           return;
         }
-        const lng = hit.coordinates.at(0);
-        const lat = hit.coordinates.at(1);
+        const lng = res.coordinates.at(0);
+        const lat = res.coordinates.at(1);
         if (!lng || !lat) {
           toast.error("Invalid coordinates");
           return;
@@ -69,7 +68,7 @@ export const Map = ({
   });
 
   const { mutateAsync: getLocation, isPending: isLocationLoading } =
-    api.location.getAdressByCoords.useMutation({
+    api.location.getAddressByCoords.useMutation({
       onError: (e) => {
         toast.error("Could not resolve location", {
           description: e.message,

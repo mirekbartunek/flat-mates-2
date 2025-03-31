@@ -22,7 +22,6 @@ export const locationRouter = createTRPCRouter({
       const res = await fetch(
         `https://api.maptiler.com/geocoding/${encodeURIComponent(input.term)}.json?key=${MAPTILER_KEY}`
       );
-      console.log(res.url);
       const data = (await res.json()) as unknown;
       if (res.status === 400) {
         throw new TRPCError({
@@ -32,19 +31,19 @@ export const locationRouter = createTRPCRouter({
         });
       }
       if (!isSearchResult(data)) {
-        console.log(data);
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Something went wrong while fetching from the external API",
         });
       }
-      const parsed = data.features.map((feature) => ({
-        // TODO: return one only
-        title: feature.place_name,
-        relevance: feature.relevance,
-        text: feature.text,
-        coordinates: feature.center,
-      }));
+      const parsed = data.features
+        .map((feature) => ({
+          title: feature.place_name,
+          relevance: feature.relevance,
+          text: feature.text,
+          coordinates: feature.center,
+        }))
+        .at(0);
       return parsed;
     }),
   getMapStyle: publicProcedure.query(async () => {
@@ -53,7 +52,7 @@ export const locationRouter = createTRPCRouter({
     );
     return (await res.json()) as StyleSpecification;
   }),
-  getAdressByCoords: publicProcedure
+  getAddressByCoords: publicProcedure
     .input(
       z.object({
         lat: z.number(),
@@ -75,7 +74,6 @@ export const locationRouter = createTRPCRouter({
       }
 
       if (!isSearchResult(data)) {
-        console.log(data);
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Something went wrong while fetching from the external API",
@@ -117,7 +115,6 @@ export const locationRouter = createTRPCRouter({
       };
 
       if (!isValidAddress(result)) {
-        console.error("Invalid result:", result);
         throw new TRPCError({
           message: "Failed to parse address components",
           code: "PARSE_ERROR",

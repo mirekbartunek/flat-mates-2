@@ -239,14 +239,6 @@ export const listingsRouter = createTRPCRouter({
               tenantId: user.id,
               listingId: res.listing.id,
             });
-            /*
-            await tx
-              .update(listings)
-              .set({
-                current_capacity: sql`${listings.current_capacity} + 1`,
-              })
-              .where(eq(listings.id, res.listing.id));
-             */
           });
           await resend.emails.send({
             from: "Flat Mates <flatmates@miroslavbartunek.com>",

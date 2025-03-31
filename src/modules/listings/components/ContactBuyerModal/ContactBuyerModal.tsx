@@ -1,7 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useState } from "react";
 import { api } from "@/trpc/react";
 import { toast } from "sonner";
 import { Textarea } from "@/components/ui/textarea";
@@ -33,7 +32,6 @@ export const ContactBuyerModal = ({
   disabled = false,
 }: ContactBuyerModalProps) => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [isOpen, setIsOpen] = useState(false);
 
   const form = useForm<ContactBuyerFormSchema>({
     resolver: zodResolver(contactBuyerFormSchema),
@@ -49,7 +47,6 @@ export const ContactBuyerModal = ({
         description: "Owner is contacted. They will be in touch soon",
       });
       form.reset();
-      setIsOpen(false);
     },
   });
   const { data: sessionData } = useSession();
