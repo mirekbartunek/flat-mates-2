@@ -87,7 +87,7 @@ export const ListingOwnerPage = ({
   const { mutate: deleteListing } = api.listings.removeListing.useMutation({
     onSuccess: () => {
       toast.success("Listing has been deleted successfully");
-      router.push("/listings");
+      router.push("/");
     },
     onError: (error) => {
       toast.error(`Failed to delete listing: ${error.message}`);
