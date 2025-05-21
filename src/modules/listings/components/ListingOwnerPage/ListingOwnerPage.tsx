@@ -286,10 +286,12 @@ export const ListingOwnerPage = ({
       </Card>
 
       <Tabs defaultValue="tenants" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 sm:flex sm:w-auto">
-          <TabsTrigger value="tenants">Current Tenants</TabsTrigger>
-          <TabsTrigger value="reservations">Reservations</TabsTrigger>
-        </TabsList>
+        <div className="flex justify-start">
+          <TabsList>
+            <TabsTrigger value="tenants">Current Tenants</TabsTrigger>
+            <TabsTrigger value="reservations">Reservations</TabsTrigger>
+          </TabsList>
+        </div>
 
         <TabsContent value="tenants" className="mt-4 sm:mt-6">
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
